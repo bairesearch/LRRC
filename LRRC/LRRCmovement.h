@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCmovement.h
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19d 15-December-2016
+ * Project Version: 3j1a 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -43,12 +43,12 @@
 #include "LRRCplayerClass.h"
 #include "LRRCsprite.h"
 
-bool compareSceneFilesMovementPhase(string preMovementPhaseSceneFileName, string thisPhaseStartSceneFileName, Player* currentPlayer, string targetSpritesSceneFileName, bool addSprites);
-	bool compareScenesMovementPhase(string preMovementPhaseSceneFileName, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, Player* currentPlayer, string targetSpritesSceneFileName, bool addSprites);
-		bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDreference* referenceInThisPhaseStartSceneFile, LDreference* initialReferenceInPreMovementPhaseScene, int parentUnitSpeed, bool isAChildOfAMovingReference, Player* currentPlayer, string targetSpritesSceneFileName, LDreference* spriteListInitialReference, int* numTargetSpritesAdded);
-			LDreference* compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(LDreference* referenceInThisPhaseStartSceneFileBeingLocated, LDreference* referenceInPreMovementPhaseSceneFile, bool resultOfComparison[], int parentUnitSpeed, bool* unitIDFound, bool* result);
-				bool compareSubmodelNamesAndIfSameCheckIfValidMove(LDreference* referenceInThisPhaseStartSceneSearchedFor, LDreference* referenceInPreMovementPhaseSceneFoundDuringSearch, bool resultOfComparison[], int parentUnitSpeed);
-			bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile, bool resultOfComparison[], Player* currentPlayer, LDreference* spriteListInitialReference, LDreference* referenceInPreMovementPhaseSceneFile, int* numTargetSpritesAdded, string targetSpritesSceneFileName, bool unitIDFound, bool isChildOfMovingReference);
+bool compareSceneFilesMovementPhase(string preMovementPhaseSceneFileName, string thisPhaseStartSceneFileName, Player* currentPlayer, string targetSpritesSceneFileName, const bool addSprites);
+	bool compareScenesMovementPhase(const string preMovementPhaseSceneFileName, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, Player* currentPlayer, string targetSpritesSceneFileName, const bool addSprites);
+		bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDreference* referenceInThisPhaseStartSceneFile, LDreference* initialReferenceInPreMovementPhaseScene, const int parentUnitSpeed, const bool isAChildOfAMovingReference, const Player* currentPlayer, string targetSpritesSceneFileName, LDreference* spriteListInitialReference, int* numTargetSpritesAdded);
+			LDreference* compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(const LDreference* referenceInThisPhaseStartSceneFileBeingLocated, LDreference* referenceInPreMovementPhaseSceneFile, bool resultOfComparison[], const int parentUnitSpeed, bool* unitIDFound, bool* result);
+				bool compareSubmodelNamesAndIfSameCheckIfValidMove(const LDreference* referenceInThisPhaseStartSceneSearchedFor, const LDreference* referenceInPreMovementPhaseSceneFoundDuringSearch, bool resultOfComparison[], const int parentUnitSpeed);
+			bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile, const bool resultOfComparison[], const Player* currentPlayer, LDreference* spriteListInitialReference, LDreference* referenceInPreMovementPhaseSceneFile, int* numTargetSpritesAdded, string targetSpritesSceneFileName, const bool unitIDFound, const bool isChildOfMovingReference);
 		bool performFinalRoundPointsCalculations(Player* currentPlayer);
 
 #endif

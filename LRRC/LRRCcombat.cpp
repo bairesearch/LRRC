@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCcombat.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19d 15-December-2016
+ * Project Version: 3j1a 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -380,7 +380,7 @@ bool calculateUnitClassNormal(string unitFileName)
 	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
 	//	0/10 if error
 */
-int performCloseCombatBasic(string unit1FileName, string unit2FileName, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack, bool unit1TakesTheInitative, bool unit2TakesTheInitative)
+int performCloseCombatBasic(string unit1FileName, string unit2FileName, const bool unit1performsCloseCombatAttack, const bool unit2performsCloseCombatAttack, const bool unit1TakesTheInitative, const bool unit2TakesTheInitative)
 {
 	//declare variables references
 	LDreference* initialReferenceInUnit1 = new LDreference();
@@ -429,7 +429,7 @@ int performCloseCombatBasic(string unit1FileName, string unit2FileName, bool uni
 	//							6 if unit1 wins and only Unit 1 can strike, 7 if unit1 does not strike, and only Unit 1 can strike, 8 if  3 if unit2 wins, 4 if neither strike
 	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
 	//							0/10 if error in finding required files.
-int performCloseCombatNormal(string unit1FileName, string unit2FileName, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack)
+int performCloseCombatNormal(string unit1FileName, string unit2FileName, const bool unit1performsCloseCombatAttack, const bool unit2performsCloseCombatAttack)
 {
 	//declare variables references
 	LDreference* initialReferenceInUnit1 = new LDreference();
@@ -499,7 +499,7 @@ int performCloseCombatNormal(string unit1FileName, string unit2FileName, bool un
 	//							6 if unit1 wins and only Unit 1 can strike, 7 if unit1 does not strike, and only Unit 1 can strike, 8 if  3 if unit2 wins, 4 if neither strike
 	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
 	//							0/10 if error in finding required files.
-int performCloseCombatWithSceneFile(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, string thisPhaseStartSceneFileName)
+int performCloseCombatWithSceneFile(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, string thisPhaseStartSceneFileName)
 {
 
 	//declare initial scene references
@@ -522,7 +522,7 @@ int performCloseCombatWithSceneFile(string unit1FileName, string unit2FileName, 
 	return result;
 }
 
-int performCloseCombatWithScene(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene)
+int performCloseCombatWithScene(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene)
 {
 	//initialise unit1/unit2 references		[NB in the future an appropriate constructor should be created for the LDreference class that accepts a name, and automatically creates a subModelDetails ModelDetails*/
 	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
@@ -565,7 +565,7 @@ int performCloseCombatWithScene(string unit1FileName, string unit2FileName, int 
 	//							6 if unit1 wins and only Unit 1 can strike, 7 if unit1 does not strike, and only Unit 1 can strike, 8 if  3 if unit2 wins, 4 if neither strike
 	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
 	//							0/10 if error in finding required files.
-int performCloseCombatWithConsecutiveSceneFiles(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, string thisPhaseStartSceneFileName, string preMovementPhaseSceneFileName)
+int performCloseCombatWithConsecutiveSceneFiles(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, string thisPhaseStartSceneFileName, string preMovementPhaseSceneFileName)
 {
 
 	//declare initial scene references
@@ -602,7 +602,7 @@ int performCloseCombatWithConsecutiveSceneFiles(string unit1FileName, string uni
 
 
 
-int performCloseCombatWithConsecutiveScenes(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
+int performCloseCombatWithConsecutiveScenes(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
 {
 	//initialise unit1/unit2 references		[NB in the future an appropriate constructor should be created for the LDreference class that accepts a name, and automatically creates a subModelDetails ModelDetails*/
 
@@ -693,7 +693,7 @@ int performCloseCombatWithConsecutiveScenes(string unit1FileName, string unit2Fi
 
 
 
-int performCloseCombatWithReferences(LDreference* unit1ReferenceInThisPhaseStartSceneFile, LDreference* unit2ReferenceInThisPhaseStartSceneFile, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, bool unit1TakesTheInitative, bool unit2TakesTheInitative)
+int performCloseCombatWithReferences(LDreference* unit1ReferenceInThisPhaseStartSceneFile, LDreference* unit2ReferenceInThisPhaseStartSceneFile, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, const bool unit1TakesTheInitative, const bool unit2TakesTheInitative)
 {
 	//cout << "DEBUG: b5" << endl;
 
@@ -751,7 +751,7 @@ int performCloseCombatWithReferences(LDreference* unit1ReferenceInThisPhaseStart
 	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
 	//	0/10 if error
 */
-int performCloseCombat(ModelDetails* unit1, ModelDetails* unit2, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack, bool unit1TakesTheInitative, bool unit2TakesTheInitative)
+int performCloseCombat(ModelDetails* unit1, ModelDetails* unit2, const bool unit1performsCloseCombatAttack, const bool unit2performsCloseCombatAttack, const bool unit1TakesTheInitative, const bool unit2TakesTheInitative)
 {
 	int result;
 
@@ -1091,7 +1091,7 @@ int performLongDistanceCombatNormal(string unit1FileName, string unit2FileName, 
 
 
 //preconditions: units are assumed not to have moved in their previous round (ie they both are allowed to perform long distance combat in their current turn)
-int performLongDistanceCombatWithSceneFile(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, string thisPhaseStartSceneFileName)
+int performLongDistanceCombatWithSceneFile(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, string thisPhaseStartSceneFileName)
 {
 	//declare initial scene references
 	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
@@ -1115,7 +1115,7 @@ int performLongDistanceCombatWithSceneFile(string unit1FileName, string unit2Fil
 
 
 
-int performLongDistanceCombatWithScene(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene)
+int performLongDistanceCombatWithScene(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene)
 {
 	int result;
 
@@ -1150,7 +1150,7 @@ int performLongDistanceCombatWithScene(string unit1FileName, string unit2FileNam
 
 
 //postconditions: the validity of the movement of the units(') between scene files is not checked - this should be done in the round's movement checker routine
-int performLongDistanceCombatWithConsecutiveSceneFiles(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, string thisPhaseStartSceneFileName, string preMovementPhaseSceneFileName)
+int performLongDistanceCombatWithConsecutiveSceneFiles(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformLongDistanceAttack, const bool unit2intendsToPerformLongDistanceAttack, string thisPhaseStartSceneFileName, string preMovementPhaseSceneFileName)
 {
 	//declare initial scene references
 	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
@@ -1182,7 +1182,7 @@ int performLongDistanceCombatWithConsecutiveSceneFiles(string unit1FileName, str
 }
 
 
-int performLongDistanceCombatWithConsecutiveScenes(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
+int performLongDistanceCombatWithConsecutiveScenes(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformLongDistanceAttack, const bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
 {
 	//initialise unit1/unit2 references
 	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
@@ -1312,7 +1312,7 @@ int performLongDistanceCombatWithReferences(LDreference* unit1ReferenceInThisPha
 	//							6 if unit1 wins and only Unit 1 can strike, 7 if unit1 does not strike, and only Unit 1 can strike, 8 if  3 if unit2 wins, 4 if neither strike
 	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
 	//	10 if error
-int performLongDistanceCombat(ModelDetails* unit1, ModelDetails* unit2, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack)
+int performLongDistanceCombat(const ModelDetails* unit1, const ModelDetails* unit2, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack)
 {
 	//cout << "\n\nDEBUG: unit1FileName = " << unit1FileName << endl;
 	//cout << "\n\nDEBUG: unit2FileName = " << unit2FileName << endl;
@@ -1545,7 +1545,7 @@ int performLongDistanceCombat(ModelDetails* unit1, ModelDetails* unit2, bool uni
 /
 /****************************************************************/
 
-bool searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(LDreference* referenceBeingSearchedFor, LDreference* initialReference, LDreference* parentReference, bool isFillingParentUnitWithAllCombatRelevantChildModelDetails)
+bool searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(LDreference* referenceBeingSearchedFor, LDreference* initialReference, const LDreference* parentReference, const bool isFillingParentUnitWithAllCombatRelevantChildModelDetails)
 {
 	bool particularSubModelFoundDuringSearch = false;
 	LDreference* currentReference = initialReference;
@@ -1804,7 +1804,7 @@ bool compareSubmodelNamesAndIfSameCopySubmodelReference(LDreference* referenceBe
 //yet to update these and many other functions with XML rules classes.... 29/12/07
 
 
-bool performUnitOrdinatesCheck(ModelDetails* u)
+bool performUnitOrdinatesCheck(const ModelDetails* u)
 {
 	bool result = true;
 
@@ -2185,7 +2185,7 @@ General Notes:
 lances can only be used against other knights, or when charging against a footsoldier
 Spears are especially good when used by a mounted unit (same close combat attack level as swords/axes)
 
-int calculateCloseCombatAttackBonus(ModelDetails* unit, bool unit2HasHorse, bool unitTakesInitative)
+int calculateCloseCombatAttackBonus(ModelDetails* unit, const bool unit2HasHorse, const bool unitTakesInitative)
 {
 	int unitMountedAttack;
 
@@ -2251,7 +2251,7 @@ General Notes:
 Spears are especially good when used against a mounted unit (same close combat attack level as swords/axes)
 */
 
-int calculateCloseCombatAttackBonus(ModelDetails* unit, bool unit2HasHorse, bool unitTakesInitative)
+int calculateCloseCombatAttackBonus(ModelDetails* unit, const bool unit2HasHorse, const bool unitTakesInitative)
 {
 	int unitAttackWithBonus = 0;
 
@@ -2465,7 +2465,7 @@ int calculateCloseCombatAttackBonus(ModelDetails* unit, bool unit2HasHorse, bool
 
 
 
-void calculateLongDistanceAttackBonus(LDreference* unit1ReferenceInThisPhaseStartSceneFile, LDreference* unit2ReferenceInThisPhaseStartSceneFile, bool unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, bool unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, bool* unit1CanPerformLongDistanceAttack, bool* unit2CanPerformLongDistanceAttack, double distanceBetweenUnitsForLDTest)
+void calculateLongDistanceAttackBonus(LDreference* unit1ReferenceInThisPhaseStartSceneFile, LDreference* unit2ReferenceInThisPhaseStartSceneFile, const bool unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, const bool unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, bool* unit1CanPerformLongDistanceAttack, bool* unit2CanPerformLongDistanceAttack, const double distanceBetweenUnitsForLDTest)
 {
 	//calculate the range of each units weapon based on the relative height between ModelDetails:
 	/******************************************************/
@@ -2587,7 +2587,7 @@ void calculateLongDistanceAttackBonus(LDreference* unit1ReferenceInThisPhaseStar
 
 
 
-bool calculateIfTwoUnitsAreWithinAGivenLongRangeAttackDistance(double positionXOfUnit1, double positionXOfUnit2, double positionYOfUnit1, double positionYOfUnit2, double positionZOfUnit1, double positionZOfUnit2, int maximumDistance, int minimumDistance)
+bool calculateIfTwoUnitsAreWithinAGivenLongRangeAttackDistance(const double positionXOfUnit1, const double positionXOfUnit2, const double positionYOfUnit1, const double positionYOfUnit2, const double positionZOfUnit1, const double positionZOfUnit2, const int maximumDistance, const int minimumDistance)
 {
 	bool result;
 
@@ -2598,7 +2598,7 @@ bool calculateIfTwoUnitsAreWithinAGivenLongRangeAttackDistance(double positionXO
 	return result;
 }
 
-bool calculateIfUnitIsWithinAGivenLongRangeAttackDistance(double distanceBetweenTheTwoUnits, int maximumDistance, int minimumDistance)
+bool calculateIfUnitIsWithinAGivenLongRangeAttackDistance(const double distanceBetweenTheTwoUnits, const int maximumDistance, const int minimumDistance)
 {
 	bool result;
 
@@ -2634,7 +2634,7 @@ double calculateTheDistanceBetweenTwoUnits(vec* positionOfUnit1, vec* positionOf
 	return calculateTheDistanceBetweenTwoPoints(&(positionOfUnit1ConvertedToLdraw), &(positionOfUnit2ConvertedToLdraw));
 }
 
-double calculateTheDistanceBetweenTwoUnits(double positionXOfUnit1, double positionXOfUnit2, double positionYOfUnit1, double positionYOfUnit2, double positionZOfUnit1, double positionZOfUnit2)
+double calculateTheDistanceBetweenTwoUnits(const double positionXOfUnit1, const double positionXOfUnit2, const double positionYOfUnit1, const double positionYOfUnit2, const double positionZOfUnit1, const double positionZOfUnit2)
 {
 
 #ifndef USE_OLD_LONG_RANGE_ATTACK_DISTANCE_CALC
@@ -2658,7 +2658,7 @@ double calculateExtraHorizontalDistanceOfProjectileWithHeightAdvantage(double ve
 
 
 
-int calculateLongDistanceRangeModifier(LDreference* targetUnitReference, LDreference* unitReference)
+int calculateLongDistanceRangeModifier(const LDreference* targetUnitReference, const LDreference* unitReference)
 {
 	return (targetUnitReference->absolutePosition.y-unitReference->absolutePosition.y)/LDRAW_UNITS_PER_CM*RANGE_MODIFIER_BASED_ON_INCREASED_HEIGHT;
 

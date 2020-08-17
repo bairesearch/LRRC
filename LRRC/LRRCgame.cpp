@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCgame.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19d 15-December-2016
+ * Project Version: 3j1a 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -564,7 +564,7 @@ bool gameObtainRoundPlayerTurnAndPhase(int* initialRound, int* initialPlayerTurn
 	return result;
 }
 
-bool generatePlayerList(int numberOfPlayers, Player* initialPlayerInList, UnitListClass* firstUnitInUnitList)
+bool generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList, UnitListClass* firstUnitInUnitList)
 {
 	bool allPlayersAI = true;
 
@@ -618,7 +618,7 @@ bool generatePlayerList(int numberOfPlayers, Player* initialPlayerInList, UnitLi
 
 }
 
-bool generatePlayerList(int numberOfPlayers, Player* initialPlayerInList)
+bool generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList)
 {
 	bool allPlayersAI = true;
 
@@ -673,7 +673,7 @@ bool generatePlayerList(int numberOfPlayers, Player* initialPlayerInList)
 
 
 
-bool gamePlay(int initialRound, int initialPlayerTurn, int initialPhase, int numberOfPlayers, Player* initialPlayerInList, int currentGame, LDreference* initialReferenceInThisPhaseStartSceneGlobal, bool allPlayersAI)
+bool gamePlay(const int initialRound, int initialPlayerTurn, int initialPhase, const int numberOfPlayers, Player* initialPlayerInList, const int currentGame, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
 {
 
 	bool result = true;
@@ -845,7 +845,7 @@ bool gamePlay(int initialRound, int initialPlayerTurn, int initialPhase, int num
 }
 
 #ifdef USE_ANN
-void feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, long numberOfInputNeurons, long numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn)
+void feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const long numberOfInputNeurons, const long numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn)
 {
 	//cout << "h111" << endl;
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
@@ -876,7 +876,7 @@ void feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwo
 #endif
 
 
-bool executePhase(int currentGame, int currentRound, int currentPlayerTurn, int currentPhase, Player* initialPlayerInList, int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, bool allPlayersAI)
+bool executePhase(const int currentGame, const int currentRound, const int currentPlayerTurn, const int currentPhase, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
 {
 
 
@@ -916,7 +916,7 @@ bool executePhase(int currentGame, int currentRound, int currentPlayerTurn, int 
 }
 
 
-bool executeMovement(int currentGame, int currentRound, int currentPlayerTurn, Player* initialPlayerInList, int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, bool allPlayersAI)
+bool executeMovement(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
 {
 
 
@@ -1140,7 +1140,7 @@ bool executeMovement(int currentGame, int currentRound, int currentPlayerTurn, P
 }
 
 
-bool executeLongDistanceCombat(int currentGame, int currentRound, int currentPlayerTurn, Player* initialPlayerInList, int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, bool allPlayersAI)
+bool executeLongDistanceCombat(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
 {
 	bool result = true;
 
@@ -1217,7 +1217,7 @@ bool executeLongDistanceCombat(int currentGame, int currentRound, int currentPla
 	return result;
 }
 
-bool executeCloseCombat(int currentGame, int currentRound, int currentPlayerTurn, Player* initialPlayerInList, int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, bool allPlayersAI)
+bool executeCloseCombat(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
 {
 	bool result = true;
 
@@ -1306,7 +1306,7 @@ bool executeCloseCombat(int currentGame, int currentRound, int currentPlayerTurn
 }
 
 
-bool prepareNextPhaseSceneFiles(int nextPhase, int nextPlayerTurn, string previousPhaseSceneFileName, string nextSceneFileName, string rangeSpritesNextSceneFileName, LDreference* firstReferenceInPreviousScene, bool allPlayersAI)
+bool prepareNextPhaseSceneFiles(const int nextPhase, const int nextPlayerTurn, string previousPhaseSceneFileName, const string nextSceneFileName, string rangeSpritesNextSceneFileName, LDreference* firstReferenceInPreviousScene, const bool allPlayersAI)
 {
 	bool result = true;
 
@@ -1340,7 +1340,7 @@ bool prepareNextPhaseSceneFiles(int nextPhase, int nextPlayerTurn, string previo
 
 
 
-bool executeGenericCombat(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, string preCombatPhaseSceneFileName, string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, Player* initialPlayerInList, bool allPlayersAI)
+bool executeGenericCombat(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, const string preCombatPhaseSceneFileName, const string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, Player* initialPlayerInList, const bool allPlayersAI)
 {
 	bool result = true;
 
@@ -1674,7 +1674,7 @@ bool moveUnitTowardsOpponent(LDreference* unitReference, LDreference* opponentRe
 //required for AI player
 	//cycle through each character the player owns on the board, and determine  and
 		//make sure to check that a unit selected is combat ready, if a unit is selected and performs combat make it no longer combat ready
-bool AIsearchUnitListForPhaseActionSelectionInitialisation(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, string preCombatPhaseSceneFileName, string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* firstUnitInOpponentUnitGroup)
+bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, const string preCombatPhaseSceneFileName, const string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* firstUnitInOpponentUnitGroup)
 {
 
 	//cout << "EXECUTING AIsearchUnitListForPhaseActionSelectionInitialisation{}:" << endl;
@@ -2212,7 +2212,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(int currentRound, int
 
 
 //bool AIsearchUnitListAndCalculateWorthOfOpponents(int currentPlayerTurn, int currentPhase, string preMovementPhaseSceneFileNameMovement, string thisPhaseStartSceneFileNameMovement, string preCombatPhaseSceneFileName, string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, LDreference* initialReferenceInSceneFile, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* playerUnitThatIsFindingAnOpponent, LDreference* referenceToPlayerUnitThatIsFindingAnOpponent)
-bool AIsearchUnitListAndCalculateWorthOfOpponents(int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, Player* initialPlayerInList, UnitListClass* firstUnitInOpponentUnitGroup, UnitListClass* playerUnitThatIsFindingAnOpponent, LDreference* referenceToPlayerUnitThatIsFindingAnOpponent)
+bool AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, const int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, Player* initialPlayerInList, UnitListClass* firstUnitInOpponentUnitGroup, const UnitListClass* playerUnitThatIsFindingAnOpponent, LDreference* referenceToPlayerUnitThatIsFindingAnOpponent)
 {
 	bool result = true;
 
@@ -2583,7 +2583,7 @@ bool AIsearchUnitListAndCalculateWorthOfOpponents(int currentPlayerTurn, int cur
 
 
 
-int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, string targetSpritesSceneFileName, string unitAttackerFileName, string unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, bool checkPreviousSceneFile)
+int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, string targetSpritesSceneFileName, string unitAttackerFileName, string unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, const bool checkPreviousSceneFile)
 {
 	bool result = true;
 
@@ -2898,7 +2898,7 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(int currentRound, i
 
 
 
-bool generateSceneFileName(int currentGame, int currentRound, int currentPlayerTurn, int currentPhase, int phaseExecutionStage, string* sceneFileName)
+bool generateSceneFileName(const int currentGame, const int currentRound, const int currentPlayerTurn, const int currentPhase, const int phaseExecutionStage, string* sceneFileName)
 {
 	bool result = true;
 
@@ -2961,7 +2961,7 @@ bool generateSceneFileName(int currentGame, int currentRound, int currentPlayerT
 }
 
 
-void generateXMLNNSceneFileName(int currentGame, string* sceneFileName, int nnIndex)
+void generateXMLNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
 {
 	string currentGameString = convertIntToString(currentGame);
 
@@ -2976,7 +2976,7 @@ void generateXMLNNSceneFileName(int currentGame, string* sceneFileName, int nnIn
 }
 
 
-void generateVectorGraphicsLDRNNSceneFileName(int currentGame, string* sceneFileName, int nnIndex)
+void generateVectorGraphicsLDRNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
 {
 	string currentGameString = convertIntToString(currentGame);
 
@@ -2990,7 +2990,7 @@ void generateVectorGraphicsLDRNNSceneFileName(int currentGame, string* sceneFile
 	*sceneFileName = *sceneFileName + VECGRAPHICS_LDR_NN_SCENE_FILE_NAME_EXTENSION;
 }
 
-void generateVectorGraphicsLDRNNSceneFileNameWithSprites(int currentGame, string* sceneFileName, int nnIndex)
+void generateVectorGraphicsLDRNNSceneFileNameWithSprites(const int currentGame, string* sceneFileName, const int nnIndex)
 {
 	string currentGameString = convertIntToString(currentGame);
 
@@ -3007,7 +3007,7 @@ void generateVectorGraphicsLDRNNSceneFileNameWithSprites(int currentGame, string
 
 
 
-void generateVectorGraphicsTALNNSceneFileName(int currentGame, string* sceneFileName, int nnIndex)
+void generateVectorGraphicsTALNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
 {
 	string currentGameString = convertIntToString(currentGame);
 
@@ -3021,7 +3021,7 @@ void generateVectorGraphicsTALNNSceneFileName(int currentGame, string* sceneFile
 	*sceneFileName = *sceneFileName + VECGRAPHICS_TAL_NN_SCENE_FILE_NAME_EXTENSION;
 }
 
-void generateRaytracedImagePPMNNSceneFileName(int currentGame, string* sceneFileName, int nnIndex)
+void generateRaytracedImagePPMNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
 {
 	string currentGameString = convertIntToString(currentGame);
 
@@ -3039,7 +3039,7 @@ void generateRaytracedImagePPMNNSceneFileName(int currentGame, string* sceneFile
 
 
 
-void generateExperiencesNNSceneFileName(int currentGame, string* sceneFileName, int nnIndex)
+void generateExperiencesNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
 {
 	string currentGameString = convertIntToString(currentGame);
 
@@ -3054,7 +3054,7 @@ void generateExperiencesNNSceneFileName(int currentGame, string* sceneFileName, 
 }
 
 
-void copyReferencesAndSubmodelDetails(LDreference* referenceNew, LDreference* referenceToCopy, int type)
+void copyReferencesAndSubmodelDetails(LDreference* referenceNew, LDreference* referenceToCopy, const int type)
 {
 	referenceNew->type = referenceToCopy->type;
 	referenceNew->colour = referenceToCopy->colour;
@@ -3086,7 +3086,7 @@ void copyReferencesAndSubmodelDetails(LDreference* referenceNew, LDreference* re
 
 
 #ifdef USE_ANN
-void trainAndOutputNeuralNetwork(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, int numberOfInputNeurons, int numberOfOutputNeurons, ANNexperience* firstExperienceInList, bool addSprites, bool allowRaytrace, int nn, int currentGame)
+void trainAndOutputNeuralNetwork(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const int numberOfInputNeurons, int numberOfOutputNeurons, ANNexperience* firstExperienceInList, bool addSprites, const bool allowRaytrace, const int nn, const int currentGame)
 {
 
 	string* XMLNNSceneFileName = new string();
@@ -3165,11 +3165,11 @@ void updatePlayerStatus(Player* initialPlayerInList)
 
 
 
-bool searchUnitListAndCheckThatSomePlayerUnitsAreAlive(int playerTeam, UnitListClass* firstUnitInUnitGroup)
+bool searchUnitListAndCheckThatSomePlayerUnitsAreAlive(const int playerTeam, const UnitListClass* firstUnitInUnitGroup)
 {
 	bool playerStillHasAUnitAlive = false;
 
-	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
+	const UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
 	while(currentUnitInList->next != NULL)
 	{

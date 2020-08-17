@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCmodelClass.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19d 15-December-2016
+ * Project Version: 3j1a 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -762,7 +762,7 @@ int maxInt(int a, int b)
 }
 */
 
-int invertLevel(int level)
+int invertLevel(const int level)
 {
 	return (7-level);
 }

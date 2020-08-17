@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCunitClass.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19d 15-December-2016
+ * Project Version: 3j1a 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -132,16 +132,16 @@ public:
 
 };
 
-UnitListClass* searchUnitListFindOpponentWithLowestError(int currentPlayerTurn, int nn, UnitListClass* firstUnitInUnitGroup, double* currentLowestError, bool* foundOpponent, int NNcurrentPhase);
+UnitListClass* searchUnitListFindOpponentWithLowestError(const int currentPlayerTurn, const int nn, UnitListClass* firstUnitInUnitGroup, double* currentLowestError, bool* foundOpponent, const int NNcurrentPhase);
 
-UnitListClass* searchUnitListFindUnit(UnitListClass* firstUnitInUnitGroup, string unitName, int unitColour, bool* unitIDFound);
+UnitListClass* searchUnitListFindUnit(UnitListClass* firstUnitInUnitGroup, const string unitName, const int unitColour, bool* unitIDFound);
 
 void addUnitToList(UnitListClass* firstUnitInUnitList, string unitName, int unitColour, ModelDetails* unitDetails, int currentRound);
-bool splitUnitGroup(UnitListClass* firstUnitInUnitList, string unitGroupName, int unitGroupColour, int currentRound);
+bool splitUnitGroup(UnitListClass* firstUnitInUnitList, const string unitGroupName, const int unitGroupColour, int currentRound);
 
 void searchUnitListAssignHasNotPerformedAction(UnitListClass* firstUnitInUnitGroup);
 
-int determineUnitWorthInPoints(ModelDetails* unitDetails);
+int determineUnitWorthInPoints(const ModelDetails* unitDetails);
 
 #endif
 

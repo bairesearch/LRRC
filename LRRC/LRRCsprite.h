@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCsprite.h
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19d 15-December-2016
+ * Project Version: 3j1a 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -84,13 +84,13 @@
 void fillInLRRCSpriteExternVariables();
 
 /*top level sprite routine*/
-bool LRRCaddUnitDetailsSpritesToSceneFile(string sceneFileName, string sceneFileNameWithSprites, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn);
-bool LRRCaddUnitDetailsSpritesToScene(string sceneFileName, string sceneFileNameWithSprites, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn, LDreference* firstReferenceInScene);
-	void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referenceInSceneFile, LDreference* spriteListInitialReference, vec* eyeCoords, int* numSpritesAdded, string sceneFileName, LDreference* initialReferenceInSceneFile, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn);
-		bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReference, LDreference* targetReference, LDreference* spriteListInitialReference, vec* eyeCoords, int* numSpritesAdded, string sceneFileName, bool addTextualSpriteInfo, bool addRangeSpriteInfo, bool addTargetSpriteInfo, int currentPhase, int currentPlayerTurn);
+bool LRRCaddUnitDetailsSpritesToSceneFile(string sceneFileName, string sceneFileNameWithSprites, const bool addTextualSpriteInfo, const bool addRangeSpriteInfo, const int currentPhase, const int currentPlayerTurn);
+bool LRRCaddUnitDetailsSpritesToScene(const string sceneFileName, string sceneFileNameWithSprites, const bool addTextualSpriteInfo, const bool addRangeSpriteInfo, const int currentPhase, const int currentPlayerTurn, LDreference* firstReferenceInScene);
+	void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referenceInSceneFile, LDreference* spriteListInitialReference, const vec* eyeCoords, int* numSpritesAdded, string sceneFileName, const LDreference* initialReferenceInSceneFile, const bool addTextualSpriteInfo, const bool addRangeSpriteInfo, const int currentPhase, const int currentPlayerTurn);
+		bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReference, LDreference* targetReference, LDreference* spriteListInitialReference, const vec* eyeCoords, int* numSpritesAdded, string sceneFileName, const bool addTextualSpriteInfo, const bool addRangeSpriteInfo, const bool addTargetSpriteInfo, const int currentPhase, const int currentPlayerTurn);
 			void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, string* spriteTextString, int spriteColourArray[]);
-			LDreference* LRRCaddRangeSpriteInfoToReferenceList(LDreference* spriteSubmodelInitialReference, LDreference* unitReference, int currentPhase, int* numSpritesAdded);
-			LDreference* LRRCaddTargetSpriteInfoToReferenceList(LDreference* spriteSubmodelInitialReference, LDreference* unitReference, LDreference* targetReference, int currentPhase, int* numSpritesAdded);
+			LDreference* LRRCaddRangeSpriteInfoToReferenceList(LDreference* spriteSubmodelInitialReference, LDreference* unitReference, const int currentPhase, int* numSpritesAdded);
+			LDreference* LRRCaddTargetSpriteInfoToReferenceList(LDreference* spriteSubmodelInitialReference, LDreference* unitReference, LDreference* targetReference, const int currentPhase, int* numSpritesAdded);
 
 
 #endif

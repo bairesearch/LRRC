@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCgameAI.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19d 15-December-2016
+ * Project Version: 3j1a 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -69,7 +69,7 @@
 
 
 	//ANNneuronContainer* firstInputNeuronInNetwork = new ANNneuronContainer();
-void initialiseNeuralNetwork(int NNBeingTested, Player* currentPlayer, int currentPhase)
+void initialiseNeuralNetwork(const int NNBeingTested, Player* currentPlayer, int currentPhase)
 {
 	ANNneuron* firstInputNeuronInNetwork = new ANNneuron();
 	ANNneuron* firstOutputNeuronInNetwork;
@@ -191,7 +191,7 @@ void initialiseNeuralNetwork(int NNBeingTested, Player* currentPlayer, int curre
 
 
 
-long mergePlayerUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, int unitGroupTeam, int nnIndex)
+long mergePlayerUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, const int unitGroupTeam, int nnIndex)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
@@ -368,10 +368,10 @@ void fillUnitList(LDreference* currentReferenceInSceneFile, UnitListClass* first
 
 
 
-bool determineIfUnitGroupHasAliveUnits(UnitListClass* firstUnitInUnitGroup)
+bool determineIfUnitGroupHasAliveUnits(const UnitListClass* firstUnitInUnitGroup)
 {
 	bool foundAliveUnit = false;
-	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
+	const UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
 	while(currentUnitInList->next != NULL)
 	{
@@ -531,7 +531,7 @@ void updateUnitListWithDeadUnits(LDreference* initialReferenceInSceneFile, UnitL
 	}
 }
 
-UnitListClass* searchUnitListForUnitAndIfNotThereAddToList(UnitListClass* firstUnitInUnitGroup, LDreference* unitReferenceInSceneFile, int currentRound, bool topLevelInTree, bool* foundUnitInList)
+UnitListClass* searchUnitListForUnitAndIfNotThereAddToList(UnitListClass* firstUnitInUnitGroup, LDreference* unitReferenceInSceneFile, int currentRound, const bool topLevelInTree, bool* foundUnitInList)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 	UnitListClass* foundUnit;
@@ -643,7 +643,7 @@ double addExperiencesFromUnitDecision(UnitListClass* unit, LDreference* unitRefe
 	return totalError;
 }
 
-double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, LDreference* initialReferenceInThisPhaseStartScene)
+double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, Player* currentPlayer, const int NNBeingTested, const bool addOrCompareExperience, LDreference* initialReferenceInThisPhaseStartScene)
 {
 	double experienceBackPropagationPassError = 0.0;
 	//bool result = true;
@@ -1180,7 +1180,7 @@ void generateExperienceFromUnitCombatDecision(LDreference* unitReference, LDrefe
 
 #ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
 	//add int currentPhase parameter???
-bool generateExperienceFromGlobalDecision(UnitListClass* firstUnitInUnitList, LDreference* initialReferenceInThisPhaseStartScene, LDreference* unitReference, LDreference* unitReferenceOpponent, ANNexperience* currentExperience)
+bool generateExperienceFromGlobalDecision(const UnitListClass* firstUnitInUnitList, LDreference* initialReferenceInThisPhaseStartScene, const LDreference* unitReference, const LDreference* unitReferenceOpponent, ANNexperience* currentExperience)
 {
 	bool result = true;
 
@@ -1227,10 +1227,10 @@ bool generateExperienceFromGlobalDecision(UnitListClass* firstUnitInUnitList, LD
 
 
 
-bool generate2DMemoryMapExperience(UnitListClass* firstUnitInGroup, LDreference* initialReferenceInThisPhaseStartScene, LDreference* unitReference, ANNexperience* currentExperience)
+bool generate2DMemoryMapExperience(const UnitListClass* firstUnitInGroup, LDreference* initialReferenceInThisPhaseStartScene, const LDreference* unitReference, ANNexperience* currentExperience)
 {
 	bool result = true;
-	UnitListClass* currentUnitInGroup = firstUnitInGroup;
+	const UnitListClass* currentUnitInGroup = firstUnitInGroup;
 
 	int maximumMovementDistanceForAnyUnit = 0;
 	int maximumCloseCombatAttackTotalForAnyUnit = 0;
@@ -1352,7 +1352,7 @@ bool generate2DMemoryMapExperience(UnitListClass* firstUnitInGroup, LDreference*
 
 
 
-ANNexperienceInput* findExperienceInputIn2DMemoryMap(int xPos, int yPos, int tPos, ANNexperience* currentExperience)
+ANNexperienceInput* findExperienceInputIn2DMemoryMap(const int xPos, const int yPos, const int tPos, ANNexperience* currentExperience)
 {
 	ANNexperienceInput* currentExperienceInput = currentExperience->firstExperienceInput;
 	for(int x=-GLOBAL_EXPERIENCE_NUMBER_OF_DIFFERENT_OUTPUT_DECISIONS_RADIUS; x<xPos; x++)
@@ -1390,7 +1390,7 @@ ANNexperienceInput* findExperienceInputIn2DMemoryMap(int xPos, int yPos, int tPo
 
 
 
-bool generateExperienceFromObjectDecision(LDreference* objectReference, long objectDecision, ANNexperience* currentExperience, bool createNewRayTracedImage)
+bool generateExperienceFromObjectDecision(const LDreference* objectReference, const long objectDecision, const ANNexperience* currentExperience, const bool createNewRayTracedImage)
 {
 	bool result = true;
 
@@ -1628,7 +1628,7 @@ void generate2DMemoryMapExperience(LDreference* firstReferenceInLayer,  LDrefere
 
 
 
-void addAllUnitExperiencesToOFStream(ofstream* experienceDataSetOFStreamObject, UnitListClass* firstUnitInUnitGroup, int nnIndex)
+void addAllUnitExperiencesToOFStream(ofstream* experienceDataSetOFStreamObject, UnitListClass* firstUnitInUnitGroup, const int nnIndex)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
@@ -1652,7 +1652,7 @@ void addAllUnitExperiencesToOFStream(ofstream* experienceDataSetOFStreamObject, 
 	}
 }
 
-void addPlayerUnitExperiencesToOFStream(ofstream* experienceDataSetOFStreamObject, UnitListClass* firstUnitInUnitGroup, int unitGroupTeam, int nnIndex)
+void addPlayerUnitExperiencesToOFStream(ofstream* experienceDataSetOFStreamObject, UnitListClass* firstUnitInUnitGroup, const int unitGroupTeam, const int nnIndex)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
@@ -1682,7 +1682,7 @@ void addPlayerUnitExperiencesToOFStream(ofstream* experienceDataSetOFStreamObjec
 
 #ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
 	//NB this routine [for ADD_EXPERIENCE] records player experiences rather than unit experiences
-double addOrCompareAllObjectExperiences(Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, bool justCountNumberOfExperiences)
+double addOrCompareAllObjectExperiences(Player* currentPlayer, const int NNBeingTested, const bool addOrCompareExperience, const bool justCountNumberOfExperiences)
 {
 	double totalError = 0.0;
 	int numberOfExperiences = 0;

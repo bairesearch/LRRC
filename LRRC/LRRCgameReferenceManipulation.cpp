@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCgameReferenceManipulation.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19d 15-December-2016
+ * Project Version: 3j1a 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -45,7 +45,7 @@
 
 /*secondary game routines*/
 
-LDreference* searchReferenceListRemoveReference(LDreference* initialReferenceInSceneFile, string unitFileName, int unitColour, bool* unitIDFound, bool* result)
+LDreference* searchReferenceListRemoveReference(LDreference* initialReferenceInSceneFile, const string unitFileName, const int unitColour, bool* unitIDFound, bool* result)
 {
 	LDreference* modInitialReferenceInSceneFile = initialReferenceInSceneFile;
 
@@ -137,7 +137,7 @@ void searchReferenceListAssignHasPerformedCombat(int currentPhase, LDreference* 
 }
 */
 
-LDreference* searchReferenceListFindReference(LDreference* initialReferenceInSceneFile, string unitFileName, int unitColour, bool* unitIDFound, bool* result)
+LDreference* searchReferenceListFindReference(LDreference* initialReferenceInSceneFile, const string unitFileName, const int unitColour, bool* unitIDFound, bool* result)
 {
 	LDreference* foundReference = NULL;
 	LDreference* currentReference = initialReferenceInSceneFile;
@@ -181,9 +181,9 @@ LDreference* searchReferenceListFindReference(LDreference* initialReferenceInSce
 }
 
 
-void searchReferenceListPrintReferenceDetails(LDreference* initialReferenceInSceneFile)
+void searchReferenceListPrintReferenceDetails(const LDreference* initialReferenceInSceneFile)
 {
-	LDreference* currentReference = initialReferenceInSceneFile;
+	const LDreference* currentReference = initialReferenceInSceneFile;
 	while(currentReference->next != NULL)
 	{
 
@@ -250,7 +250,7 @@ bool obtainUserInputInt(int* userInputInt)
 
 
 
-bool obtainUnitDetailsFromUserWOSceneRef(int currentPhase, string* unit1FileName, string* unit2FileName, int* unit1ID, int* unit2ID, string sceneFileName)
+bool obtainUnitDetailsFromUserWOSceneRef(const int currentPhase, string* unit1FileName, string* unit2FileName, int* unit1ID, int* unit2ID, string sceneFileName)
 {
 	bool result = true;
 
@@ -286,7 +286,7 @@ bool obtainUnitDetailsFromUserWOSceneRef(int currentPhase, string* unit1FileName
 
 
 
-bool obtainUnitDetailsFromUserForCombat(string* unit1FileName, string* unit2FileName, int* unit1ID, int* unit2ID, LDreference* initialReferenceInSceneFile)
+bool obtainUnitDetailsFromUserForCombat(string* unit1FileName, string* unit2FileName, int* unit1ID, int* unit2ID, const LDreference* initialReferenceInSceneFile)
 {
 	bool result = true;
 
@@ -318,7 +318,7 @@ bool obtainUnitDetailsFromUserForCombat(string* unit1FileName, string* unit2File
 }
 
 
-bool determineIfUnitsExists(int currentPhase, string unitAttackerFileName, string unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* initialReferenceInSceneFile)
+bool determineIfUnitsExists(const int currentPhase, const string unitAttackerFileName, const string unitDefenderFileName, const int unitAttackerPlayerID, const int unitDefenderPlayerID, const LDreference* initialReferenceInSceneFile)
 {
 	bool result = true;
 
@@ -343,7 +343,7 @@ bool determineIfUnitsExists(int currentPhase, string unitAttackerFileName, strin
 }
 
 
-bool determineUnitNamesWithColours(int currentPhase, string* unit1FileName, string* unit2FileName, int unit1ID, int unit2ID, LDreference* initialReferenceInSceneFile)
+bool determineUnitNamesWithColours(const int currentPhase, string* unit1FileName, string* unit2FileName, const int unit1ID, const int unit2ID, LDreference* initialReferenceInSceneFile)
 {
 	bool result = true;
 
@@ -368,9 +368,9 @@ bool determineUnitNamesWithColours(int currentPhase, string* unit1FileName, stri
 }
 
 
-void parseRefListCheckUnitExists(int currentPhase, LDreference* initialReferenceInSceneFile, string unitFileName, int unitColour, bool* unitIDFound, bool* result)
+void parseRefListCheckUnitExists(const int currentPhase, const LDreference* initialReferenceInSceneFile, const string unitFileName, const int unitColour, bool* unitIDFound, bool* result)
 {
-	LDreference* currentReference = initialReferenceInSceneFile;
+	const LDreference* currentReference = initialReferenceInSceneFile;
 	while(currentReference->next != NULL)
 	{
 		if(currentReference->isSubModelReference)
@@ -397,7 +397,7 @@ void parseRefListCheckUnitExists(int currentPhase, LDreference* initialReference
 }
 
 
-void parseRefListDetRefNames(int currentPhase, LDreference* reference, string* referenceName, int referenceColour, bool* unitIDFound, bool* result)
+void parseRefListDetRefNames(const int currentPhase, LDreference* reference, string* referenceName, const int referenceColour, bool* unitIDFound, bool* result)
 {
 	LDreference* currentReference = reference;
 	while(currentReference->next != NULL)
