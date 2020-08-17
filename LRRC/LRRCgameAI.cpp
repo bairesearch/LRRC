@@ -26,7 +26,7 @@
  * File Name: LRRCgameAI.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j2a 17-January-2017
+ * Project Version: 3n7b 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -1371,7 +1371,7 @@ ANNexperienceInput* LRRCgameAIClass::findExperienceInputIn2DMemoryMap(const int 
 
 
 
-bool LRRCgameAIClass::generateExperienceFromObjectDecision(const LDreference* objectReference, const long objectDecision, const ANNexperience* currentExperience, const bool createNewRayTracedImage)
+bool LRRCgameAIClass::generateExperienceFromObjectDecision(const LDreference* objectReference, long objectDecision, ANNexperience* currentExperience, const bool createNewRayTracedImage)
 {
 	bool result = true;
 
@@ -1380,10 +1380,7 @@ bool LRRCgameAIClass::generateExperienceFromObjectDecision(const LDreference* ob
 		//CHECK THIS - need to randomly vary lighting conditions
 
 
-	char experienceNumberStringCharStar[10];
-	experienceNumberStringCharStar = SHAREDvars.convertIntToString(objectDecision);
-	string experienceNumberString = "";
-	experienceNumberString = experienceNumberString + experienceNumberStringCharStar;
+	string experienceNumberString = SHAREDvars.convertIntToString(objectDecision);
 
 	string imageFileNameStart = "";
 	imageFileNameStart = imageFileNameStart + "objectImageExperience" + experienceNumberString + "fileName" + objectReference->name;
@@ -1455,7 +1452,7 @@ bool LRRCgameAIClass::generateExperienceFromObjectDecision(const LDreference* ob
 	//3. load pixmap into RAM objectImage from generated pixmap
 	pixmap* objectImage;
 	cout << "image file being loaded = " << charstarraytracedImagePPMNNSceneFileName << endl;
-	objectImage = load_ppm(charstarraytracedImagePPMNNSceneFileName);
+	objectImage = RTppm.loadPPM(charstarraytracedImagePPMNNSceneFileName);
 
 	//cout << "4" << endl;
 	//4. produce contrast map from pixmap image
@@ -1481,15 +1478,15 @@ bool LRRCgameAIClass::generateExperienceFromObjectDecision(const LDreference* ob
 	//fill experience input tree
 
 	#ifdef GAME_OBJECT_RECOGNITION_EXPERIENCE_FEED_RGB_MAP
-	generateExperienceWith2DRGBMap(rgbMap, objectImage->wide, objectImage->high, currentExperience, objectDecision);
+	ANNdisplay.generateExperienceWith2DrgbMap(rgbMap, objectImage->wide, objectImage->high, currentExperience, objectDecision);
 	#elif defined GAME_OBJECT_RECOGNITION_EXPERIENCE_FEED_LUMINOSITY_BOOLEAN_MAP
-	generateExperienceWith2DBooleanMap(luminosityBooleanMap, objectImage->wide, objectImage->high, currentExperience, objectDecision);
+	ANNdisplay.generateExperienceWith2DbooleanMap(luminosityBooleanMap, objectImage->wide, objectImage->high, currentExperience, objectDecision);
 	#elif defined GAME_OBJECT_RECOGNITION_EXPERIENCE_LUMINOSITY_CONTRAST_BOOLEAN_MAP
-	generateExperienceWith2DBooleanMap(luminosityContrastBooleanMap, objectImage->wide, objectImage->high, currentExperience, objectDecision);
+	ANNdisplay.generateExperienceWith2DbooleanMap(luminosityContrastBooleanMap, objectImage->wide, objectImage->high, currentExperience, objectDecision);
 	#elif defined GAME_OBJECT_RECOGNITION_EXPERIENCE_FEED_LUMINOSITY_MAP
-	generateExperienceWith2DMap(luminosityMap, objectImage->wide, objectImage->high, LUMINOSITY_MAP_MAX_LUMINOSITY_VALUE, currentExperience, objectDecision);
+	ANNdisplay.generateExperienceWith2Dmap(luminosityMap, objectImage->wide, objectImage->high, LUMINOSITY_MAP_MAX_LUMINOSITY_VALUE, currentExperience, objectDecision);
 	#elif defined GAME_OBJECT_RECOGNITION_EXPERIENCE_LUMINOSITY_CONTRAST_MAP
-	generateExperienceWith2DMap(luminosityContrastMap, objectImage->wide, objectImage->high, CONTRAST_MAP_MAX_CONTRAST_VALUE, currentExperience, objectDecision);
+	ANNdisplay.generateExperienceWith2Dmap(luminosityContrastMap, objectImage->wide, objectImage->high, CONTRAST_MAP_MAX_CONTRAST_VALUE, currentExperience, objectDecision);
 	#else
 	cout << "Error: no feed defined" << endl;
 	exit(0);
@@ -1538,7 +1535,7 @@ bool LRRCgameAIClass::generateExperienceFromObjectDecision(const LDreference* ob
 	//free_pixmap(objectImageContrast);
 	//free_pixmap(objectImageLuminosity);
 	*/
-	free_pixmap(objectImage);
+	RTppm.freePixmap(objectImage);
 
 	return result;
 

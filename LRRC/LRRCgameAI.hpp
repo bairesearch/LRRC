@@ -26,7 +26,7 @@
  * File Name: LRRCgameAI.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j2a 17-January-2017
+ * Project Version: 3n7b 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -60,7 +60,7 @@
 #include "ANNxmlConversion.hpp"
 #include "ANNalgorithmBackpropagationUpdate.hpp"
 #include "ANNdisplay.hpp"
-
+#include "RTppm.hpp"
 
 
 //ANN Defs;
@@ -160,7 +160,9 @@ class LRRCgameAIClass
 	private: LRRCgameReferenceManipulationClass LRRCgameReferenceManipulation;
 	private: LRRCunitClassClass LRRCunitClass;
 	private: ANNalgorithmBackpropagationTrainingClass ANNalgorithmBackpropagationTraining;
+	private: ANNdisplayClass ANNdisplay;
 	private: SHAREDvarsClass SHAREDvars;
+	private: RTppmClass RTppm;
 	private: RTsceneClass RTscene;
 	private: RTpixelMapsClass RTpixelMaps;
 	private: RTreferenceManipulationClass RTreferenceManipulation;
@@ -200,7 +202,7 @@ class LRRCgameAIClass
 					private: ANNexperienceInput* findExperienceInputIn2DMemoryMap(const int xPos, const int yPos, const int tPos, ANNexperience* currentExperience);
 		#endif
 		#ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
-			private: bool generateExperienceFromObjectDecision(const LDreference* objectReference, const long objectDecision, const ANNexperience* currentExperience, const bool createNewRayTracedImage);
+			private: bool generateExperienceFromObjectDecision(const LDreference* objectReference, long objectDecision, ANNexperience* currentExperience, const bool createNewRayTracedImage);
 		#endif
 
 
