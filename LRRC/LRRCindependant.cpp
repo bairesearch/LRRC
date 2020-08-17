@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCindependant.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -99,7 +99,7 @@ void executeLRRCfunctionsIndependantly()
 {
 	bool UIstatus = true;
 
-	char answerAsString[100];
+	string answerAsString = "";
 	long answerAsInt;
 
 	if(!parseLRRCrulesXMLfile())
@@ -139,10 +139,8 @@ void executeLRRCfunctionsIndependantly()
 		cout <<	"Enter Answer (0,1,2,3... etc):\n\n>> ";
 
 
-		char answerAsString[100];
-		//cin.get(answerAsString, 10);
 		cin >> answerAsString;
-		long answerAsInt = long(atof(answerAsString));
+		long answerAsInt = convertStringToLong(answerAsString);
 
 		int unit1ID;
 		int unit2ID;
@@ -162,7 +160,7 @@ void executeLRRCfunctionsIndependantly()
 
 			obtainSceneFileNamesFromUser(thisPhaseStartSceneFileName, preMovementPhaseSceneFileName);
 
-			Player * currentPlayer = new Player();
+			Player* currentPlayer = new Player();
 			currentPlayer->name = "Player1";
 			currentPlayer->id = 1;
 			currentPlayer->credits = PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT;
@@ -327,7 +325,7 @@ void executeLRRCfunctionsIndependantly()
 	}
 }
 
-bool obtainAttackIntentionsFromUser(bool * unit1intendsToPerformAttack, bool * unit2intendsToPerformAttack)
+bool obtainAttackIntentionsFromUser(bool* unit1intendsToPerformAttack, bool* unit2intendsToPerformAttack)
 {
 	bool result = true;
 
@@ -371,7 +369,7 @@ bool obtainAttackIntentionsFromUser(bool * unit1intendsToPerformAttack, bool * u
 	return result;
 }
 
-bool obtainSceneFileNamesFromUser(char * currentSceneFileName, char * previousSceneFileName)
+bool obtainSceneFileNamesFromUser(char* currentSceneFileName, char* previousSceneFileName)
 {
 	bool result = true;
 
@@ -386,7 +384,7 @@ bool obtainSceneFileNamesFromUser(char * currentSceneFileName, char * previousSc
 	return result;
 }
 
-bool obtainSceneFileNameFromUser(char * currentSceneFileName)
+bool obtainSceneFileNameFromUser(char* currentSceneFileName)
 {
 	bool result = true;
 

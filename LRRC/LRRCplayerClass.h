@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCplayerClass.h
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -36,21 +36,10 @@
  *******************************************************************************/
 
 
-
 /*LRRCplayerClass.cpp: Defines a class for references to submodels/parts/units within a scene file*/
 
 #ifndef HEADER_LRRC_PLAYER_CLASS
 #define HEADER_LRRC_PLAYER_CLASS
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <string.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <math.h>
-using namespace std;
 
 #include "SHAREDvector.h"
 #include "LRRCglobalDefs.h"
@@ -126,33 +115,33 @@ public:
 
 	bool status; //dead or alive
 
-	UnitListClass * firstUnitInUnitList;
-	UnitListClass * currentObjectInUnitList;	//temp variable for UnitListClass * initialisation	//is this used anymore?
+	UnitListClass* firstUnitInUnitList;
+	UnitListClass* currentObjectInUnitList;	//temp variable for UnitListClass* initialisation	//is this used anymore?
 
 
 #ifdef USE_ANN
 	double creativity;
 
 	/*
-	Experience * firstExperience;		//not currently used, using unit experiences instead
-	Experience * currentExperience;		//not currently used,using unit experiences instead		//temp variable for experience linked list creation
+	ANNexperience* firstExperience;		//not currently used, using unit experiences instead
+	ANNexperience* currentExperience;		//not currently used,using unit experiences instead		//temp variable for experience linked list creation
 	*/
-	Experience * firstExperience[GAME_NUMBER_OF_EXPERIENCE_NN];
-	Experience * currentExperience[GAME_NUMBER_OF_EXPERIENCE_NN];		//temp variable for experience linked list creation
+	ANNexperience* firstExperience[GAME_NUMBER_OF_EXPERIENCE_NN];
+	ANNexperience* currentExperience[GAME_NUMBER_OF_EXPERIENCE_NN];		//temp variable for experience linked list creation
 
-	NeuronContainer * firstInputNeuronInNetwork[GAME_NUMBER_OF_EXPERIENCE_NN];
-	NeuronContainer * firstOutputNeuronInNetwork[GAME_NUMBER_OF_EXPERIENCE_NN];
+	ANNneuronContainer* firstInputNeuronInNetwork[GAME_NUMBER_OF_EXPERIENCE_NN];
+	ANNneuronContainer* firstOutputNeuronInNetwork[GAME_NUMBER_OF_EXPERIENCE_NN];
 	long numberOfInputNeurons[GAME_NUMBER_OF_EXPERIENCE_NN];
 	long numberOfOutputNeurons[GAME_NUMBER_OF_EXPERIENCE_NN];
 #endif
 
-	Player * next;
+	Player* next;
 };
 
-void fillPlayerDetails(Player * p, string playerName, int playerID, int playerInitialCredits);
-void fillPlayerDetails(Player * p, string playerName, int playerID, int playerInitialCredits, vec* playerStartPosition);
+void fillPlayerDetails(Player* p, string playerName, int playerID, int playerInitialCredits);
+void fillPlayerDetails(Player* p, string playerName, int playerID, int playerInitialCredits, vec* playerStartPosition);
 
-Player * findPlayer(Player * initialPlayerInList, int playerID);
+Player* findPlayer(Player* initialPlayerInList, int playerID);
 
 #endif
 

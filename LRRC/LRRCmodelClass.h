@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCmodelClass.h
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -34,9 +34,6 @@
  * Project Fifth Internal Release: 2d11a 3-June-07
  *
  *******************************************************************************/
-
-
-
 
 
 #ifndef HEADER_LRRC_MODEL_CLASS
@@ -163,7 +160,7 @@ public:
 
 	/*ModelDetails Type Details - these could be transfered to a separate File class*/
 
-	RecordClass * recordOfUnitTypeDetails;
+	RecordClass* recordOfUnitTypeDetails;
 		//repetative information:
 	int numPerson;
 	int numHorse;
@@ -186,11 +183,11 @@ public:
 	*/
 
 	/*Combat Details*/
-	RecordClass * recordOfUnitCombatDetailsDefenceHead;
-	RecordClass * recordOfUnitCombatDetailsDefenceTorso;
-	RecordClass * recordOfUnitCombatDetailsDefenceShield;
-	RecordClass * recordOfUnitCombatDetailsAttackCloseCombat;
-	RecordClass * recordOfUnitCombatDetailsAttackLongDistance;
+	RecordClass* recordOfUnitCombatDetailsDefenceHead;
+	RecordClass* recordOfUnitCombatDetailsDefenceTorso;
+	RecordClass* recordOfUnitCombatDetailsDefenceShield;
+	RecordClass* recordOfUnitCombatDetailsAttackCloseCombat;
+	RecordClass* recordOfUnitCombatDetailsAttackLongDistance;
 
 	int breastDefenceValue;
 	int helmetDefenceValue;
@@ -242,7 +239,7 @@ public:
 
 	/*building details - these could be transfered to separate Building class*/
 	int numBuildingOther;
-	RecordClass * recordOfBuildingDetails;
+	RecordClass* recordOfBuildingDetails;
 	/*
 	int numBuildingWallWindow;
 	int numBuildingWallCorner;
@@ -267,16 +264,16 @@ public:
 #endif
 
 //no longer used due to algorithm break down
-//void copyCombatRelevantInheritedImmediateParentUnitDetailsIntoChildObject(ModelDetails * unitChild, ModelDetails * unitParent);
+//void copyCombatRelevantInheritedImmediateParentUnitDetailsIntoChildObject(ModelDetails* unitChild, ModelDetails* unitParent);
 
-void copyAllUnitDetails(ModelDetails * u, ModelDetails * unitToCopy);
-void copyEnvironmentRelevantChildUnitDetailsIntoParentObject(ModelDetails * unitChild, ModelDetails * unitParent);
-void addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails * unitChild, ModelDetails * unitParent);
-void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails * u);
+void copyAllUnitDetails(ModelDetails* u, ModelDetails* unitToCopy);
+void copyEnvironmentRelevantChildUnitDetailsIntoParentObject(ModelDetails* unitChild, ModelDetails* unitParent);
+void addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails* unitChild, ModelDetails* unitParent);
+void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails* u);
 
-bool calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(ModelDetails * u);
-void copyRecordLists(RecordClass * recordToFill, RecordClass * recordToCopy);
-void addRecordLists(RecordClass * recordToFill, RecordClass * recordToAdd);
+bool calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(ModelDetails* u);
+void copyRecordLists(RecordClass* recordToFill, RecordClass* recordToCopy);
+void addRecordLists(RecordClass* recordToFill, RecordClass* recordToAdd);
 
 //generic
 //int maxInt(int a, int b);

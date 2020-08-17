@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCTHgame.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -34,6 +34,7 @@
  * Project Fifth Internal Release: 2d11a 3-June-07
  *
  *******************************************************************************/
+
 
 #include "LRRCglobalDefs.h"
 #include "LRRCTHgame.h"
@@ -63,27 +64,12 @@
 #include "ANNdisplay.h"
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <string.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <math.h>
-using namespace std;
-
-
-
-
-
-
 //Test Harness Code:
 
 
-bool cullUnitList(UnitListClass * firstUnitInUnitList, int numberOfUnitsRequired)
+bool cullUnitList(UnitListClass* firstUnitInUnitList, int numberOfUnitsRequired)
 {
-	UnitListClass * currentUnitInUnitList = firstUnitInUnitList;
+	UnitListClass* currentUnitInUnitList = firstUnitInUnitList;
 
 	for(int i=0; i<numberOfUnitsRequired; i++)
 	{
@@ -94,11 +80,11 @@ bool cullUnitList(UnitListClass * firstUnitInUnitList, int numberOfUnitsRequired
 	return true;
 }
 
-bool randomiseUnitList(UnitListClass * firstUnitInNonRandomisedUnitList, UnitListClass * firstUnitInUnitList, long numberOfUnits)
+bool randomiseUnitList(UnitListClass* firstUnitInNonRandomisedUnitList, UnitListClass* firstUnitInUnitList, long numberOfUnits)
 {
-	UnitListClass * currentUnitInNonRandomisedUnitList = firstUnitInNonRandomisedUnitList->next;
-	UnitListClass * previousUnitInNonRandomisedUnitList = firstUnitInNonRandomisedUnitList;
-	UnitListClass * currentUnitInUnitList = firstUnitInUnitList;
+	UnitListClass* currentUnitInNonRandomisedUnitList = firstUnitInNonRandomisedUnitList->next;
+	UnitListClass* previousUnitInNonRandomisedUnitList = firstUnitInNonRandomisedUnitList;
+	UnitListClass* currentUnitInUnitList = firstUnitInUnitList;
 
 	long indexOfCurrentUnitInNonRandomisedUnitList = 0;
 	long currentNumberOfUnitsInRandomisedUnitList = numberOfUnits;
@@ -131,9 +117,9 @@ bool randomiseUnitList(UnitListClass * firstUnitInNonRandomisedUnitList, UnitLis
 		{
 			//cout << "1" << endl;
 
-			UnitListClass * newUnit = new UnitListClass();
+			UnitListClass* newUnit = new UnitListClass();
 			newUnit->number = currentUnitInNonRandomisedUnitList->number;
-			ModelDetails * newUnitDetails = new ModelDetails();
+			ModelDetails* newUnitDetails = new ModelDetails();
 			newUnit->unitDetails = newUnitDetails;
 			copyAllUnitDetails(newUnit->unitDetails, currentUnitInNonRandomisedUnitList->unitDetails);
 			currentUnitInUnitList->next = newUnit;
@@ -198,7 +184,7 @@ int THtestANNusingCombatExperiences()
 	fillInPlayerClassExternVariables();
 	fillInLRRCSpriteExternVariables();
 
-	Player * currentPlayer = new Player();
+	Player* currentPlayer = new Player();
 
 	#define IRRELEVANT (0)
 
@@ -236,14 +222,14 @@ int THtestANNusingCombatExperiences()
 	//PART 2: Generate a list of Units with Random Unit Properties
 	//************************
 
-	UnitListClass * firstUnitInNonRandomisedUnitList = new UnitListClass();
+	UnitListClass* firstUnitInNonRandomisedUnitList = new UnitListClass();
 
 
 	int numberOfUnitsBeforeCull = THgenerateUnitListwithAllUnitProperties(firstUnitInNonRandomisedUnitList);
 
-	UnitListClass * firstUnitInUnitList = new UnitListClass();
+	UnitListClass* firstUnitInUnitList = new UnitListClass();
 	firstUnitInUnitList->number = 0;
-	ModelDetails * newUnitDetails = new ModelDetails();
+	ModelDetails* newUnitDetails = new ModelDetails();
 	firstUnitInUnitList->unitDetails = newUnitDetails;
 	copyAllUnitDetails(firstUnitInUnitList->unitDetails, firstUnitInNonRandomisedUnitList->unitDetails);
 
@@ -258,7 +244,7 @@ int THtestANNusingCombatExperiences()
 	/*
 	//temp - print out unit list
 	//int uin = 0;
-	UnitListClass * currentUnitInList = firstUnitInUnitList;
+	UnitListClass* currentUnitInList = firstUnitInUnitList;
 	while(currentUnitInList->next != NULL)
 	{
 		//uin++;
@@ -458,12 +444,12 @@ int THtestANNusingCombatExperiences()
 	NNBeingTested = GAME_INDEX_OF_COMBAT_EXPERIENCE_NN;
 	totalErrorCCCombatExperience = THperformGenericCombatWithAllPermutationsOfUnitsInListAndAddOrCompareExperiences(currentPhase, firstUnitInUnitList, currentPlayer, NNBeingTested, COMPARE_EXPERIENCE, numberOfDistancesToTrainNetwork);
 
-	double averageErrorCCPropertiesExperience = totalErrorCCPropertiesExperience/((pow((double)numberOfUnits, 2) * (double)numberOfExperiencesPerUnitPerScenario * (double)numberOfDistancesToTrainNetwork));
+	double averageErrorCCPropertiesExperience = totalErrorCCPropertiesExperience/((pow((double)numberOfUnits, 2)* (double)numberOfExperiencesPerUnitPerScenario* (double)numberOfDistancesToTrainNetwork));
 
 	//cout << "averageErrorPropertiesExperience = " << averageErrorPropertiesExperience << endl;
 	cout << "averageAccuracyCCPropertiesExperience = " << (1.0F-averageErrorCCPropertiesExperience)*100.0F << "%" <<endl;
 
-	double averageErrorCCCombatExperience = totalErrorCCCombatExperience/((pow((double)numberOfUnits, 2) * (double)numberOfExperiencesPerUnitPerScenario * (double)numberOfDistancesToTrainNetwork));
+	double averageErrorCCCombatExperience = totalErrorCCCombatExperience/((pow((double)numberOfUnits, 2)* (double)numberOfExperiencesPerUnitPerScenario* (double)numberOfDistancesToTrainNetwork));
 
 	//cout << "averageErrorCombatExperience = " << averageErrorCombatExperience << endl;
 	cout << "averageAccuracyCCCombatExperience = " << (1.0F-averageErrorCCCombatExperience)*100.0F << "%" <<endl;
@@ -482,12 +468,12 @@ int THtestANNusingCombatExperiences()
 	NNBeingTested = GAME_INDEX_OF_COMBAT_EXPERIENCE_NN;
 	totalErrorLDCombatExperience = THperformGenericCombatWithAllPermutationsOfUnitsInListAndAddOrCompareExperiences(currentPhase, firstUnitInUnitList, currentPlayer, NNBeingTested, COMPARE_EXPERIENCE, numberOfDistancesToTrainNetwork);
 
-	double averageErrorLDPropertiesExperience = totalErrorLDPropertiesExperience/((pow((double)numberOfUnits, 2) * (double)numberOfExperiencesPerUnitPerScenario * (double)numberOfDistancesToTrainNetwork));
+	double averageErrorLDPropertiesExperience = totalErrorLDPropertiesExperience/((pow((double)numberOfUnits, 2)* (double)numberOfExperiencesPerUnitPerScenario* (double)numberOfDistancesToTrainNetwork));
 
 	//cout << "averageErrorPropertiesExperience = " << averageErrorPropertiesExperience << endl;
 	cout << "averageAccuracyLDPropertiesExperience = " << (1.0F-averageErrorLDPropertiesExperience)*100.0F << "%" <<endl;
 
-	double averageErrorLDCombatExperience = totalErrorLDCombatExperience/((pow((double)numberOfUnits, 2) * (double)numberOfExperiencesPerUnitPerScenario * (double)numberOfDistancesToTrainNetwork));
+	double averageErrorLDCombatExperience = totalErrorLDCombatExperience/((pow((double)numberOfUnits, 2)* (double)numberOfExperiencesPerUnitPerScenario* (double)numberOfDistancesToTrainNetwork));
 
 	//cout << "averageErrorCombatExperience = " << averageErrorCombatExperience << endl;
 	cout << "averageAccuracyLDCombatExperience = " << (1.0F-averageErrorLDCombatExperience)*100.0F << "%" <<endl;
@@ -513,16 +499,16 @@ int THtestANNusingCombatExperiences()
 
 
 	//assume units can only have 1 part of each part type (Ie - NO UNIT GROUPS!)
-long THgenerateUnitListwithAllUnitProperties(UnitListClass * firstUnitInUnitList)
+long THgenerateUnitListwithAllUnitProperties(UnitListClass* firstUnitInUnitList)
 {
 	bool result = true;
 	long numberOfUnits = 0;
 
-	UnitListClass * currentUnitInUnitList = firstUnitInUnitList;
+	UnitListClass* currentUnitInUnitList = firstUnitInUnitList;
 
 
 	//count number of units in each
-	RulesClass * currentReferenceRulesClass;
+	XMLrulesClass* currentReferenceRulesClass;
 
 	currentReferenceRulesClass = LRRCrulesUnitTypeCatagories;
 	int numberUnitTypeCatagories = 0;
@@ -588,7 +574,7 @@ long THgenerateUnitListwithAllUnitProperties(UnitListClass * firstUnitInUnitList
 						{
 							numberOfUnits++;
 
-							ModelDetails * currentUnitDetails = new ModelDetails();
+							ModelDetails* currentUnitDetails = new ModelDetails();
 							if(!generateUnitDetails(currentUnitDetails, indexUnitTypeCatagories, indexUnitCombatDetailsAttackCloseCombat, indexUnitCombatDetailsAttackLongDistance, indexUnitCombatDetailsDefenceHead, indexUnitCombatDetailsDefenceTorso, indexUnitCombatDetailsDefenceShield))
 							{
 								result = false;
@@ -596,7 +582,7 @@ long THgenerateUnitListwithAllUnitProperties(UnitListClass * firstUnitInUnitList
 							//performFinalUnitClassCalculations(currentUnitDetails);	- this is now done in LRRCcombat.cpp
 							currentUnitInUnitList->unitDetails = currentUnitDetails;
 							currentUnitInUnitList->number = numberOfUnits;	//record unit number - for debugging
-							UnitListClass * newUnit = new UnitListClass();
+							UnitListClass* newUnit = new UnitListClass();
 							currentUnitInUnitList->next = newUnit;
 							currentUnitInUnitList=currentUnitInUnitList->next;
 						}
@@ -619,9 +605,9 @@ long THgenerateUnitListwithAllUnitProperties(UnitListClass * firstUnitInUnitList
 	return numberOfUnits;
 }
 
-bool generateUnitDetails(ModelDetails * unitDetails, int selectionUnitTypeCatagories, int selectionUnitCombatDetailsAttackCloseCombat, int selectionUnitCombatDetailsAttackLongDistance, int selectionUnitCombatDetailsDefenceHead, int selectionUnitCombatDetailsDefenceTorso, int selectionUnitCombatDetailsDefenceShield)
+bool generateUnitDetails(ModelDetails* unitDetails, int selectionUnitTypeCatagories, int selectionUnitCombatDetailsAttackCloseCombat, int selectionUnitCombatDetailsAttackLongDistance, int selectionUnitCombatDetailsDefenceHead, int selectionUnitCombatDetailsDefenceTorso, int selectionUnitCombatDetailsDefenceShield)
 {
-	RecordClass * currentRecord;
+	RecordClass* currentRecord;
 
 
 
@@ -701,18 +687,18 @@ bool generateUnitDetails(ModelDetails * unitDetails, int selectionUnitTypeCatago
 
 }
 
-double THperformGenericCombatWithAllPermutationsOfUnitsInListAndAddOrCompareExperiences(int currentPhase, UnitListClass * firstUnitInUnitList, Player * currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork)	//firstPlayerInList contains the NN
+double THperformGenericCombatWithAllPermutationsOfUnitsInListAndAddOrCompareExperiences(int currentPhase, UnitListClass* firstUnitInUnitList, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork)	//firstPlayerInList contains the NN
 {
 	//bool result = true;
 	double totalError = 0.0;
 
-	UnitListClass * currentUnitAttackerInList = firstUnitInUnitList;
+	UnitListClass* currentUnitAttackerInList = firstUnitInUnitList;
 
 	while(currentUnitAttackerInList -> next != NULL)
 	{
 
 
-		UnitListClass * currentUnitDefenderInList = firstUnitInUnitList;
+		UnitListClass* currentUnitDefenderInList = firstUnitInUnitList;
 		while(currentUnitDefenderInList -> next != NULL)
 		{
 
@@ -730,13 +716,13 @@ double THperformGenericCombatWithAllPermutationsOfUnitsInListAndAddOrCompareExpe
 
 
 
-double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(int currentPhase, UnitListClass * unitAttacker, UnitListClass * unitDefender, Player * currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork)
+double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(int currentPhase, UnitListClass* unitAttacker, UnitListClass* unitDefender, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork)
 {
 	double totalError = 0.0;
 	//bool result = true;
 
-	Reference * unitAttackerReference = new Reference();
-	Reference * unitDefenderReference = new Reference();
+	LDreference* unitAttackerReference = new LDreference();
+	LDreference* unitDefenderReference = new LDreference();
 	unitAttackerReference->subModelDetails = unitAttacker->unitDetails;
 	unitDefenderReference->subModelDetails = unitDefender->unitDetails;
 
@@ -752,8 +738,8 @@ double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(in
 	{
 					//Long Distance Consideration
 					//find range of the ideal long range weapon (most powerful)
-		RulesClass * currentReferenceRulesClass = LRRCrulesUnitCombatDetailsAttackLongDistance;
-		RecordClass * currentReferenceRecordClass = unitAttackerReference->subModelDetails->recordOfUnitCombatDetailsAttackLongDistance;
+		XMLrulesClass* currentReferenceRulesClass = LRRCrulesUnitCombatDetailsAttackLongDistance;
+		RecordClass* currentReferenceRecordClass = unitAttackerReference->subModelDetails->recordOfUnitCombatDetailsAttackLongDistance;
 		bool foundOptimumLongDistanceWeapon = false;
 		int longDistanceAttackBaseRange = 0;
 		while((currentReferenceRecordClass->next != NULL) && (!foundOptimumLongDistanceWeapon))
@@ -990,7 +976,7 @@ double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(in
 
 
 #ifdef TH_LRRC_GAME_USE_AVERAGED_COMBAT_OUTCOMES
-int repeatCombatAndFindMostSuccessfulContendor(int currentPhase, Reference * unitAttackerReference, Reference * unitDefenderReference, int numberOfCombatSequences, bool addOrCompareExperience)
+int repeatCombatAndFindMostSuccessfulContendor(int currentPhase, LDreference* unitAttackerReference, LDreference* unitDefenderReference, int numberOfCombatSequences, bool addOrCompareExperience)
 {
 	int result;
 
@@ -1001,7 +987,7 @@ int repeatCombatAndFindMostSuccessfulContendor(int currentPhase, Reference * uni
 	bool unit1intendsToPerformLongDistanceAttack = true;
 	bool unit2intendsToPerformLongDistanceAttack = true;
 
-	int * resultsForAllCombatSequences = new int[TOTAL_NUMBER_OF_COMBAT_OUTCOMES];
+	int* resultsForAllCombatSequences = new int[TOTAL_NUMBER_OF_COMBAT_OUTCOMES];
 	int numberOfUnit1Wins = 0;
 	int numberOfUnit2Wins = 0;
 

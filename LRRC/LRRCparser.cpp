@@ -21,9 +21,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCparser.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -32,20 +32,10 @@
  *
  *******************************************************************************/
 
+
 #include "LRRCparser.h"
 #include "LRRCmodelClass.h"
 #include "LRRCrules.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <string.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <math.h>
-using namespace std;
-
 
 
 #ifdef USE_LRRC
@@ -53,7 +43,7 @@ int HAND_DAGGER_MOD;
 
 void fillInParserExternVariables()
 {
-	RulesClass * currentReferenceRulesClass = LRRCrulesMiscellaneous;
+	XMLrulesClass* currentReferenceRulesClass = LRRCrulesMiscellaneous;
 
 	while(currentReferenceRulesClass->next != NULL)
 	{
@@ -72,7 +62,7 @@ void fillInParserExternVariables()
 	//white space removal required for messy dat files from ldraw parts library
 
 
-void updateUnitDetails(string subPartFileName, ModelDetails * u)
+void updateUnitDetails(string subPartFileName, ModelDetails* u)
 {
 	updateUnitDetailsWithTypeDetails(subPartFileName, u);
 	updateUnitDetailsWithCombatDetails(subPartFileName, u);
@@ -80,7 +70,7 @@ void updateUnitDetails(string subPartFileName, ModelDetails * u)
 	updateUnitDetailsWithTerrainDefenceDetails(subPartFileName, u);
 }
 							
-void updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails * u)
+void updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails* u)
 {
 	/*defence levels
 	breast
@@ -112,8 +102,8 @@ void updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails * u
 	//////////////////////////////
 
 
-	RulesClass * currentReferenceRulesClass;
-	RecordClass * currentReferenceRecordClass;
+	XMLrulesClass* currentReferenceRulesClass;
+	RecordClass* currentReferenceRecordClass;
 
 
 
@@ -121,7 +111,7 @@ void updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails * u
 	currentReferenceRulesClass = LRRCrulesUnitCombatDetailsDefenceHead;
 	currentReferenceRecordClass = u->recordOfUnitCombatDetailsDefenceHead;
 
-	//assumes recordClass linked list already has the same number of references as the RulesClass linked list
+	//assumes recordClass linked list already has the same number of references as the XMLrulesClass linked list
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		if(strncmp(subPartFileName.c_str(), currentReferenceRulesClass->stringValue.c_str(), int(currentReferenceRulesClass->fractionalValue)) == 0)
@@ -166,7 +156,7 @@ void updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails * u
 	currentReferenceRulesClass = LRRCrulesUnitCombatDetailsDefenceTorso;
 	currentReferenceRecordClass = u->recordOfUnitCombatDetailsDefenceTorso;
 
-	//assumes recordClass linked list already has the same number of references as the RulesClass linked list
+	//assumes recordClass linked list already has the same number of references as the XMLrulesClass linked list
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		if(strncmp(subPartFileName.c_str(), currentReferenceRulesClass->stringValue.c_str(), int(currentReferenceRulesClass->fractionalValue)) == 0)
@@ -257,7 +247,7 @@ void updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails * u
 	currentReferenceRulesClass = LRRCrulesUnitCombatDetailsDefenceShield;
 	currentReferenceRecordClass = u->recordOfUnitCombatDetailsDefenceShield;
 
-	//assumes recordClass linked list already has the same number of references as the RulesClass linked list
+	//assumes recordClass linked list already has the same number of references as the XMLrulesClass linked list
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		if(strncmp(subPartFileName.c_str(), currentReferenceRulesClass->stringValue.c_str(), int(currentReferenceRulesClass->fractionalValue)) == 0)
@@ -297,7 +287,7 @@ void updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails * u
 	currentReferenceRulesClass = LRRCrulesUnitCombatDetailsAttackCloseCombat;
 	currentReferenceRecordClass = u->recordOfUnitCombatDetailsAttackCloseCombat;
 
-	//assumes recordClass linked list already has the same number of references as the RulesClass linked list
+	//assumes recordClass linked list already has the same number of references as the XMLrulesClass linked list
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		if(strncmp(subPartFileName.c_str(), currentReferenceRulesClass->stringValue.c_str(), int(currentReferenceRulesClass->fractionalValue)) == 0)
@@ -311,7 +301,7 @@ void updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails * u
 	currentReferenceRulesClass = LRRCrulesUnitCombatDetailsAttackLongDistance;
 	currentReferenceRecordClass = u->recordOfUnitCombatDetailsAttackLongDistance;
 
-	//assumes recordClass linked list already has the same number of references as the RulesClass linked list
+	//assumes recordClass linked list already has the same number of references as the XMLrulesClass linked list
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		if(strncmp(subPartFileName.c_str(), currentReferenceRulesClass->stringValue.c_str(), int(currentReferenceRulesClass->fractionalValue)) == 0)
@@ -370,17 +360,17 @@ void updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails * u
 	//u.hasCape.. ? , u.hasBucket.. ?
 }
 
-void updateUnitDetailsWithTypeDetails(string subPartFileName, ModelDetails * u)
+void updateUnitDetailsWithTypeDetails(string subPartFileName, ModelDetails* u)
 {
 	//////////////////////////////
 	//ModelDetails Type modification
 	//////////////////////////////
 
 
-	RulesClass * currentReferenceRulesClass = LRRCrulesUnitTypeDetails;
-	RecordClass * currentReferenceRecordClass = u->recordOfUnitTypeDetails;
+	XMLrulesClass* currentReferenceRulesClass = LRRCrulesUnitTypeDetails;
+	RecordClass* currentReferenceRecordClass = u->recordOfUnitTypeDetails;
 
-	//assumes recordClass linked list already has the same number of references as the RulesClass linked list
+	//assumes recordClass linked list already has the same number of references as the XMLrulesClass linked list
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		if(strncmp(subPartFileName.c_str(), currentReferenceRulesClass->stringValue.c_str(), int(currentReferenceRulesClass->fractionalValue)) == 0)
@@ -459,9 +449,9 @@ void updateUnitDetailsWithTypeDetails(string subPartFileName, ModelDetails * u)
 
 
 
-void updateUnitDetailsWithTerrainDefenceDetails(string subPartFileName, ModelDetails * u)
+void updateUnitDetailsWithTerrainDefenceDetails(string subPartFileName, ModelDetails* u)
 {
-	RulesClass * currentReferenceRulesClass = LRRCrulesTerrainDetails;
+	XMLrulesClass* currentReferenceRulesClass = LRRCrulesTerrainDetails;
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		if(strncmp(subPartFileName.c_str(), currentReferenceRulesClass->stringValue.c_str(), int(currentReferenceRulesClass->fractionalValue)) == 0)
@@ -492,14 +482,14 @@ void updateUnitDetailsWithTerrainDefenceDetails(string subPartFileName, ModelDet
 }
 
 
-void updateUnitDetailsWithBuildingDetails(string subPartFileName, ModelDetails * u)
+void updateUnitDetailsWithBuildingDetails(string subPartFileName, ModelDetails* u)
 {
 	bool foundBuildingPartInList = false;
 
-	RulesClass * currentReferenceRulesClass = LRRCrulesBuildingDetails;
-	RecordClass * currentReferenceRecordClass = u->recordOfBuildingDetails;
+	XMLrulesClass* currentReferenceRulesClass = LRRCrulesBuildingDetails;
+	RecordClass* currentReferenceRecordClass = u->recordOfBuildingDetails;
 
-	//assumes recordClass linked list already has the same number of references as the RulesClass linked list
+	//assumes recordClass linked list already has the same number of references as the XMLrulesClass linked list
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		if(strncmp(subPartFileName.c_str(), currentReferenceRulesClass->stringValue.c_str(), int(currentReferenceRulesClass->fractionalValue)) == 0)

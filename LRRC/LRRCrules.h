@@ -21,9 +21,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCrules.h
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -36,46 +36,36 @@
 #ifndef HEADER_LRRC_RULES
 #define HEADER_LRRC_RULES
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <string.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <math.h>
-using namespace std;
-
 #include "SHAREDglobalDefs.h"
 #include "XMLparserClass.h"
 #include "XMLrulesClass.h"
 
-//there really should be child classes of RulesClass called LRRCrulesUnitTypeDetails, unitCombatDetailsAttack, and unitCombatDetailsDefence that inherit rulesObject and include unique parameters
+//there really should be child classes of XMLrulesClass called LRRCrulesUnitTypeDetails, unitCombatDetailsAttack, and unitCombatDetailsDefence that inherit rulesObject and include unique parameters
 
 
 bool parseLRRCrulesXMLfile();
-	bool parseLRRCrulesTag(XMLparserTag * currentTag);
-		bool parseTagUnitCombatDetails(XMLparserTag * currentTag);
-			bool parseTagArmour(XMLparserTag * currentTag);
-				bool parseTagHead(XMLparserTag * currentTag);
-				bool parseTagTorso(XMLparserTag * currentTag);
-				bool parseTagShield(XMLparserTag * currentTag);
-			bool parseTagWeapons(XMLparserTag * currentTag);
-				bool parseTagCloseCombat(XMLparserTag * currentTag);
-				bool parseTagLongDistanceCombat(XMLparserTag * currentTag);
+	bool parseLRRCrulesTag(XMLparserTag* currentTag);
+		bool parseTagUnitCombatDetails(XMLparserTag* currentTag);
+			bool parseTagArmour(XMLparserTag* currentTag);
+				bool parseTagHead(XMLparserTag* currentTag);
+				bool parseTagTorso(XMLparserTag* currentTag);
+				bool parseTagShield(XMLparserTag* currentTag);
+			bool parseTagWeapons(XMLparserTag* currentTag);
+				bool parseTagCloseCombat(XMLparserTag* currentTag);
+				bool parseTagLongDistanceCombat(XMLparserTag* currentTag);
 
 
-extern RulesClass * LRRCrulesUnitTypeDetails;
-extern RulesClass * LRRCrulesUnitCombatDetailsDefenceHead;
-extern RulesClass * LRRCrulesUnitCombatDetailsDefenceTorso;
-extern RulesClass * LRRCrulesUnitCombatDetailsDefenceShield;
-extern RulesClass * LRRCrulesUnitCombatDetailsAttackCloseCombat;
-extern RulesClass * LRRCrulesUnitCombatDetailsAttackLongDistance;
-extern RulesClass * LRRCrulesBuildingDetails;
-extern RulesClass * LRRCrulesTerrainDetails;
-extern RulesClass * LRRCrulesUnitTypeCatagories;
-extern RulesClass * LRRCrulesMiscellaneous;
-extern RulesClass * LRRCrulesSprite;
+extern XMLrulesClass* LRRCrulesUnitTypeDetails;
+extern XMLrulesClass* LRRCrulesUnitCombatDetailsDefenceHead;
+extern XMLrulesClass* LRRCrulesUnitCombatDetailsDefenceTorso;
+extern XMLrulesClass* LRRCrulesUnitCombatDetailsDefenceShield;
+extern XMLrulesClass* LRRCrulesUnitCombatDetailsAttackCloseCombat;
+extern XMLrulesClass* LRRCrulesUnitCombatDetailsAttackLongDistance;
+extern XMLrulesClass* LRRCrulesBuildingDetails;
+extern XMLrulesClass* LRRCrulesTerrainDetails;
+extern XMLrulesClass* LRRCrulesUnitTypeCatagories;
+extern XMLrulesClass* LRRCrulesMiscellaneous;
+extern XMLrulesClass* LRRCrulesSprite;
 
 
 #endif

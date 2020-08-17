@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCsprite.h
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -34,7 +34,6 @@
  * Project Fifth Internal Release: 2d11a 3-June-07
  *
  *******************************************************************************/
-
 
 
 /*spriteCode.cpp - 10-Sept-06 12:30pm - for integration into legoRulesRoundsChecker. This code allows the addition of a sprite into a given scene file where a sprite is a paragraph of text. [The text is to be rendered in 3D, and point towards the user POV - see CHECK THIS for missing code]*/
@@ -86,12 +85,12 @@ void fillInLRRCSpriteExternVariables();
 
 /*top level sprite routine*/
 bool LRRCaddUnitDetailsSpritesToSceneFile(char* sceneFileName, char* sceneFileNameWithSprites, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn);
-bool LRRCaddUnitDetailsSpritesToScene(char* sceneFileName, char* sceneFileNameWithSprites, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn, Reference * firstReferenceInScene);
-	void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(Reference * referenceInSceneFile, Reference * spriteListInitialReference, vec * eyeCoords, int * numSpritesAdded, char* sceneFileName, Reference * initialReferenceInSceneFile, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn);
-		bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(Reference * unitReference, Reference * targetReference, Reference * spriteListInitialReference, vec * eyeCoords, int * numSpritesAdded, char* sceneFileName, bool addTextualSpriteInfo, bool addRangeSpriteInfo, bool addTargetSpriteInfo, int currentPhase, int currentPlayerTurn);
-			void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, string * spriteTextString, int spriteColourArray[]);
-			Reference * LRRCaddRangeSpriteInfoToReferenceList(Reference * spriteSubmodelInitialReference, Reference * unitReference, int currentPhase, int * numSpritesAdded);
-			Reference * LRRCaddTargetSpriteInfoToReferenceList(Reference * spriteSubmodelInitialReference, Reference * unitReference, Reference * targetReference, int currentPhase, int * numSpritesAdded);
+bool LRRCaddUnitDetailsSpritesToScene(char* sceneFileName, char* sceneFileNameWithSprites, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn, LDreference* firstReferenceInScene);
+	void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referenceInSceneFile, LDreference* spriteListInitialReference, vec* eyeCoords, int* numSpritesAdded, char* sceneFileName, LDreference* initialReferenceInSceneFile, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn);
+		bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReference, LDreference* targetReference, LDreference* spriteListInitialReference, vec* eyeCoords, int* numSpritesAdded, char* sceneFileName, bool addTextualSpriteInfo, bool addRangeSpriteInfo, bool addTargetSpriteInfo, int currentPhase, int currentPlayerTurn);
+			void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, string* spriteTextString, int spriteColourArray[]);
+			LDreference* LRRCaddRangeSpriteInfoToReferenceList(LDreference* spriteSubmodelInitialReference, LDreference* unitReference, int currentPhase, int* numSpritesAdded);
+			LDreference* LRRCaddTargetSpriteInfoToReferenceList(LDreference* spriteSubmodelInitialReference, LDreference* unitReference, LDreference* targetReference, int currentPhase, int* numSpritesAdded);
 
 
 #endif

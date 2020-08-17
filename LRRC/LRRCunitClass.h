@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCunitClass.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -36,6 +36,7 @@
  * NB phase specific sprites are yet to be added to scene files based upon movement/combat outcomes
  * NB phase specific sprites are yet to be added to scene files based upon future movement/combat options
  *******************************************************************************/
+
 
 #ifndef HEADER_LRRC_UNIT_CLASS
 #define HEADER_LRRC_UNIT_CLASS
@@ -48,16 +49,6 @@
 #endif
 
 #include "LRRCmodelClass.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <string.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <math.h>
-using namespace std;
 
 
 #define GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN (0)
@@ -76,8 +67,8 @@ using namespace std;
 
 #ifdef ANN_SEPARATE_CC_FROM_LD_NETWORK		//the following will be tested with the test harness first
 	#define ANN_TOTAL_NUMBER_OF_COMBAT_SCENARIOS (2) //CC Attack and LD Attack
-	#define GAME_NUMBER_OF_EXPERIENCE_NN (GAME_NUMBER_OF_EXPERIENCE_NN_WITHOUT_SEPARATE_COMBAT_SCENARIOS *2)
-	#define GAME_NUMBER_OF_EXPERIENCE_NN_UTILISED (GAME_NUMBER_OF_EXPERIENCE_NN_UTILISED_WITHOUT_SEPARATE_COMBAT_SCENARIOS * 2)
+	#define GAME_NUMBER_OF_EXPERIENCE_NN (GAME_NUMBER_OF_EXPERIENCE_NN_WITHOUT_SEPARATE_COMBAT_SCENARIOS* 2)
+	#define GAME_NUMBER_OF_EXPERIENCE_NN_UTILISED (GAME_NUMBER_OF_EXPERIENCE_NN_UTILISED_WITHOUT_SEPARATE_COMBAT_SCENARIOS* 2)
 
 #else
 	#define ANN_TOTAL_NUMBER_OF_COMBAT_SCENARIOS (1)
@@ -121,15 +112,15 @@ public:
 	string name;	//currently used identifier of the unit in game scene files
 	int team;		//not currently used, as there is 1 UnitListClass created for every team
 	//long id;		//the unique id/number for every unit - not currently used
-	ModelDetails * unitDetails;
+	ModelDetails* unitDetails;
 
 	bool isUnitGroup;
-	UnitListClass * firstUnitInUnitGroup;
+	UnitListClass* firstUnitInUnitGroup;
 
 #ifdef USE_ANN
 
-	Experience * firstExperience[GAME_NUMBER_OF_EXPERIENCE_NN];
-	Experience * currentExperience[GAME_NUMBER_OF_EXPERIENCE_NN];		//temp variable for experience linked list creation
+	ANNexperience* firstExperience[GAME_NUMBER_OF_EXPERIENCE_NN];
+	ANNexperience* currentExperience[GAME_NUMBER_OF_EXPERIENCE_NN];		//temp variable for experience linked list creation
 
 	double selfLearningTempVarBackPropagationPassError[GAME_NUMBER_OF_EXPERIENCE_NN];	//temp variable used for determination of whether to use this unit for a certain game action (Eg Combat)
 	bool selfLearningTempVarUnitHasBeenTried;
@@ -137,20 +128,20 @@ public:
 
 #endif
 
-	UnitListClass * next;
+	UnitListClass* next;
 
 };
 
-UnitListClass * searchUnitListFindOpponentWithLowestError(int currentPlayerTurn, int nn, UnitListClass * firstUnitInUnitGroup, double * currentLowestError, bool * foundOpponent, int NNcurrentPhase);
+UnitListClass* searchUnitListFindOpponentWithLowestError(int currentPlayerTurn, int nn, UnitListClass* firstUnitInUnitGroup, double* currentLowestError, bool* foundOpponent, int NNcurrentPhase);
 
-UnitListClass * searchUnitListFindUnit(UnitListClass * firstUnitInUnitGroup, string unitName, int unitColour, bool * unitIDFound);
+UnitListClass* searchUnitListFindUnit(UnitListClass* firstUnitInUnitGroup, string unitName, int unitColour, bool* unitIDFound);
 
-void addUnitToList(UnitListClass * firstUnitInUnitList, string unitName, int unitColour, ModelDetails * unitDetails, int currentRound);
-bool splitUnitGroup(UnitListClass * firstUnitInUnitList, string unitGroupName, int unitGroupColour, int currentRound);
+void addUnitToList(UnitListClass* firstUnitInUnitList, string unitName, int unitColour, ModelDetails* unitDetails, int currentRound);
+bool splitUnitGroup(UnitListClass* firstUnitInUnitList, string unitGroupName, int unitGroupColour, int currentRound);
 
-void searchUnitListAssignHasNotPerformedAction(UnitListClass * firstUnitInUnitGroup);
+void searchUnitListAssignHasNotPerformedAction(UnitListClass* firstUnitInUnitGroup);
 
-int determineUnitWorthInPoints(ModelDetails * unitDetails);
+int determineUnitWorthInPoints(ModelDetails* unitDetails);
 
 #endif
 

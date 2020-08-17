@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCrecordClass.h
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -35,18 +35,9 @@
  *
  *******************************************************************************/
 
+
 #ifndef HEADER_LRRC_RECORD_CLASS
 #define HEADER_LRRC_RECORD_CLASS
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <string.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <math.h>
-using namespace std;
 
 class RecordClass
 {
@@ -60,9 +51,7 @@ public:
 	string name;
 	int numberOfThisPartIDInTheUnit;
 
-	RecordClass * next;
-
-
+	RecordClass* next;
 };
 
 #endif

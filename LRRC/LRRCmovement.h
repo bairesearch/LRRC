@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCmovement.h
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -43,12 +43,12 @@
 #include "LRRCplayerClass.h"
 #include "LRRCsprite.h"
 
-bool compareSceneFilesMovementPhase(char* preMovementPhaseSceneFileName, char* thisPhaseStartSceneFileName, Player * currentPlayer, char * targetSpritesSceneFileName, bool addSprites);
-	bool compareScenesMovementPhase(char * preMovementPhaseSceneFileName, Reference * initialReferenceInPreMovementPhaseScene, Reference * initialReferenceInThisPhaseStartScene, Player * currentPlayer, char * targetSpritesSceneFileName, bool addSprites);
-		bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(Reference * referenceInThisPhaseStartSceneFile, Reference * initialReferenceInPreMovementPhaseScene, int parentUnitSpeed, bool isAChildOfAMovingReference, Player * currentPlayer, char * targetSpritesSceneFileName, Reference * spriteListInitialReference, int * numTargetSpritesAdded);
-			Reference * compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(Reference * referenceInThisPhaseStartSceneFileBeingLocated, Reference * referenceInPreMovementPhaseSceneFile, bool resultOfComparison[], int parentUnitSpeed, bool * unitIDFound, bool * result);
-				bool compareSubmodelNamesAndIfSameCheckIfValidMove(Reference * referenceInThisPhaseStartSceneSearchedFor, Reference * referenceInPreMovementPhaseSceneFoundDuringSearch, bool resultOfComparison[], int parentUnitSpeed);
-			bool dealWithResultsOfComparison(Reference * referenceInThisPhaseStartSceneFile, bool resultOfComparison[], Player * currentPlayer, Reference * spriteListInitialReference, Reference * referenceInPreMovementPhaseSceneFile, int * numTargetSpritesAdded, char * targetSpritesSceneFileName, bool unitIDFound, bool isChildOfMovingReference);
-		bool performFinalRoundPointsCalculations(Player * currentPlayer);
+bool compareSceneFilesMovementPhase(char* preMovementPhaseSceneFileName, char* thisPhaseStartSceneFileName, Player* currentPlayer, char* targetSpritesSceneFileName, bool addSprites);
+	bool compareScenesMovementPhase(char* preMovementPhaseSceneFileName, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, Player* currentPlayer, char* targetSpritesSceneFileName, bool addSprites);
+		bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDreference* referenceInThisPhaseStartSceneFile, LDreference* initialReferenceInPreMovementPhaseScene, int parentUnitSpeed, bool isAChildOfAMovingReference, Player* currentPlayer, char* targetSpritesSceneFileName, LDreference* spriteListInitialReference, int* numTargetSpritesAdded);
+			LDreference* compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(LDreference* referenceInThisPhaseStartSceneFileBeingLocated, LDreference* referenceInPreMovementPhaseSceneFile, bool resultOfComparison[], int parentUnitSpeed, bool* unitIDFound, bool* result);
+				bool compareSubmodelNamesAndIfSameCheckIfValidMove(LDreference* referenceInThisPhaseStartSceneSearchedFor, LDreference* referenceInPreMovementPhaseSceneFoundDuringSearch, bool resultOfComparison[], int parentUnitSpeed);
+			bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile, bool resultOfComparison[], Player* currentPlayer, LDreference* spriteListInitialReference, LDreference* referenceInPreMovementPhaseSceneFile, int* numTargetSpritesAdded, char* targetSpritesSceneFileName, bool unitIDFound, bool isChildOfMovingReference);
+		bool performFinalRoundPointsCalculations(Player* currentPlayer);
 
 #endif

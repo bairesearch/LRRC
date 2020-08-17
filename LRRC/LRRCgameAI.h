@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCgameAI.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -37,10 +37,9 @@
  * NB phase specific sprites are yet to be added to scene files based upon future movement/combat options
  *******************************************************************************/
 
+
 #ifndef HEADER_LRRC_GAME_AI
 #define HEADER_LRRC_GAME_AI
-
-
 
 #include "LRRCglobalDefs.h"
 //#assert USE_ANN
@@ -85,7 +84,7 @@
 
 
 
-//Combat/Unit Experience Defs;
+//Combat/Unit ANNexperience Defs;
 
 #define COMBAT_TYPE_CLOSE_COMBAT (1)
 #define COMBAT_TYPE_LONG_DISTANCE (2)
@@ -134,53 +133,53 @@
 
 /*
 //not used
-void addExperienceToPlayer(Experience * experience, Player * player);
-void addExperienceToUnit(Experience * experience, ModelDetails * unit);
-void addExperienceInputToExperience(ExperienceInput * experienceInput, Experience * experience);
+void addExperienceToPlayer(ANNexperience* experience, Player* player);
+void addExperienceToUnit(ANNexperience* experience, ModelDetails* unit);
+void addExperienceInputToExperience(ANNexperienceInput* experienceInput, ANNexperience* experience);
 */
 
-void initialiseNeuralNetwork(int NNBeingTested, Player * currentPlayer, int currentPhase);
+void initialiseNeuralNetwork(int NNBeingTested, Player* currentPlayer, int currentPhase);
 
-long mergePlayerUnitExperiencesIntoPlayerExperienceList(Player * currentPlayer, UnitListClass * firstUnitInUnitGroup, int unitGroupTeam, int nnIndex);
-long mergeAllUnitExperiencesIntoPlayerExperienceList(Player * currentPlayer, UnitListClass * firstUnitInUnitGroup, int nnIndex);
-
-
-void parseSceneFileAndFillUnitLists(char sceneFileName[], UnitListClass * firstUnitInUnitList, int currentRound);
-	void fillUnitList(Reference * currentReferenceInSceneFile, UnitListClass * firstUnitInUnitGroup, int currentRound);
-
-void parseSceneFileAndUpdateUnitList(char sceneFileName[], UnitListClass * firstUnitInUnitList, int currentRound);
-	void updateUnitList(Reference * initialReferenceInSceneFile, UnitListClass * firstUnitInUnitList, int currentRound);	//required after every round
-		void updateUnitListWithNewUnits(Reference * currentReferenceInSceneFile, UnitListClass * firstUnitInUnitGroup, int currentRound);
-			UnitListClass * searchUnitListForUnitAndIfNotThereAddToList(UnitListClass * firstUnitInUnitGroup, Reference * unitReferenceInSceneFile, int currentRound, bool topLevelInTree, bool * foundUnitInList);
-		void updateUnitListWithDeadUnits(Reference * initialReferenceInSceneFile, UnitListClass * firstUnitInUnitGroup, int currentRound);
+long mergePlayerUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, int unitGroupTeam, int nnIndex);
+long mergeAllUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, int nnIndex);
 
 
+void parseSceneFileAndFillUnitLists(char sceneFileName[], UnitListClass* firstUnitInUnitList, int currentRound);
+	void fillUnitList(LDreference* currentReferenceInSceneFile, UnitListClass* firstUnitInUnitGroup, int currentRound);
 
-bool determineIfUnitGroupHasAliveUnits(UnitListClass * firstUnitInUnitGroup);
-bool checkAverageKillRatioForUnitGroup(UnitListClass * firstUnitInUnitGroup);
-	void determineAverageKillRatioForUnitGroup(UnitListClass * firstUnitInUnitGroup, int * killPoints, int * deathPoints);
+void parseSceneFileAndUpdateUnitList(char sceneFileName[], UnitListClass* firstUnitInUnitList, int currentRound);
+	void updateUnitList(LDreference* initialReferenceInSceneFile, UnitListClass* firstUnitInUnitList, int currentRound);	//required after every round
+		void updateUnitListWithNewUnits(LDreference* currentReferenceInSceneFile, UnitListClass* firstUnitInUnitGroup, int currentRound);
+			UnitListClass* searchUnitListForUnitAndIfNotThereAddToList(UnitListClass* firstUnitInUnitGroup, LDreference* unitReferenceInSceneFile, int currentRound, bool topLevelInTree, bool* foundUnitInList);
+		void updateUnitListWithDeadUnits(LDreference* initialReferenceInSceneFile, UnitListClass* firstUnitInUnitGroup, int currentRound);
+
+
+
+bool determineIfUnitGroupHasAliveUnits(UnitListClass* firstUnitInUnitGroup);
+bool checkAverageKillRatioForUnitGroup(UnitListClass* firstUnitInUnitGroup);
+	void determineAverageKillRatioForUnitGroup(UnitListClass* firstUnitInUnitGroup, int* killPoints, int* deathPoints);
 
 
 #ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
-double addOrCompareAllObjectExperiences(Player * currentPlayer, int NNBeingTested, bool addOrCompareExperience, bool justCountNumberOfExperiences);
+double addOrCompareAllObjectExperiences(Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, bool justCountNumberOfExperiences);
 #endif
 
-double addExperiencesFromUnitDecision(UnitListClass * unit, Reference * unitReference, Reference * unitReferenceOpponent, long unitDecision, Reference * initialReferenceInThisPhaseStartScene, int NNcurrentPhase, Player * currentPlayer);
-	double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass * unit, Reference * unitReference, Reference * unitReferenceOpponent, long unitDecision, Player * currentPlayer, int NNBeingTested, bool addOrCompareExperience, Reference * initialReferenceInThisPhaseStartScene);
-		void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Reference * unitReferenceOpponent, long unitDecision, Experience * currentExperience, int currentPhase);
-		void generateExperienceFromUnitCombatDecision(Reference * unitReference, Reference * unitReferenceOpponent, long unitDecision, Experience * currentExperience, int currentPhase);
+double addExperiencesFromUnitDecision(UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, LDreference* initialReferenceInThisPhaseStartScene, int NNcurrentPhase, Player* currentPlayer);
+	double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, LDreference* initialReferenceInThisPhaseStartScene);
+		void generateExperienceFromUnitPropertiesDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, ANNexperience* currentExperience, int currentPhase);
+		void generateExperienceFromUnitCombatDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, ANNexperience* currentExperience, int currentPhase);
 		#ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
-		bool generateExperienceFromGlobalDecision(UnitListClass * firstUnitInUnitList, Reference * initialReferenceInThisPhaseStartScene, Reference * unitReference, Reference * unitReferenceOpponent, Experience * currentExperience);
-			bool generate2DMemoryMapExperience(UnitListClass * firstUnitInGroup, Reference * initialReferenceInThisPhaseStartScene, Reference * unitReference, Experience * currentExperience);
-				ExperienceInput * findExperienceInputIn2DMemoryMap(int xPos, int yPos, int tPos, Experience * currentExperience);
+		bool generateExperienceFromGlobalDecision(UnitListClass* firstUnitInUnitList, LDreference* initialReferenceInThisPhaseStartScene, LDreference* unitReference, LDreference* unitReferenceOpponent, ANNexperience* currentExperience);
+			bool generate2DMemoryMapExperience(UnitListClass* firstUnitInGroup, LDreference* initialReferenceInThisPhaseStartScene, LDreference* unitReference, ANNexperience* currentExperience);
+				ANNexperienceInput* findExperienceInputIn2DMemoryMap(int xPos, int yPos, int tPos, ANNexperience* currentExperience);
 		#endif
 		#ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
-		bool generateExperienceFromObjectDecision(Reference * objectReference, long objectDecision, Experience * currentExperience, bool createNewRayTracedImage);
+		bool generateExperienceFromObjectDecision(LDreference* objectReference, long objectDecision, ANNexperience* currentExperience, bool createNewRayTracedImage);
 		#endif
 
 
-void addAllUnitExperiencesToOFStream(ofstream * experienceDataSetOFStreamObject, UnitListClass * firstUnitInUnitGroup, int nnIndex);
-void addPlayerUnitExperiencesToOFStream(ofstream * experienceDataSetOFStreamObject, UnitListClass * firstUnitInUnitGroup, int unitGroupTeam, int nnIndex);
+void addAllUnitExperiencesToOFStream(ofstream* experienceDataSetOFStreamObject, UnitListClass* firstUnitInUnitGroup, int nnIndex);
+void addPlayerUnitExperiencesToOFStream(ofstream* experienceDataSetOFStreamObject, UnitListClass* firstUnitInUnitGroup, int unitGroupTeam, int nnIndex);
 
 #endif
 

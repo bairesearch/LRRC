@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCTHgame.h
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -34,7 +34,6 @@
  * Project Fifth Internal Release: 2d11a 3-June-07
  *
  *******************************************************************************/
-
 
 
 #ifndef HEADER_TH_LRRC_GAME
@@ -61,7 +60,7 @@
 #ifdef TH_LRRC_GAME_EMULATE_GAME_AI_REQUIREMENTS
 	#define TH_LRRC_GAME_USE_RANDOM_DISTANCES_TO_TRAIN_NETWORKS
 	#define TH_LRRC_GAME_NUM_RANDOM_DISTANCES_TO_TRAIN_NETWORKS (10)
-	#define TH_LRRC_GAME_RANGE_OF_RANDOM_LD_DISTANCES_TO_TRAIN_NETWORK (40)		//40 Ldraw units in distance (also = CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY * TH_LRRC_GAME_NUM_RANDOM_DISTANCES_TO_TRAIN_NETWORKS)
+	#define TH_LRRC_GAME_RANGE_OF_RANDOM_LD_DISTANCES_TO_TRAIN_NETWORK (40)		//40 Ldraw units in distance (also = CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY* TH_LRRC_GAME_NUM_RANDOM_DISTANCES_TO_TRAIN_NETWORKS)
 		//this should be the same as the maximum LD attack distance as calculated in LRRCgameAI's generateCombat/PropertiesExperience() function
 #else
 	//#define DEBUG_TH_DO_NOT_USE_ADVANCED_LEARNING_BASED_UPON_DISTANCES
@@ -72,14 +71,14 @@
 
 
 int THtestANNusingCombatExperiences();
-	long THgenerateUnitListwithAllUnitProperties(UnitListClass * firstUnitInUnitList);
-		bool generateUnitDetails(ModelDetails * unitDetails, int selectionUnitTypeCatagories, int selectionUnitCombatDetailsAttackCloseCombat, int selectionUnitCombatDetailsAttackLongDistance, int selectionUnitCombatDetailsDefenceHead, int selectionUnitCombatDetailsDefenceTorso, int selectionUnitCombatDetailsDefenceShield);
-	bool randomiseUnitList(UnitListClass * firstUnitInNonRandomisedUnitList, UnitListClass * firstUnitInUnitList, long numberOfUnits);
-	bool cullUnitList(UnitListClass * firstUnitInUnitList, int numberOfUnitsRequired);
-	double THperformGenericCombatWithAllPermutationsOfUnitsInListAndAddOrCompareExperiences(int currentPhase, UnitListClass * firstUnitInUnitList, Player * currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork);
-		double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(int currentPhase, UnitListClass * unitAttacker, UnitListClass * unitDefender, Player * currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork);
+	long THgenerateUnitListwithAllUnitProperties(UnitListClass* firstUnitInUnitList);
+		bool generateUnitDetails(ModelDetails* unitDetails, int selectionUnitTypeCatagories, int selectionUnitCombatDetailsAttackCloseCombat, int selectionUnitCombatDetailsAttackLongDistance, int selectionUnitCombatDetailsDefenceHead, int selectionUnitCombatDetailsDefenceTorso, int selectionUnitCombatDetailsDefenceShield);
+	bool randomiseUnitList(UnitListClass* firstUnitInNonRandomisedUnitList, UnitListClass* firstUnitInUnitList, long numberOfUnits);
+	bool cullUnitList(UnitListClass* firstUnitInUnitList, int numberOfUnitsRequired);
+	double THperformGenericCombatWithAllPermutationsOfUnitsInListAndAddOrCompareExperiences(int currentPhase, UnitListClass* firstUnitInUnitList, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork);
+		double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(int currentPhase, UnitListClass* unitAttacker, UnitListClass* unitDefender, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork);
 			#ifdef TH_LRRC_GAME_USE_AVERAGED_COMBAT_OUTCOMES
-			int repeatCombatAndFindMostSuccessfulContendor(int currentPhase, Reference * unitAttackerReference, Reference * unitDefenderReference, int numberOfCombatSequences, bool addOrCompareExperience);
+			int repeatCombatAndFindMostSuccessfulContendor(int currentPhase, LDreference* unitAttackerReference, LDreference* unitDefenderReference, int numberOfCombatSequences, bool addOrCompareExperience);
 			#endif
 
 #endif

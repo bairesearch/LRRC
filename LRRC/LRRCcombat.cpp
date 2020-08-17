@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCcombat.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -49,7 +49,7 @@ double RANGE_MODIFIER_BASED_ON_INCREASED_HEIGHT;
 
 void fillInCombatExternVariables()
 {
-	RulesClass * currentReferenceRulesClass = LRRCrulesMiscellaneous;
+	XMLrulesClass* currentReferenceRulesClass = LRRCrulesMiscellaneous;
 
 	while(currentReferenceRulesClass->next != NULL)
 	{
@@ -163,9 +163,9 @@ void fillInCombatExternVariables()
 bool calculateUnitClassBasic(char* unitFileName)
 {
 	//reinitalise ModelDetails specific values if necessary
-	Reference * initialReferenceInUnitFile = new Reference();
-	Reference * topLevelReferenceInFile = new Reference(true);
-	ModelDetails * u = topLevelReferenceInFile->subModelDetails;
+	LDreference* initialReferenceInUnitFile = new LDreference();
+	LDreference* topLevelReferenceInFile = new LDreference(true);
+	ModelDetails* u = topLevelReferenceInFile->subModelDetails;
 
 	if(!parseFile(unitFileName, initialReferenceInUnitFile, topLevelReferenceInFile, false))
 	{//file does not exist
@@ -191,10 +191,10 @@ bool calculateUnitClassBasic(char* unitFileName)
 bool calculateUnitClassNormal(char* unitFileName)
 {
 	//declare initial scene references
-	Reference * initialReferenceInUnit1 = new Reference();
-	Reference * topLevelReferenceInUnit1 = new Reference(true);
+	LDreference* initialReferenceInUnit1 = new LDreference();
+	LDreference* topLevelReferenceInUnit1 = new LDreference(true);
 
-	//parse the unit files and build Reference linked lists
+	//parse the unit files and build LDreference linked lists
 	parseFile(unitFileName, initialReferenceInUnit1, topLevelReferenceInUnit1, false);
 
 	//initialise unit1/unit2 references
@@ -383,12 +383,12 @@ bool calculateUnitClassNormal(char* unitFileName)
 int performCloseCombatBasic(char* unit1FileName, char* unit2FileName, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack, bool unit1TakesTheInitative, bool unit2TakesTheInitative)
 {
 	//declare variables references
-	Reference * initialReferenceInUnit1 = new Reference();
-	Reference * initialReferenceInUnit2 = new Reference();
-	Reference * topLevelReferenceInUnit1 = new Reference(true);
-	Reference * topLevelReferenceInUnit2 = new Reference(true);
+	LDreference* initialReferenceInUnit1 = new LDreference();
+	LDreference* initialReferenceInUnit2 = new LDreference();
+	LDreference* topLevelReferenceInUnit1 = new LDreference(true);
+	LDreference* topLevelReferenceInUnit2 = new LDreference(true);
 
-	//parse the scene files and build Reference linked lists
+	//parse the scene files and build LDreference linked lists
 	if(!parseFile(unit1FileName, initialReferenceInUnit1, topLevelReferenceInUnit1, false))
 	{//file does not exist
 		cout << "The unit unit1FileName=" << unit1FileName << " does not exist in the directory" << endl;
@@ -432,19 +432,19 @@ int performCloseCombatBasic(char* unit1FileName, char* unit2FileName, bool unit1
 int performCloseCombatNormal(char* unit1FileName, char* unit2FileName, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack)
 {
 	//declare variables references
-	Reference * initialReferenceInUnit1 = new Reference();
-	Reference * initialReferenceInUnit2 = new Reference();
-	Reference * topLevelReferenceInUnit1 = new Reference(true);
-	Reference * topLevelReferenceInUnit2 = new Reference(true);
+	LDreference* initialReferenceInUnit1 = new LDreference();
+	LDreference* initialReferenceInUnit2 = new LDreference();
+	LDreference* topLevelReferenceInUnit1 = new LDreference(true);
+	LDreference* topLevelReferenceInUnit2 = new LDreference(true);
 
-	//parse the unit files and build Reference linked lists
+	//parse the unit files and build LDreference linked lists
 	if(!parseFile(unit1FileName, initialReferenceInUnit1, topLevelReferenceInUnit1, false))
 	{//file does not exist
 		cout << "The unit unit1FileName=" << unit1FileName << " does not exist in the directory" << endl;
 		return false;
 	}
 
-	//parse the unit files and build Reference linked lists
+	//parse the unit files and build LDreference linked lists
 	if(!parseFile(unit2FileName, initialReferenceInUnit2, topLevelReferenceInUnit2, false))
 	{//file does not exist
 		cout << "The unit unit2FileName=" << unit2FileName << " does not exist in the directory" << endl;
@@ -503,10 +503,10 @@ int performCloseCombatWithSceneFile(char* unit1FileName, char* unit2FileName, in
 {
 
 	//declare initial scene references
-	Reference * initialReferenceInThisPhaseStartScene = new Reference();
-	Reference * topLevelReferenceInThisPhaseStartScene = new Reference(true);	//the modelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
+	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);	//the modelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
 
-	//parse the scene files and build Reference linked lists
+	//parse the scene files and build LDreference linked lists
 	if(!parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
 	{//file does not exist
 		cout << "The file thisPhaseStartSceneFileName " << thisPhaseStartSceneFileName << " does not exist in the directory" << endl;
@@ -522,11 +522,11 @@ int performCloseCombatWithSceneFile(char* unit1FileName, char* unit2FileName, in
 	return result;
 }
 
-int performCloseCombatWithScene(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, Reference * initialReferenceInThisPhaseStartScene)
+int performCloseCombatWithScene(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene)
 {
-	//initialise unit1/unit2 references		[NB in the future an appropriate constructor should be created for the Reference class that accepts a name, and automatically creates a subModelDetails ModelDetails*/
-	Reference * unit1ReferenceInThisPhaseStartSceneFile = new Reference(unit1FileName, unit1ID, true);
-	Reference * unit2ReferenceInThisPhaseStartSceneFile = new Reference(unit2FileName, unit2ID, true);
+	//initialise unit1/unit2 references		[NB in the future an appropriate constructor should be created for the LDreference class that accepts a name, and automatically creates a subModelDetails ModelDetails*/
+	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
+	LDreference* unit2ReferenceInThisPhaseStartSceneFile = new LDreference(unit2FileName, unit2ID, true);
 
 	//determing the current position of Unit 1
 	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
@@ -569,12 +569,12 @@ int performCloseCombatWithConsecutiveSceneFiles(char* unit1FileName, char* unit2
 {
 
 	//declare initial scene references
-	Reference * initialReferenceInThisPhaseStartScene = new Reference();
-	Reference * initialReferenceInPreMovementPhaseScene = new Reference();
-	Reference * topLevelReferenceInThisPhaseStartScene = new Reference(true);	//the smodelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
-	Reference * topLevelReferenceInPreMovementPhaseScene = new Reference(true);	//the modelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
+	LDreference* initialReferenceInPreMovementPhaseScene = new LDreference();
+	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);	//the smodelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+	LDreference* topLevelReferenceInPreMovementPhaseScene = new LDreference(true);	//the modelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
 
-	//parse the scene files and build Reference linked lists
+	//parse the scene files and build LDreference linked lists
 	if(!parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
 	{//file does not exist
 		cout << "The file: " << thisPhaseStartSceneFileName << " does not exist in the directory" << endl;
@@ -602,14 +602,14 @@ int performCloseCombatWithConsecutiveSceneFiles(char* unit1FileName, char* unit2
 
 
 
-int performCloseCombatWithConsecutiveScenes(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, Reference * initialReferenceInThisPhaseStartScene, Reference * initialReferenceInPreMovementPhaseScene)
+int performCloseCombatWithConsecutiveScenes(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
 {
-	//initialise unit1/unit2 references		[NB in the future an appropriate constructor should be created for the Reference class that accepts a name, and automatically creates a subModelDetails ModelDetails*/
+	//initialise unit1/unit2 references		[NB in the future an appropriate constructor should be created for the LDreference class that accepts a name, and automatically creates a subModelDetails ModelDetails*/
 
-	Reference * unit1ReferenceInThisPhaseStartSceneFile = new Reference(unit1FileName, unit1ID, true);
-	Reference * unit2ReferenceInThisPhaseStartSceneFile = new Reference(unit2FileName, unit2ID, true);
-	Reference * unit1ReferenceInPreMovementPhaseSceneFile = new Reference(unit1FileName, unit1ID, true);
-	Reference * unit2ReferenceInPreMovementPhaseSceneFile = new Reference(unit2FileName, unit2ID, true);
+	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
+	LDreference* unit2ReferenceInThisPhaseStartSceneFile = new LDreference(unit2FileName, unit2ID, true);
+	LDreference* unit1ReferenceInPreMovementPhaseSceneFile = new LDreference(unit1FileName, unit1ID, true);
+	LDreference* unit2ReferenceInPreMovementPhaseSceneFile = new LDreference(unit2FileName, unit2ID, true);
 
 	//determing the current position of Unit 1
 	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
@@ -693,7 +693,7 @@ int performCloseCombatWithConsecutiveScenes(char* unit1FileName, char* unit2File
 
 
 
-int performCloseCombatWithReferences(Reference * unit1ReferenceInThisPhaseStartSceneFile, Reference * unit2ReferenceInThisPhaseStartSceneFile, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, bool unit1TakesTheInitative, bool unit2TakesTheInitative)
+int performCloseCombatWithReferences(LDreference* unit1ReferenceInThisPhaseStartSceneFile, LDreference* unit2ReferenceInThisPhaseStartSceneFile, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, bool unit1TakesTheInitative, bool unit2TakesTheInitative)
 {
 	//cout << "DEBUG: b5" << endl;
 
@@ -751,7 +751,7 @@ int performCloseCombatWithReferences(Reference * unit1ReferenceInThisPhaseStartS
 	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
 	//	0/10 if error
 */
-int performCloseCombat(ModelDetails * unit1, ModelDetails * unit2, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack, bool unit1TakesTheInitative, bool unit2TakesTheInitative)
+int performCloseCombat(ModelDetails* unit1, ModelDetails* unit2, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack, bool unit1TakesTheInitative, bool unit2TakesTheInitative)
 {
 	int result;
 
@@ -992,12 +992,12 @@ int performLongDistanceCombatBasic(char* unit1FileName, char* unit2FileName, boo
 {
 
 	//declare variables references
-	Reference * initialReferenceInUnit1 = new Reference();
-	Reference * initialReferenceInUnit2 = new Reference();
-	Reference * topLevelReferenceInUnit1 = new Reference(true);
-	Reference * topLevelReferenceInUnit2 = new Reference(true);
+	LDreference* initialReferenceInUnit1 = new LDreference();
+	LDreference* initialReferenceInUnit2 = new LDreference();
+	LDreference* topLevelReferenceInUnit1 = new LDreference(true);
+	LDreference* topLevelReferenceInUnit2 = new LDreference(true);
 
-	//parse the scene files and build Reference linked lists
+	//parse the scene files and build LDreference linked lists
 	if(!parseFile(unit1FileName, initialReferenceInUnit1, topLevelReferenceInUnit1, false))
 	{//file does not exist
 		cout << "The unit unit1FileName=" << unit1FileName << " does not exist in the directory" << endl;
@@ -1033,19 +1033,19 @@ int performLongDistanceCombatBasic(char* unit1FileName, char* unit2FileName, boo
 int performLongDistanceCombatNormal(char* unit1FileName, char* unit2FileName, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack)
 {
 	//declare initial scene references
-	Reference * initialReferenceInUnit1 = new Reference();
-	Reference * initialReferenceInUnit2 = new Reference();
-	Reference * topLevelReferenceInUnit1 = new Reference(true);
-	Reference * topLevelReferenceInUnit2 = new Reference(true);
+	LDreference* initialReferenceInUnit1 = new LDreference();
+	LDreference* initialReferenceInUnit2 = new LDreference();
+	LDreference* topLevelReferenceInUnit1 = new LDreference(true);
+	LDreference* topLevelReferenceInUnit2 = new LDreference(true);
 
-	//parse the unit files and build Reference linked lists
+	//parse the unit files and build LDreference linked lists
 	if(!parseFile(unit1FileName, initialReferenceInUnit1, topLevelReferenceInUnit1, false))
 	{//file does not exist
 		cout << "The unit unit1FileName=" << unit1FileName << " does not exist in the directory" << endl;
 		return false;
 	}
 
-	//parse the unit files and build Reference linked lists
+	//parse the unit files and build LDreference linked lists
 	if(!parseFile(unit2FileName, initialReferenceInUnit2, topLevelReferenceInUnit2, false))
 	{//file does not exist
 		cout << "The unit unit2FileName=" << unit2FileName << " does not exist in the directory" << endl;
@@ -1094,10 +1094,10 @@ int performLongDistanceCombatNormal(char* unit1FileName, char* unit2FileName, bo
 int performLongDistanceCombatWithSceneFile(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, char* thisPhaseStartSceneFileName)
 {
 	//declare initial scene references
-	Reference * initialReferenceInThisPhaseStartScene = new Reference();
-	Reference * topLevelReferenceInThisPhaseStartScene = new Reference(true);			//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
+	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);			//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
 
-	//parse the scene files and build Reference linked lists
+	//parse the scene files and build LDreference linked lists
 	if(!parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
 	{//file does not exist
 		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the directory" << endl;
@@ -1115,13 +1115,13 @@ int performLongDistanceCombatWithSceneFile(char* unit1FileName, char* unit2FileN
 
 
 
-int performLongDistanceCombatWithScene(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, Reference* initialReferenceInThisPhaseStartScene)
+int performLongDistanceCombatWithScene(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene)
 {
 	int result;
 
 	//initialise unit1/unit2 references
-	Reference * unit1ReferenceInThisPhaseStartSceneFile = new Reference(unit1FileName, unit1ID, true);
-	Reference * unit2ReferenceInThisPhaseStartSceneFile = new Reference(unit2FileName, unit2ID, true);
+	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
+	LDreference* unit2ReferenceInThisPhaseStartSceneFile = new LDreference(unit2FileName, unit2ID, true);
 
 	//determing the current position of Unit 1
 	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
@@ -1153,12 +1153,12 @@ int performLongDistanceCombatWithScene(char* unit1FileName, char* unit2FileName,
 int performLongDistanceCombatWithConsecutiveSceneFiles(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, char* thisPhaseStartSceneFileName, char* preMovementPhaseSceneFileName)
 {
 	//declare initial scene references
-	Reference * initialReferenceInThisPhaseStartScene = new Reference();
-	Reference * initialReferenceInPreMovementPhaseScene = new Reference();
-	Reference * topLevelReferenceInThisPhaseStartScene = new Reference(true);
-	Reference * topLevelReferenceInPreMovementPhaseScene = new Reference(true);
+	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
+	LDreference* initialReferenceInPreMovementPhaseScene = new LDreference();
+	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);
+	LDreference* topLevelReferenceInPreMovementPhaseScene = new LDreference(true);
 
-	//parse the scene files and build Reference linked lists
+	//parse the scene files and build LDreference linked lists
 	if(!parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
 	{//file does not exist
 		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the directory" << endl;
@@ -1182,13 +1182,13 @@ int performLongDistanceCombatWithConsecutiveSceneFiles(char* unit1FileName, char
 }
 
 
-int performLongDistanceCombatWithConsecutiveScenes(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, Reference* initialReferenceInThisPhaseStartScene, Reference* initialReferenceInPreMovementPhaseScene)
+int performLongDistanceCombatWithConsecutiveScenes(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
 {
 	//initialise unit1/unit2 references
-	Reference * unit1ReferenceInThisPhaseStartSceneFile = new Reference(unit1FileName, unit1ID, true);
-	Reference * unit2ReferenceInThisPhaseStartSceneFile = new Reference(unit2FileName, unit2ID, true);
-	Reference * unit1ReferenceInPreMovementPhaseSceneFile = new Reference(unit1FileName, unit1ID, true);
-	Reference * unit2ReferenceInPreMovementPhaseSceneFile = new Reference(unit2FileName, unit2ID, true);
+	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
+	LDreference* unit2ReferenceInThisPhaseStartSceneFile = new LDreference(unit2FileName, unit2ID, true);
+	LDreference* unit1ReferenceInPreMovementPhaseSceneFile = new LDreference(unit1FileName, unit1ID, true);
+	LDreference* unit2ReferenceInPreMovementPhaseSceneFile = new LDreference(unit2FileName, unit2ID, true);
 
 	//determing the current position of Unit 1
 	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
@@ -1259,7 +1259,7 @@ int performLongDistanceCombatWithConsecutiveScenes(char* unit1FileName, char* un
 
 
 
-int performLongDistanceCombatWithReferences(Reference* unit1ReferenceInThisPhaseStartSceneFile, Reference* unit2ReferenceInThisPhaseStartSceneFile, bool unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, bool unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack)
+int performLongDistanceCombatWithReferences(LDreference* unit1ReferenceInThisPhaseStartSceneFile, LDreference* unit2ReferenceInThisPhaseStartSceneFile, bool unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, bool unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack)
 {
 	int result;
 
@@ -1312,7 +1312,7 @@ int performLongDistanceCombatWithReferences(Reference* unit1ReferenceInThisPhase
 	//							6 if unit1 wins and only Unit 1 can strike, 7 if unit1 does not strike, and only Unit 1 can strike, 8 if  3 if unit2 wins, 4 if neither strike
 	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
 	//	10 if error
-int performLongDistanceCombat(ModelDetails * unit1, ModelDetails * unit2, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack)
+int performLongDistanceCombat(ModelDetails* unit1, ModelDetails* unit2, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack)
 {
 	//cout << "\n\nDEBUG: unit1FileName = " << unit1FileName << endl;
 	//cout << "\n\nDEBUG: unit2FileName = " << unit2FileName << endl;
@@ -1545,10 +1545,10 @@ int performLongDistanceCombat(ModelDetails * unit1, ModelDetails * unit2, bool u
 /
 /****************************************************************/
 
-bool searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(Reference * referenceBeingSearchedFor, Reference * initialReference, Reference * parentReference, bool isFillingParentUnitWithAllCombatRelevantChildModelDetails)
+bool searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(LDreference* referenceBeingSearchedFor, LDreference* initialReference, LDreference* parentReference, bool isFillingParentUnitWithAllCombatRelevantChildModelDetails)
 {
 	bool particularSubModelFoundDuringSearch = false;
-	Reference * currentReference = initialReference;
+	LDreference* currentReference = initialReference;
 
 	//cout << "DEBUG: c1" << endl;
 
@@ -1572,7 +1572,7 @@ bool searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(Ref
 				/*
 				//debug:
 
-				RecordClass * currentReferenceRecordClass = currentReference->subModelDetails->recordOfUnitTypeDetails;
+				RecordClass* currentReferenceRecordClass = currentReference->subModelDetails->recordOfUnitTypeDetails;
 				while(currentReferenceRecordClass->next != NULL)
 				{
 					if(currentReferenceRecordClass->name == PERSON_HEAD_NAME)
@@ -1634,7 +1634,7 @@ bool searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(Ref
 	return particularSubModelFoundDuringSearch;
 }
 
-bool compareSubmodelNamesAndIfSameCopySubmodelReference(Reference * referenceBeingSearchedFor, Reference * referenceCurrentlyFoundDuringSearch)
+bool compareSubmodelNamesAndIfSameCopySubmodelReference(LDreference* referenceBeingSearchedFor, LDreference* referenceCurrentlyFoundDuringSearch)
 {
 	bool particularSubModelFoundDuringSearch = false;
 	//cout << "DEBUG: d1" << endl;
@@ -1655,12 +1655,12 @@ bool compareSubmodelNamesAndIfSameCopySubmodelReference(Reference * referenceBei
 		}
 		else
 		{
-			//do not do anything with this particular submodel/part/ModelDetails Reference, it is the wrong one (it is not of its stated colour)
+			//do not do anything with this particular submodel/part/ModelDetails LDreference, it is the wrong one (it is not of its stated colour)
 		}
 	}
 	else
 	{
-		//do not do anything with this particular submodel/part/ModelDetails Reference, it is the wrong one (it is not of the required)
+		//do not do anything with this particular submodel/part/ModelDetails LDreference, it is the wrong one (it is not of the required)
 	}
 	return particularSubModelFoundDuringSearch;
 }
@@ -1804,7 +1804,7 @@ bool compareSubmodelNamesAndIfSameCopySubmodelReference(Reference * referenceBei
 //yet to update these and many other functions with XML rules classes.... 29/12/07
 
 
-bool performUnitOrdinatesCheck(ModelDetails * u)
+bool performUnitOrdinatesCheck(ModelDetails* u)
 {
 	bool result = true;
 
@@ -1838,9 +1838,9 @@ bool performUnitOrdinatesCheck(ModelDetails * u)
 }
 
 
-void performFinalUnitClassCalculations(ModelDetails * u)
+void performFinalUnitClassCalculations(ModelDetails* u)
 {
-	/*Perform Basic ModelDetails Class close combat Calculations */
+	/*Perform Basic ModelDetails Class close combat Calculations*/
 	//these are no longer calculated within the original updateUnitDetailsWithCombatDetails() routine
 
 			//All persons have daggers and hence a minimum attack value of 1 (d2)
@@ -1853,8 +1853,8 @@ void performFinalUnitClassCalculations(ModelDetails * u)
 	//NB unit type calculations have been shifted forward
 	determineUnitTypeAndMinSpeedOfUnitGroup(u);
 
-	RecordClass * currentReferenceRecordClass;
-	RulesClass * currentReferenceRulesClass;
+	RecordClass* currentReferenceRecordClass;
+	XMLrulesClass* currentReferenceRulesClass;
 
 	currentReferenceRulesClass = LRRCrulesUnitTypeDetails;
 	currentReferenceRecordClass = u->recordOfUnitTypeDetails;
@@ -1955,7 +1955,7 @@ void performFinalUnitClassCalculations(ModelDetails * u)
 		{
 			if(currentReferenceRulesClass->name == CATAPULT_BUCKET_NAME)
 			{
-				u->longDistanceAttackValue = maxInt(u->longDistanceAttackValue, (currentReferenceRulesClass->attribute4 * currentReferenceRecordClass->numberOfThisPartIDInTheUnit));
+				u->longDistanceAttackValue = maxInt(u->longDistanceAttackValue, (currentReferenceRulesClass->attribute4* currentReferenceRecordClass->numberOfThisPartIDInTheUnit));
 			}
 			else
 			{
@@ -2009,9 +2009,9 @@ void performFinalUnitClassCalculations(ModelDetails * u)
 
 }
 
-void performFinalUnitGroupClassCalculations(ModelDetails * u)
+void performFinalUnitGroupClassCalculations(ModelDetails* u)
 {
-	/*Perform Basic ModelDetails Class close combat Calculations */
+	/*Perform Basic ModelDetails Class close combat Calculations*/
 	//these are no longer calculated within the original updateUnitDetailsWithCombatDetails() routine
 
 			//All persons have daggers and hence a minimum attack value of 1 (d2)
@@ -2025,8 +2025,8 @@ void performFinalUnitGroupClassCalculations(ModelDetails * u)
 	determineUnitTypeAndMinSpeedOfUnitGroup(u);
 
 
-	RecordClass * currentReferenceRecordClass;
-	RulesClass * currentReferenceRulesClass;
+	RecordClass* currentReferenceRecordClass;
+	XMLrulesClass* currentReferenceRulesClass;
 
 	currentReferenceRecordClass = u->recordOfUnitTypeDetails;
 	while(currentReferenceRecordClass->next != NULL)
@@ -2064,7 +2064,7 @@ void performFinalUnitGroupClassCalculations(ModelDetails * u)
 	currentReferenceRecordClass = u->recordOfUnitCombatDetailsDefenceHead;
 	while(currentReferenceRecordClass->next != NULL)
 	{
-		u->helmetDefenceValue = u->helmetDefenceValue + (currentReferenceRulesClass->attribute4 * currentReferenceRecordClass->numberOfThisPartIDInTheUnit);
+		u->helmetDefenceValue = u->helmetDefenceValue + (currentReferenceRulesClass->attribute4* currentReferenceRecordClass->numberOfThisPartIDInTheUnit);
 
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
@@ -2076,7 +2076,7 @@ void performFinalUnitGroupClassCalculations(ModelDetails * u)
 	while(currentReferenceRecordClass->next != NULL)
 	{
 
-		u->breastDefenceValue = u->breastDefenceValue + (currentReferenceRulesClass->attribute4 * currentReferenceRecordClass->numberOfThisPartIDInTheUnit);
+		u->breastDefenceValue = u->breastDefenceValue + (currentReferenceRulesClass->attribute4* currentReferenceRecordClass->numberOfThisPartIDInTheUnit);
 
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
@@ -2088,7 +2088,7 @@ void performFinalUnitGroupClassCalculations(ModelDetails * u)
 	while(currentReferenceRecordClass->next != NULL)
 	{
 
-		u->shieldDefenceValue = u->shieldDefenceValue + (currentReferenceRulesClass->attribute4 * currentReferenceRecordClass->numberOfThisPartIDInTheUnit);
+		u->shieldDefenceValue = u->shieldDefenceValue + (currentReferenceRulesClass->attribute4* currentReferenceRecordClass->numberOfThisPartIDInTheUnit);
 		if(currentReferenceRecordClass->numberOfThisPartIDInTheUnit > 0)
 		{
 			u->numShields++;
@@ -2103,7 +2103,7 @@ void performFinalUnitGroupClassCalculations(ModelDetails * u)
 	currentReferenceRecordClass = u->recordOfUnitCombatDetailsAttackCloseCombat;
 	while(currentReferenceRecordClass->next != NULL)
 	{
-		u->closeCombatAttackValue = u->closeCombatAttackValue + (currentReferenceRulesClass->attribute4 * currentReferenceRecordClass->numberOfThisPartIDInTheUnit);
+		u->closeCombatAttackValue = u->closeCombatAttackValue + (currentReferenceRulesClass->attribute4* currentReferenceRecordClass->numberOfThisPartIDInTheUnit);
 
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
@@ -2115,7 +2115,7 @@ void performFinalUnitGroupClassCalculations(ModelDetails * u)
 	while(currentReferenceRecordClass->next != NULL)
 	{
 
-		u->longDistanceAttackValue = u->longDistanceAttackValue + (currentReferenceRulesClass->attribute4 * currentReferenceRecordClass->numberOfThisPartIDInTheUnit);
+		u->longDistanceAttackValue = u->longDistanceAttackValue + (currentReferenceRulesClass->attribute4* currentReferenceRecordClass->numberOfThisPartIDInTheUnit);
 
 		if(currentReferenceRecordClass->numberOfThisPartIDInTheUnit > 0)
 		{
@@ -2185,7 +2185,7 @@ General Notes:
 lances can only be used against other knights, or when charging against a footsoldier
 Spears are especially good when used by a mounted unit (same close combat attack level as swords/axes)
 
-int calculateCloseCombatAttackBonus(ModelDetails * unit, bool unit2HasHorse, bool unitTakesInitative)
+int calculateCloseCombatAttackBonus(ModelDetails* unit, bool unit2HasHorse, bool unitTakesInitative)
 {
 	int unitMountedAttack;
 
@@ -2251,7 +2251,7 @@ General Notes:
 Spears are especially good when used against a mounted unit (same close combat attack level as swords/axes)
 */
 
-int calculateCloseCombatAttackBonus(ModelDetails * unit, bool unit2HasHorse, bool unitTakesInitative)
+int calculateCloseCombatAttackBonus(ModelDetails* unit, bool unit2HasHorse, bool unitTakesInitative)
 {
 	int unitAttackWithBonus = 0;
 
@@ -2339,8 +2339,8 @@ int calculateCloseCombatAttackBonus(ModelDetails * unit, bool unit2HasHorse, boo
 
 	//this now needs to be upgraded for rules xml file data...
 
-	RulesClass * currentReferenceRulesClass;
-	RecordClass * currentReferenceRecordClass;
+	XMLrulesClass* currentReferenceRulesClass;
+	RecordClass* currentReferenceRecordClass;
 
 	if(unit2HasHorse && (unit->numHorse)==0)
 	{
@@ -2465,7 +2465,7 @@ int calculateCloseCombatAttackBonus(ModelDetails * unit, bool unit2HasHorse, boo
 
 
 
-void calculateLongDistanceAttackBonus(Reference * unit1ReferenceInThisPhaseStartSceneFile, Reference * unit2ReferenceInThisPhaseStartSceneFile, bool unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, bool unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, bool * unit1CanPerformLongDistanceAttack, bool * unit2CanPerformLongDistanceAttack, double distanceBetweenUnitsForLDTest)
+void calculateLongDistanceAttackBonus(LDreference* unit1ReferenceInThisPhaseStartSceneFile, LDreference* unit2ReferenceInThisPhaseStartSceneFile, bool unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, bool unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, bool* unit1CanPerformLongDistanceAttack, bool* unit2CanPerformLongDistanceAttack, double distanceBetweenUnitsForLDTest)
 {
 	//calculate the range of each units weapon based on the relative height between ModelDetails:
 	/******************************************************/
@@ -2507,8 +2507,8 @@ void calculateLongDistanceAttackBonus(Reference * unit1ReferenceInThisPhaseStart
 	{
 
 
-		RulesClass * currentReferenceRulesClass = LRRCrulesUnitCombatDetailsAttackLongDistance;
-		RecordClass * currentReferenceRecordClass = unit1ReferenceInThisPhaseStartSceneFile->subModelDetails->recordOfUnitCombatDetailsAttackLongDistance;
+		XMLrulesClass* currentReferenceRulesClass = LRRCrulesUnitCombatDetailsAttackLongDistance;
+		RecordClass* currentReferenceRecordClass = unit1ReferenceInThisPhaseStartSceneFile->subModelDetails->recordOfUnitCombatDetailsAttackLongDistance;
 		bool foundOptimumLongDistanceWeapon = false;
 		while((currentReferenceRecordClass->next != NULL) && (!foundOptimumLongDistanceWeapon))
 		{
@@ -2522,7 +2522,7 @@ void calculateLongDistanceAttackBonus(Reference * unit1ReferenceInThisPhaseStart
 
 					if(currentReferenceRulesClass->name == CATAPULT_BUCKET_NAME)
 					{
-						unit1ReferenceInThisPhaseStartSceneFile->subModelDetails->longDistanceAttackValue = currentReferenceRulesClass->attribute4 * currentReferenceRecordClass->numberOfThisPartIDInTheUnit;
+						unit1ReferenceInThisPhaseStartSceneFile->subModelDetails->longDistanceAttackValue = currentReferenceRulesClass->attribute4* currentReferenceRecordClass->numberOfThisPartIDInTheUnit;
 					}
 					else
 					{
@@ -2549,8 +2549,8 @@ void calculateLongDistanceAttackBonus(Reference * unit1ReferenceInThisPhaseStart
 	else if(unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack)
 	{
 
-		RulesClass * currentReferenceRulesClass = LRRCrulesUnitCombatDetailsAttackLongDistance;
-		RecordClass * currentReferenceRecordClass = unit2ReferenceInThisPhaseStartSceneFile->subModelDetails->recordOfUnitCombatDetailsAttackLongDistance;
+		XMLrulesClass* currentReferenceRulesClass = LRRCrulesUnitCombatDetailsAttackLongDistance;
+		RecordClass* currentReferenceRecordClass = unit2ReferenceInThisPhaseStartSceneFile->subModelDetails->recordOfUnitCombatDetailsAttackLongDistance;
 		bool foundOptimumLongDistanceWeapon = false;
 		while((currentReferenceRecordClass->next != NULL) && (!foundOptimumLongDistanceWeapon))
 		{
@@ -2564,7 +2564,7 @@ void calculateLongDistanceAttackBonus(Reference * unit1ReferenceInThisPhaseStart
 
 					if(currentReferenceRulesClass->name == CATAPULT_BUCKET_NAME)
 					{
-						unit2ReferenceInThisPhaseStartSceneFile->subModelDetails->longDistanceAttackValue = currentReferenceRulesClass->attribute4 * currentReferenceRecordClass->numberOfThisPartIDInTheUnit;
+						unit2ReferenceInThisPhaseStartSceneFile->subModelDetails->longDistanceAttackValue = currentReferenceRulesClass->attribute4* currentReferenceRecordClass->numberOfThisPartIDInTheUnit;
 					}
 					else
 					{
@@ -2622,7 +2622,7 @@ bool calculateIfUnitIsWithinAGivenLongRangeAttackDistance(double distanceBetween
 }
 
 
-double calculateTheDistanceBetweenTwoUnits(vec * positionOfUnit1, vec * positionOfUnit2)
+double calculateTheDistanceBetweenTwoUnits(vec* positionOfUnit1, vec* positionOfUnit2)
 {
 	vec positionOfUnit1ConvertedToLdraw;
 	vec positionOfUnit2ConvertedToLdraw;
@@ -2658,7 +2658,7 @@ double calculateExtraHorizontalDistanceOfProjectileWithHeightAdvantage(double ve
 
 
 
-int calculateLongDistanceRangeModifier(Reference * targetUnitReference, Reference * unitReference)
+int calculateLongDistanceRangeModifier(LDreference* targetUnitReference, LDreference* unitReference)
 {
 	return (targetUnitReference->absolutePosition.y-unitReference->absolutePosition.y)/LDRAW_UNITS_PER_CM*RANGE_MODIFIER_BASED_ON_INCREASED_HEIGHT;
 

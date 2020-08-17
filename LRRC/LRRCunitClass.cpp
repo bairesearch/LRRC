@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCunitClass.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -36,6 +36,7 @@
  * NB phase specific sprites are yet to be added to scene files based upon movement/combat outcomes
  * NB phase specific sprites are yet to be added to scene files based upon future movement/combat options
  *******************************************************************************/
+
 
 #include "LRRCunitClass.h"
 #include "SHAREDvars.h"
@@ -69,7 +70,7 @@ UnitListClass::UnitListClass(void)
 #ifdef USE_ANN
 	for(int nn = 0; nn < GAME_NUMBER_OF_EXPERIENCE_NN; nn++)
 	{
-		firstExperience[nn] = new Experience();
+		firstExperience[nn] = new ANNexperience();
 		currentExperience[nn] = firstExperience[nn];
 	}
 
@@ -116,10 +117,10 @@ UnitListClass::~UnitListClass()
 
 
 
-UnitListClass * searchUnitListFindUnit(UnitListClass * firstUnitInUnitGroup, string unitName, int unitColour, bool * unitIDFound)
+UnitListClass* searchUnitListFindUnit(UnitListClass* firstUnitInUnitGroup, string unitName, int unitColour, bool* unitIDFound)
 {
-	UnitListClass * currentUnitInList = firstUnitInUnitGroup;
-	UnitListClass * unitFound = NULL;
+	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
+	UnitListClass* unitFound = NULL;
 
 	while((currentUnitInList->next != NULL) && (*unitIDFound == false))
 	{
@@ -137,7 +138,7 @@ UnitListClass * searchUnitListFindUnit(UnitListClass * firstUnitInUnitGroup, str
 			if(currentUnitInList->isUnitGroup)
 			{
 				//cout << "h1" << endl;
-				UnitListClass * tempUnit;
+				UnitListClass* tempUnit;
 				tempUnit = searchUnitListFindUnit(currentUnitInList->firstUnitInUnitGroup, unitName, unitColour, unitIDFound);
 				if(*unitIDFound)
 				{
@@ -157,9 +158,9 @@ UnitListClass * searchUnitListFindUnit(UnitListClass * firstUnitInUnitGroup, str
 
 
 
-void addUnitToList(UnitListClass * firstUnitInUnitList, string unitName, int unitColour, ModelDetails * unitDetails, int currentRound)
+void addUnitToList(UnitListClass* firstUnitInUnitList, string unitName, int unitColour, ModelDetails* unitDetails, int currentRound)
 {
-	UnitListClass * currentUnitInList = firstUnitInUnitList;
+	UnitListClass* currentUnitInList = firstUnitInUnitList;
 
 	while(currentUnitInList->next != NULL)
 	{
@@ -173,7 +174,7 @@ void addUnitToList(UnitListClass * firstUnitInUnitList, string unitName, int uni
 			currentUnitInList->status = true;
 			currentUnitInList->roundSpawned = currentRound;
 
-			UnitListClass * newUnitList = new UnitListClass();
+			UnitListClass* newUnitList = new UnitListClass();
 			currentUnitInList->next = newUnitList;
 		}
 
@@ -185,10 +186,10 @@ void addUnitToList(UnitListClass * firstUnitInUnitList, string unitName, int uni
 
 #ifdef USE_ANN
 
-UnitListClass * searchUnitListFindOpponentWithLowestError(int currentPlayerTurn, int nn, UnitListClass * firstUnitInUnitGroup, double * currentLowestError, bool * foundOpponent, int NNcurrentPhase)
+UnitListClass* searchUnitListFindOpponentWithLowestError(int currentPlayerTurn, int nn, UnitListClass* firstUnitInUnitGroup, double* currentLowestError, bool* foundOpponent, int NNcurrentPhase)
 {
-	UnitListClass * currentUnitInList = firstUnitInUnitGroup;
-	UnitListClass * unitFound = NULL;
+	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
+	UnitListClass* unitFound = NULL;
 
 	while(currentUnitInList->next != NULL)
 	{
@@ -239,7 +240,7 @@ UnitListClass * searchUnitListFindOpponentWithLowestError(int currentPlayerTurn,
 
 						}
 
-						if(totalError < *currentLowestError)
+						if(totalError <* currentLowestError)
 						{
 							passedErrorRequirements = true;
 							*currentLowestError = totalError;
@@ -254,7 +255,7 @@ UnitListClass * searchUnitListFindOpponentWithLowestError(int currentPlayerTurn,
 						int nnForParticularNNPhase = nn;
 					#endif
 
-						if((currentUnitInList->selfLearningTempVarBackPropagationPassError[nnForParticularNNPhase] < *currentLowestError))
+						if((currentUnitInList->selfLearningTempVarBackPropagationPassError[nnForParticularNNPhase] <* currentLowestError))
 						{
 							passedErrorRequirements = true;
 							*currentLowestError = currentUnitInList->selfLearningTempVarBackPropagationPassError[nnForParticularNNPhase];
@@ -281,7 +282,7 @@ UnitListClass * searchUnitListFindOpponentWithLowestError(int currentPlayerTurn,
 
 		if(currentUnitInList->isUnitGroup)
 		{
-			UnitListClass * tempUnit;
+			UnitListClass* tempUnit;
 			bool tempFoundUnit = false;
 			tempUnit = searchUnitListFindOpponentWithLowestError(currentPlayerTurn, nn, currentUnitInList->firstUnitInUnitGroup, currentLowestError, &tempFoundUnit, NNcurrentPhase);
 			if(tempFoundUnit)
@@ -298,12 +299,12 @@ UnitListClass * searchUnitListFindOpponentWithLowestError(int currentPlayerTurn,
 }
 #endif
 
-bool splitUnitGroup(UnitListClass * firstUnitInUnitList, string unitGroupName, int unitGroupColour, int currentRound)
+bool splitUnitGroup(UnitListClass* firstUnitInUnitList, string unitGroupName, int unitGroupColour, int currentRound)
 {
 	bool result = true;
 
-	UnitListClass * currentUnitInList = firstUnitInUnitList;
-	UnitListClass * unitGroupInList;
+	UnitListClass* currentUnitInList = firstUnitInUnitList;
+	UnitListClass* unitGroupInList;
 
 	bool foundUnitInList = false;
 
@@ -351,9 +352,9 @@ bool splitUnitGroup(UnitListClass * firstUnitInUnitList, string unitGroupName, i
 }
 
 
-void searchUnitListAssignHasNotPerformedAction(UnitListClass * firstUnitInUnitGroup)
+void searchUnitListAssignHasNotPerformedAction(UnitListClass* firstUnitInUnitGroup)
 {
-	UnitListClass * currentUnitInList = firstUnitInUnitGroup;
+	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
 	while(currentUnitInList->next != NULL)
 	{
@@ -372,7 +373,7 @@ void searchUnitListAssignHasNotPerformedAction(UnitListClass * firstUnitInUnitGr
 	}
 }
 
-int determineUnitWorthInPoints(ModelDetails * unitDetails)
+int determineUnitWorthInPoints(ModelDetails* unitDetails)
 {
 	int totalPoints;
 

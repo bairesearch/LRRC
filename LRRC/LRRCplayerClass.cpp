@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCplayerClass.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -34,7 +34,6 @@
  * Project Fifth Internal Release: 2d11a 3-June-07
  *
  *******************************************************************************/
-
 
 
 /*LDreferenceClass.cpp: Defines a class for references to submodels/parts/units within a scene file*/
@@ -52,7 +51,7 @@ int BUILDING_DEFAULT_MOD;
 
 void fillInPlayerClassExternVariables()
 {
-	RulesClass * currentReferenceRulesClass = LRRCrulesMiscellaneous;
+	XMLrulesClass* currentReferenceRulesClass = LRRCrulesMiscellaneous;
 
 	while(currentReferenceRulesClass->next != NULL)
 	{
@@ -108,12 +107,12 @@ Player::Player(void)
 	creativity = DEFAULT_AI_PLAYER_CREATIVITY;		//a large degree of creativity is assigned to player for now...
 
 	/*
-	firstExperience = new Experience();
+	firstExperience = new ANNexperience();
 	currentExperience = firstExperience;
 	*/
 	for(int nn = 0; nn < GAME_NUMBER_OF_EXPERIENCE_NN; nn++)
 	{
-		firstExperience[nn] = new Experience();
+		firstExperience[nn] = new ANNexperience();
 		currentExperience[nn] = firstExperience[nn];
 	}
 
@@ -175,14 +174,14 @@ Player::~Player()
 
 }
 
-void fillPlayerDetails(Player * p, string playerName, int playerID, int playerInitialCredits)
+void fillPlayerDetails(Player* p, string playerName, int playerID, int playerInitialCredits)
 {
 	p->name = playerName;
 	p->id = playerID;			//player ID - Eg colour
 	p->credits = playerInitialCredits;
 }
 
-void fillPlayerDetails(Player * p, string playerName, int playerID, int playerInitialCredits, vec* playerStartPosition)
+void fillPlayerDetails(Player* p, string playerName, int playerID, int playerInitialCredits, vec* playerStartPosition)
 {
 	p->name = playerName;
 	p->id = playerID;			//player ID - Eg colour
@@ -191,11 +190,11 @@ void fillPlayerDetails(Player * p, string playerName, int playerID, int playerIn
 }
 
 
-Player * findPlayer(Player * initialPlayerInList, int playerID)
+Player* findPlayer(Player* initialPlayerInList, int playerID)
 {
-	Player * playerThatWasLocated = NULL;
+	Player* playerThatWasLocated = NULL;
 
-	Player * currentPlayerInList = initialPlayerInList;
+	Player* currentPlayerInList = initialPlayerInList;
 	while(currentPlayerInList->next != NULL)
 	{
 		if(currentPlayerInList->id == playerID)

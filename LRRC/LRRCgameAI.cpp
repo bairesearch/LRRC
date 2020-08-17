@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCgameAI.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -36,6 +36,7 @@
  * NB phase specific sprites are yet to be added to scene files based upon movement/combat outcomes
  * NB phase specific sprites are yet to be added to scene files based upon future movement/combat options
  *******************************************************************************/
+
 
 #include "LRRCglobalDefs.h"
 
@@ -66,20 +67,20 @@
 
 
 
-	//NeuronContainer * firstInputNeuronInNetwork = new NeuronContainer();
-void initialiseNeuralNetwork(int NNBeingTested, Player * currentPlayer, int currentPhase)
+	//ANNneuronContainer* firstInputNeuronInNetwork = new ANNneuronContainer();
+void initialiseNeuralNetwork(int NNBeingTested, Player* currentPlayer, int currentPhase)
 {
-	NeuronContainer * firstInputNeuronInNetwork = new NeuronContainer();
-	NeuronContainer * firstOutputNeuronInNetwork;
+	ANNneuronContainer* firstInputNeuronInNetwork = new ANNneuronContainer();
+	ANNneuronContainer* firstOutputNeuronInNetwork;
 
 	long numberOfInputNeurons;
 	long numberOfOutputNeurons;
 	long numberOfLayers;
 
-	Reference *tempUnitReference = new Reference(true);
-	Reference * tempUnitRefenceOpponent = new Reference(true);
+	LDreference* tempUnitReference = new LDreference(true);
+	LDreference* tempUnitRefenceOpponent = new LDreference(true);
 	long tempUnitDecision = IRRELEVANT;
-	Experience * tempExperience = new Experience;
+	ANNexperience* tempExperience = new ANNexperience;
 	if(NNBeingTested == GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN)
 	{
 		numberOfOutputNeurons = PROPERTIES_EXPERIENCE_NUMBER_OF_DIFFERENT_OUTPUT_DECISIONS;
@@ -93,8 +94,8 @@ void initialiseNeuralNetwork(int NNBeingTested, Player * currentPlayer, int curr
 #ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
 	else if(NNBeingTested == GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN)
 	{
-		UnitListClass * tempUnit = new UnitListClass();
-		Reference * tempReferenceInNULLSceneFile;
+		UnitListClass* tempUnit = new UnitListClass();
+		LDreference* tempReferenceInNULLSceneFile;
 		numberOfOutputNeurons = GLOBAL_EXPERIENCE_NUMBER_OF_DIFFERENT_OUTPUT_DECISIONS;
 		generateExperienceFromGlobalDecision(tempUnit, tempReferenceInNULLSceneFile, tempUnitReference, tempUnitRefenceOpponent, tempExperience);
 	}
@@ -104,8 +105,8 @@ void initialiseNeuralNetwork(int NNBeingTested, Player * currentPlayer, int curr
 	{
 		numberOfOutputNeurons = (long)addOrCompareAllObjectExperiences(NULL, NULL, NULL, true);
 		/*
-		Experience * tempExperience2 = new Experience;
-		Reference * tempUnitReference2 = new Reference(true);
+		ANNexperience* tempExperience2 = new ANNexperience;
+		LDreference* tempUnitReference2 = new LDreference(true);
 		long tempUnitDecision2 = IRRELEVANT;
 		generateExperienceFromUnitPropertiesDecision(tempUnitReference2, tempUnitRefenceOpponent, tempUnitDecision2, tempExperience2, currentPhase);
 		numberOfOutputNeurons = countNumberOfExperienceInputs(tempExperience2) - 2;	//-2 for distanceBetweenUnits and currentPhase properties experience inputs
@@ -115,7 +116,7 @@ void initialiseNeuralNetwork(int NNBeingTested, Player * currentPlayer, int curr
 
 
 
-		RulesClass * currentReferenceRulesClass = LRRCrulesUnitTypeDetails;
+		XMLrulesClass* currentReferenceRulesClass = LRRCrulesUnitTypeDetails;
 		tempUnitReference->name = currentReferenceRulesClass->next->stringValue;	//generate a random reference name [NB not reference 1, as this is not an exclusive name]
 		cout << "tempUnitReference->name = " << tempUnitReference->name << "\n\n" << endl;
 		generateExperienceFromObjectDecision(tempUnitReference, tempUnitDecision, tempExperience, true);
@@ -123,7 +124,7 @@ void initialiseNeuralNetwork(int NNBeingTested, Player * currentPlayer, int curr
 #endif
 	else
 	{
-		cout << "error: initialiseNeuralNetwork(): illegal NNBeingTested" << endl;
+		cout << "error: initialiseNeuralNetwork{}: illegal NNBeingTested" << endl;
 		exit(0);
 	}
 	numberOfInputNeurons = countNumberOfExperienceInputs(tempExperience);
@@ -148,9 +149,9 @@ void initialiseNeuralNetwork(int NNBeingTested, Player * currentPlayer, int curr
 		numberOfLayers = GAME_NUMBER_OF_NN_LAYERS_GLOBAL_EXPERIENCE;
 		int layerDivergenceType = LAYER_DIVERGENCE_TYPE_LINEAR_DIVERGING_SQUARE2D_RADIALBIAS;
 		double meanLayerDivergenceFactor = 1.5;
-		double probabilityNeuronConnectionWithPreviousLayerNeuron = 1.0;
-		double probabilityNeuronConnectionWithAllPreviousLayersNeurons = 0.5;
-		firstOutputNeuronInNetwork = formNeuralNet(firstInputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, numberOfLayers, layerDivergenceType, meanLayerDivergenceFactor, probabilityNeuronConnectionWithPreviousLayerNeuron, probabilityNeuronConnectionWithAllPreviousLayersNeurons);
+		double probabilityANNneuronConnectionWithPreviousLayerNeuron = 1.0;
+		double probabilityANNneuronConnectionWithAllPreviousLayersNeurons = 0.5;
+		firstOutputNeuronInNetwork = formNeuralNet(firstInputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, numberOfLayers, layerDivergenceType, meanLayerDivergenceFactor, probabilityANNneuronConnectionWithPreviousLayerNeuron, probabilityANNneuronConnectionWithAllPreviousLayersNeurons);
 	}
 #endif
 #ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
@@ -159,9 +160,9 @@ void initialiseNeuralNetwork(int NNBeingTested, Player * currentPlayer, int curr
 		numberOfLayers = GAME_NUMBER_OF_NN_LAYERS_OBJECT_EXPERIENCE;
 		int layerDivergenceType = LAYER_DIVERGENCE_TYPE_LINEAR_CONVERGING_SQUARE2D; //DEFAULT = LAYER_DIVERGENCE_TYPE_LINEAR_CONVERGING_SQUARE2D;
 		double meanLayerDivergenceFactor = 1.0;
-		double probabilityNeuronConnectionWithPreviousLayerNeuron = 1.0;
-		double probabilityNeuronConnectionWithAllPreviousLayersNeurons = 0.0;		//default 0.0
-		firstOutputNeuronInNetwork = formNeuralNet(firstInputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, numberOfLayers, layerDivergenceType, meanLayerDivergenceFactor, probabilityNeuronConnectionWithPreviousLayerNeuron, probabilityNeuronConnectionWithAllPreviousLayersNeurons);
+		double probabilityANNneuronConnectionWithPreviousLayerNeuron = 1.0;
+		double probabilityANNneuronConnectionWithAllPreviousLayersNeurons = 0.0;		//default 0.0
+		firstOutputNeuronInNetwork = formNeuralNet(firstInputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, numberOfLayers, layerDivergenceType, meanLayerDivergenceFactor, probabilityANNneuronConnectionWithPreviousLayerNeuron, probabilityANNneuronConnectionWithAllPreviousLayersNeurons);
 	}
 #endif
 	else
@@ -189,9 +190,9 @@ void initialiseNeuralNetwork(int NNBeingTested, Player * currentPlayer, int curr
 
 
 
-long mergePlayerUnitExperiencesIntoPlayerExperienceList(Player * currentPlayer, UnitListClass * firstUnitInUnitGroup, int unitGroupTeam, int nnIndex)
+long mergePlayerUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, int unitGroupTeam, int nnIndex)
 {
-	UnitListClass * currentUnitInList = firstUnitInUnitGroup;
+	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
 	while(currentUnitInList->next != NULL)
 	{
@@ -201,12 +202,12 @@ long mergePlayerUnitExperiencesIntoPlayerExperienceList(Player * currentPlayer, 
 		#endif
 			if(currentUnitInList->team == unitGroupTeam)
 			{
-				Experience * currentExperienceInCurrentUnit = currentUnitInList->firstExperience[nnIndex];
+				ANNexperience* currentExperienceInCurrentUnit = currentUnitInList->firstExperience[nnIndex];
 				while(currentExperienceInCurrentUnit->next != NULL)
 				{
 					//cout << "copying experiences" << endl;
 					copyExperiences(currentPlayer->currentExperience[nnIndex], currentExperienceInCurrentUnit);
-					Experience * newExperience = new Experience();
+					ANNexperience* newExperience = new ANNexperience();
 					currentPlayer->currentExperience[nnIndex]->next = newExperience;
 					currentPlayer->currentExperience[nnIndex] = currentPlayer->currentExperience[nnIndex]->next;
 
@@ -232,9 +233,9 @@ long mergePlayerUnitExperiencesIntoPlayerExperienceList(Player * currentPlayer, 
 
 
 
-long mergeAllUnitExperiencesIntoPlayerExperienceList(Player * currentPlayer, UnitListClass * firstUnitInUnitGroup, int nnIndex)
+long mergeAllUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, int nnIndex)
 {
-	UnitListClass * currentUnitInList = firstUnitInUnitGroup;
+	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
 	while(currentUnitInList->next != NULL)
 	{
@@ -244,12 +245,12 @@ long mergeAllUnitExperiencesIntoPlayerExperienceList(Player * currentPlayer, Uni
 		if(checkAverageKillRatioForUnitGroup(currentUnitInList) || (currentUnitInList->unitDetails->numPerson == 1))
 		{
 		#endif
-			Experience * currentExperienceInCurrentUnit = currentUnitInList->firstExperience[nnIndex];
+			ANNexperience* currentExperienceInCurrentUnit = currentUnitInList->firstExperience[nnIndex];
 			while(currentExperienceInCurrentUnit->next != NULL)
 			{
 				//cout << "copying experiences" << endl;
 				copyExperiences(currentPlayer->currentExperience[nnIndex], currentExperienceInCurrentUnit);
-				Experience * newExperience = new Experience();
+				ANNexperience* newExperience = new ANNexperience();
 				currentPlayer->currentExperience[nnIndex]->next = newExperience;
 				currentPlayer->currentExperience[nnIndex] = currentPlayer->currentExperience[nnIndex]->next;
 
@@ -272,12 +273,12 @@ long mergeAllUnitExperiencesIntoPlayerExperienceList(Player * currentPlayer, Uni
 
 
 
-void parseSceneFileAndFillUnitLists(char sceneFileName[], UnitListClass * firstUnitInUnitList, int currentRound)
+void parseSceneFileAndFillUnitLists(char sceneFileName[], UnitListClass* firstUnitInUnitList, int currentRound)
 {
 	bool result = true;
 
-	Reference * initialReferenceInSceneFile = new Reference();
-	Reference * topLevelReferenceInSceneFile = new Reference(sceneFileName, 1, true);	//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+	LDreference* initialReferenceInSceneFile = new LDreference();
+	LDreference* topLevelReferenceInSceneFile = new LDreference(sceneFileName, 1, true);	//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
 	if(!parseFile(sceneFileName, initialReferenceInSceneFile, topLevelReferenceInSceneFile, false))
 	{//file does not exist
 		cout << "The file: " << sceneFileName << " does not exist in the directory" << endl;
@@ -294,22 +295,22 @@ void parseSceneFileAndFillUnitLists(char sceneFileName[], UnitListClass * firstU
 
 
 
-void fillUnitList(Reference * currentReferenceInSceneFile, UnitListClass * firstUnitInUnitGroup, int currentRound)
+void fillUnitList(LDreference* currentReferenceInSceneFile, UnitListClass* firstUnitInUnitGroup, int currentRound)
 {
-	Reference * currentReference = currentReferenceInSceneFile;
-	UnitListClass * currentUnitInUnitList = firstUnitInUnitGroup;
+	LDreference* currentReference = currentReferenceInSceneFile;
+	UnitListClass* currentUnitInUnitList = firstUnitInUnitGroup;
 	while(currentReference->next != NULL)
 	{
 		if(currentReference->isSubModelReference)
 		{
 			//cout << "currentReference->name = " << currentReference->name << endl;
 
-			Reference * topLevelReferenceInUnit = new Reference(currentReference->name, currentReference->colour, true);
+			LDreference* topLevelReferenceInUnit = new LDreference(currentReference->name, currentReference->colour, true);
 			copyAllUnitDetails(topLevelReferenceInUnit->subModelDetails, currentReference->subModelDetails);
 			searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit, currentReference->firstReferenceWithinSubModel, topLevelReferenceInUnit, true);
 			/*
 			//debug:
-			RecordClass * currentReferenceRecordClass = topLevelReferenceInUnit->subModelDetails->recordOfUnitTypeDetails;
+			RecordClass* currentReferenceRecordClass = topLevelReferenceInUnit->subModelDetails->recordOfUnitTypeDetails;
 			while(currentReferenceRecordClass->next != NULL)
 			{
 				if(currentReferenceRecordClass->name == PERSON_HEAD_NAME)
@@ -336,7 +337,7 @@ void fillUnitList(Reference * currentReferenceInSceneFile, UnitListClass * first
 				currentUnitInUnitList->status = true;
 				currentUnitInUnitList->roundSpawned = currentRound;
 
-				UnitListClass * newUnitList = new UnitListClass();
+				UnitListClass* newUnitList = new UnitListClass();
 				currentUnitInUnitList->next = newUnitList;
 
 				if(topLevelReferenceInUnit->subModelDetails->numPerson == 1)
@@ -346,7 +347,7 @@ void fillUnitList(Reference * currentReferenceInSceneFile, UnitListClass * first
 				else
 				{
 					//go down further into reference tree
-					UnitListClass * newUnitList1 = new UnitListClass();
+					UnitListClass* newUnitList1 = new UnitListClass();
 					currentUnitInUnitList->firstUnitInUnitGroup = newUnitList1;
 					currentUnitInUnitList->isUnitGroup = true;
 					fillUnitList(currentReference->firstReferenceWithinSubModel, currentUnitInUnitList->firstUnitInUnitGroup, currentRound);
@@ -366,10 +367,10 @@ void fillUnitList(Reference * currentReferenceInSceneFile, UnitListClass * first
 
 
 
-bool determineIfUnitGroupHasAliveUnits(UnitListClass * firstUnitInUnitGroup)
+bool determineIfUnitGroupHasAliveUnits(UnitListClass* firstUnitInUnitGroup)
 {
 	bool foundAliveUnit = false;
-	UnitListClass * currentUnitInList = firstUnitInUnitGroup;
+	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
 	while(currentUnitInList->next != NULL)
 	{
@@ -392,7 +393,7 @@ bool determineIfUnitGroupHasAliveUnits(UnitListClass * firstUnitInUnitGroup)
 	return foundAliveUnit;
 }
 
-bool checkAverageKillRatioForUnitGroup(UnitListClass * firstUnitInUnitGroup)
+bool checkAverageKillRatioForUnitGroup(UnitListClass* firstUnitInUnitGroup)
 {
 	bool result;
 
@@ -411,9 +412,9 @@ bool checkAverageKillRatioForUnitGroup(UnitListClass * firstUnitInUnitGroup)
 	return result;
 }
 
-void determineAverageKillRatioForUnitGroup(UnitListClass * firstUnitInUnitGroup, int * killPoints, int * deathPoints)
+void determineAverageKillRatioForUnitGroup(UnitListClass* firstUnitInUnitGroup, int* killPoints, int* deathPoints)
 {
-	UnitListClass * currentUnitInList = firstUnitInUnitGroup;
+	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
 	while(currentUnitInList->next != NULL)
 	{
@@ -437,12 +438,12 @@ void determineAverageKillRatioForUnitGroup(UnitListClass * firstUnitInUnitGroup,
 
 
 
-void parseSceneFileAndUpdateUnitList(char sceneFileName[], UnitListClass * firstUnitInUnitList, int currentRound)
+void parseSceneFileAndUpdateUnitList(char sceneFileName[], UnitListClass* firstUnitInUnitList, int currentRound)
 {
 	bool result = true;
 
-	Reference * initialReferenceInSceneFile = new Reference();
-	Reference * topLevelReferenceInSceneFile = new Reference(sceneFileName, 1, true);	//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+	LDreference* initialReferenceInSceneFile = new LDreference();
+	LDreference* topLevelReferenceInSceneFile = new LDreference(sceneFileName, 1, true);	//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
 	if(!parseFile(sceneFileName, initialReferenceInSceneFile, topLevelReferenceInSceneFile, false))
 	{//file does not exist
 		cout << "The file: " << sceneFileName << " does not exist in the directory" << endl;
@@ -455,7 +456,7 @@ void parseSceneFileAndUpdateUnitList(char sceneFileName[], UnitListClass * first
 	delete firstUnitInUnitList;
 }
 
-void updateUnitList(Reference * initialReferenceInSceneFile, UnitListClass * firstUnitInUnitList, int currentRound)	//required after every round
+void updateUnitList(LDreference* initialReferenceInSceneFile, UnitListClass* firstUnitInUnitList, int currentRound)	//required after every round
 {
 	updateUnitListWithNewUnits(initialReferenceInSceneFile, firstUnitInUnitList, currentRound);
 
@@ -463,9 +464,9 @@ void updateUnitList(Reference * initialReferenceInSceneFile, UnitListClass * fir
 
 }
 
-void updateUnitListWithNewUnits(Reference * currentReferenceInSceneFile, UnitListClass * firstUnitInUnitGroup, int currentRound)
+void updateUnitListWithNewUnits(LDreference* currentReferenceInSceneFile, UnitListClass* firstUnitInUnitGroup, int currentRound)
 {
-	Reference * currentReference = currentReferenceInSceneFile;
+	LDreference* currentReference = currentReferenceInSceneFile;
 	while(currentReference->next != NULL)
 	{
 		if(currentReference->isSubModelReference)
@@ -473,7 +474,7 @@ void updateUnitListWithNewUnits(Reference * currentReferenceInSceneFile, UnitLis
 			//add a unit to the unit list if it contains a single person
 
 			bool foundUnitInList = false;
-			UnitListClass * foundUnit;
+			UnitListClass* foundUnit;
 			foundUnit = searchUnitListForUnitAndIfNotThereAddToList(firstUnitInUnitGroup, currentReference, currentRound, true, &foundUnitInList);
 
 			//go down further into reference tree
@@ -486,14 +487,14 @@ void updateUnitListWithNewUnits(Reference * currentReferenceInSceneFile, UnitLis
 				else
 				{
 					foundUnit->isUnitGroup = true;
-					UnitListClass * newUnit = new UnitListClass();
+					UnitListClass* newUnit = new UnitListClass();
 					foundUnit->firstUnitInUnitGroup = newUnit;
 				}
 			}
 			else
 			{
 				foundUnit->isUnitGroup = true;
-				UnitListClass * newUnit = new UnitListClass();
+				UnitListClass* newUnit = new UnitListClass();
 				foundUnit->firstUnitInUnitGroup = newUnit;
 
 			}
@@ -504,16 +505,16 @@ void updateUnitListWithNewUnits(Reference * currentReferenceInSceneFile, UnitLis
 	}
 }
 
-void updateUnitListWithDeadUnits(Reference * initialReferenceInSceneFile, UnitListClass * firstUnitInUnitGroup, int currentRound)
+void updateUnitListWithDeadUnits(LDreference* initialReferenceInSceneFile, UnitListClass* firstUnitInUnitGroup, int currentRound)
 {
-	UnitListClass * currentUnitInList = firstUnitInUnitGroup;
+	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
 	while(currentUnitInList->next != NULL)
 	{
 		bool unitIDFound = false;
 		bool result = true;
 
-		Reference * foundReference = searchReferenceListFindReference(initialReferenceInSceneFile, currentUnitInList->name, currentUnitInList->team, &unitIDFound, &result);
+		LDreference* foundReference = searchReferenceListFindReference(initialReferenceInSceneFile, currentUnitInList->name, currentUnitInList->team, &unitIDFound, &result);
 		if(!unitIDFound)
 		{
 			currentUnitInList->status = false;
@@ -529,10 +530,10 @@ void updateUnitListWithDeadUnits(Reference * initialReferenceInSceneFile, UnitLi
 	}
 }
 
-UnitListClass * searchUnitListForUnitAndIfNotThereAddToList(UnitListClass * firstUnitInUnitGroup, Reference * unitReferenceInSceneFile, int currentRound, bool topLevelInTree, bool * foundUnitInList)
+UnitListClass* searchUnitListForUnitAndIfNotThereAddToList(UnitListClass* firstUnitInUnitGroup, LDreference* unitReferenceInSceneFile, int currentRound, bool topLevelInTree, bool* foundUnitInList)
 {
-	UnitListClass * currentUnitInList = firstUnitInUnitGroup;
-	UnitListClass * foundUnit;
+	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
+	UnitListClass* foundUnit;
 
 	while((currentUnitInList->next != NULL) && (!(*foundUnitInList)))
 	{
@@ -545,7 +546,7 @@ UnitListClass * searchUnitListForUnitAndIfNotThereAddToList(UnitListClass * firs
 		{
 			if(currentUnitInList->isUnitGroup)
 			{
-				UnitListClass * tempUnit;
+				UnitListClass* tempUnit;
 				tempUnit = searchUnitListForUnitAndIfNotThereAddToList(currentUnitInList->firstUnitInUnitGroup, unitReferenceInSceneFile, currentRound, false, foundUnitInList);
 				if(*foundUnitInList)
 				{
@@ -565,7 +566,7 @@ UnitListClass * searchUnitListForUnitAndIfNotThereAddToList(UnitListClass * firs
 			currentUnitInList->status = true;
 			currentUnitInList->roundSpawned = currentRound;
 
-			UnitListClass * newUnitList = new UnitListClass();
+			UnitListClass* newUnitList = new UnitListClass();
 			currentUnitInList->next = newUnitList;
 
 
@@ -584,31 +585,31 @@ UnitListClass * searchUnitListForUnitAndIfNotThereAddToList(UnitListClass * firs
 
 /*
 //not used
-void addExperienceToPlayer(Experience * experience, Player * player)
+void addExperienceToPlayer(ANNexperience* experience, Player* player)
 {
 	player->currentExperience = experience;
 
-	Experience * newExperience = new Experience();
+	ANNexperience* newExperience = new ANNexperience();
 	player->currentExperience->next = newExperience;
 	player->currentExperience = player->currentExperience->next;
 }
 
 //not used
-void addExperienceToUnit(Experience * experience, ModelDetails * unit)
+void addExperienceToUnit(ANNexperience* experience, ModelDetails* unit)
 {
 	unit->currentExperience = experience;
 
-	Experience * newExperience = new Experience();
+	ANNexperience* newExperience = new ANNexperience();
 	unit->currentExperience->next = newExperience;
 	unit->currentExperience = unit->currentExperience->next;
 }
 
 //not used
-void addExperienceInputToExperience(ExperienceInput * experienceInput, Experience * experience)
+void addExperienceInputToExperience(ANNexperienceInput* experienceInput, ANNexperience* experience)
 {
 	experience->currentExperienceInput = experienceInput;
 
-	ExperienceInput * newExperienceInput = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput;
 	currentExperienceInput = currentExperienceInput->next;
 }
@@ -623,7 +624,7 @@ void addExperienceInputToExperience(ExperienceInput * experienceInput, Experienc
 
 
 
-double addExperiencesFromUnitDecision(UnitListClass * unit, Reference * unitReference, Reference * unitReferenceOpponent, long unitDecision, Reference * initialReferenceInThisPhaseStartScene, int NNcurrentPhase, Player * currentPlayer)
+double addExperiencesFromUnitDecision(UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, LDreference* initialReferenceInThisPhaseStartScene, int NNcurrentPhase, Player* currentPlayer)
 {
 	//bool result = true;
 
@@ -641,7 +642,7 @@ double addExperiencesFromUnitDecision(UnitListClass * unit, Reference * unitRefe
 	return totalError;
 }
 
-double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass * unit, Reference * unitReference, Reference * unitReferenceOpponent, long unitDecision, Player * currentPlayer, int NNBeingTested, bool addOrCompareExperience, Reference * initialReferenceInThisPhaseStartScene)
+double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, LDreference* initialReferenceInThisPhaseStartScene)
 {
 	double experienceBackPropagationPassError = 0.0;
 	//bool result = true;
@@ -666,14 +667,14 @@ double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass * 
 		if(NNBeingTested == GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN)
 		{
 			generateExperienceFromUnitPropertiesDecision(unitReference, unitReferenceOpponent, unitDecision, (unit->currentExperience[nn]), currentPhase);
-			Experience * newExperience = new Experience();
+			ANNexperience* newExperience = new ANNexperience();
 			unit->currentExperience[nn]->next = newExperience;
 			unit->currentExperience[nn] = unit->currentExperience[nn]->next;
 		}
 		else if(NNBeingTested == GAME_INDEX_OF_COMBAT_EXPERIENCE_NN)
 		{
 			generateExperienceFromUnitCombatDecision(unitReference, unitReferenceOpponent, unitDecision, (unit->currentExperience[nn]), currentPhase);
-			Experience * newExperience = new Experience();
+			ANNexperience* newExperience = new ANNexperience();
 			unit->currentExperience[nn]->next = newExperience;
 			unit->currentExperience[nn] = unit->currentExperience[nn]->next;
 		}
@@ -681,7 +682,7 @@ double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass * 
 		else if(NNBeingTested == GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN)
 		{
 			generateExperienceFromGlobalDecision(currentPlayer->firstUnitInUnitList, initialReferenceInThisPhaseStartScene, unitReference, unitReferenceOpponent, (unit->currentExperience[nn]));
-			Experience * newExperience = new Experience();
+			ANNexperience* newExperience = new ANNexperience();
 			unit->currentExperience[nn]->next = newExperience;
 			unit->currentExperience[nn] = unit->currentExperience[nn]->next;
 		}
@@ -690,19 +691,19 @@ double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass * 
 		else if(NNBeingTested == GAME_INDEX_OF_OBJECT_EXPERIENCE_NN)
 		{
 			generateExperienceFromObjectDecision(unitReference, unitDecision, (currentPlayer->currentExperience[nn]), true);
-			Experience * newExperience = new Experience();
+			ANNexperience* newExperience = new ANNexperience();
 			currentPlayer->currentExperience[nn]->next = newExperience;
 			currentPlayer->currentExperience[nn] = currentPlayer->currentExperience[nn]->next;
 		}
 	#endif
 		else
 		{
-			cout << "error: addOrCompareExperienceFromUnitDecision(): illegal NNBeingTested 1" << endl;
+			cout << "error: addOrCompareExperienceFromUnitDecision{}: illegal NNBeingTested 1" << endl;
 			exit(0);
 		}
 
 	#else
-					Experience * newExperience = new Experience();
+					ANNexperience* newExperience = new ANNexperience();
 					if(NNBeingTested == GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN)
 					{
 						generateExperienceFromUnitPropertiesDecision(unitReference, unitReferenceOpponent, unitDecision, newExperience, currentPhase);
@@ -725,7 +726,7 @@ double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass * 
 				#endif
 					else
 					{
-						cout << "error: addOrCompareExperienceFromUnitDecision(): illegal NNBeingTested 3" << endl;
+						cout << "error: addOrCompareExperienceFromUnitDecision{}: illegal NNBeingTested 3" << endl;
 						exit(0);
 					}
 					for(int e=0; e<TH_LRRC_LOW_RAM_NUM_CONSEC_TRAINING_EPOCHS_PER_EXPERIENCE; e++)
@@ -738,7 +739,7 @@ double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass * 
 	}
 	else if(addOrCompareExperience == COMPARE_EXPERIENCE)
 	{
-		Experience * experienceWithoutKnownOutput = new Experience;
+		ANNexperience* experienceWithoutKnownOutput = new ANNexperience;
 		long unitHypotheticalDecisionToTest;
 		unitHypotheticalDecisionToTest = unitDecision;
 		//generate proposed experience
@@ -768,7 +769,7 @@ double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass * 
 	#endif
 		else
 		{
-			cout << "error: addOrCompareExperienceFromUnitDecision(): illegal NNBeingTested 4" << endl;
+			cout << "error: addOrCompareExperienceFromUnitDecision{}: illegal NNBeingTested 4" << endl;
 			exit(0);
 		}
 		experienceBackPropagationPassError = calculateExperienceErrorForHypotheticalDecision(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn], currentPlayer->numberOfInputNeurons[nn], currentPlayer->numberOfOutputNeurons[nn], (experienceWithoutKnownOutput));
@@ -780,7 +781,7 @@ double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass * 
 
 
 
-void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Reference * unitReferenceOpponent, long unitDecision, Experience * currentExperience, int currentPhase)
+void generateExperienceFromUnitPropertiesDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, ANNexperience* currentExperience, int currentPhase)
 {
 
 	/*
@@ -809,12 +810,12 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	//cout << "3d1" << endl;
 
 	currentExperience->classTargetValue = unitDecision;
-	ExperienceInput * currentExperienceInput = currentExperience->firstExperienceInput;
+	ANNexperienceInput* currentExperienceInput = currentExperience->firstExperienceInput;
 
-	ModelDetails * unitDetails = unitReference->subModelDetails;
-	ModelDetails * unitDetailsOpponent = unitReferenceOpponent->subModelDetails;
+	ModelDetails* unitDetails = unitReference->subModelDetails;
+	ModelDetails* unitDetailsOpponent = unitReferenceOpponent->subModelDetails;
 
-	RecordClass * currentRecord;
+	RecordClass* currentRecord;
 
 	//cout << "3d2" << endl;
 
@@ -833,7 +834,7 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 
 		//cout << "3d2a2" << endl;
 
-		ExperienceInput * newExperienceInput = new ExperienceInput();
+		ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 
 		//cout << "3d2a2b" << endl;
 
@@ -854,7 +855,7 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	{
 		currentExperienceInput->inputValue = normaliseExperienceInput((double)currentRecord->numberOfThisPartIDInTheUnit, COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
 
-		ExperienceInput * newExperienceInput = new ExperienceInput();
+		ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 		currentExperienceInput->next = newExperienceInput;
 		currentExperienceInput = currentExperienceInput->next;
 
@@ -866,7 +867,7 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	{
 		currentExperienceInput->inputValue = normaliseExperienceInput((double)currentRecord->numberOfThisPartIDInTheUnit, COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
 
-		ExperienceInput * newExperienceInput = new ExperienceInput();
+		ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 		currentExperienceInput->next = newExperienceInput;
 		currentExperienceInput = currentExperienceInput->next;
 
@@ -878,7 +879,7 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	{
 		currentExperienceInput->inputValue = normaliseExperienceInput((double)currentRecord->numberOfThisPartIDInTheUnit, COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
 
-		ExperienceInput * newExperienceInput = new ExperienceInput();
+		ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 		currentExperienceInput->next = newExperienceInput;
 		currentExperienceInput = currentExperienceInput->next;
 
@@ -890,7 +891,7 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	{
 		currentExperienceInput->inputValue = normaliseExperienceInput((double)currentRecord->numberOfThisPartIDInTheUnit, COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
 
-		ExperienceInput * newExperienceInput = new ExperienceInput();
+		ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 		currentExperienceInput->next = newExperienceInput;
 		currentExperienceInput = currentExperienceInput->next;
 
@@ -902,7 +903,7 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	{
 		currentExperienceInput->inputValue = normaliseExperienceInput((double)currentRecord->numberOfThisPartIDInTheUnit, COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
 
-		ExperienceInput * newExperienceInput = new ExperienceInput();
+		ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 		currentExperienceInput->next = newExperienceInput;
 		currentExperienceInput = currentExperienceInput->next;
 
@@ -914,7 +915,7 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	{
 		currentExperienceInput->inputValue = normaliseExperienceInput((double)currentRecord->numberOfThisPartIDInTheUnit, COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
 
-		ExperienceInput * newExperienceInput = new ExperienceInput();
+		ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 		currentExperienceInput->next = newExperienceInput;
 		currentExperienceInput = currentExperienceInput->next;
 
@@ -926,7 +927,7 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	{
 		currentExperienceInput->inputValue = normaliseExperienceInput((double)currentRecord->numberOfThisPartIDInTheUnit, COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
 
-		ExperienceInput * newExperienceInput = new ExperienceInput();
+		ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 		currentExperienceInput->next = newExperienceInput;
 		currentExperienceInput = currentExperienceInput->next;
 
@@ -937,7 +938,7 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	{
 		currentExperienceInput->inputValue = normaliseExperienceInput((double)currentRecord->numberOfThisPartIDInTheUnit, COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
 
-		ExperienceInput * newExperienceInput = new ExperienceInput();
+		ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 		currentExperienceInput->next = newExperienceInput;
 		currentExperienceInput = currentExperienceInput->next;
 
@@ -949,7 +950,7 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	{
 		currentExperienceInput->inputValue = normaliseExperienceInput((double)currentRecord->numberOfThisPartIDInTheUnit, COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
 
-		ExperienceInput * newExperienceInput = new ExperienceInput();
+		ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 		currentExperienceInput->next = newExperienceInput;
 		currentExperienceInput = currentExperienceInput->next;
 
@@ -961,7 +962,7 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	{
 		currentExperienceInput->inputValue = normaliseExperienceInput((double)currentRecord->numberOfThisPartIDInTheUnit, COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
 
-		ExperienceInput * newExperienceInput = new ExperienceInput();
+		ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 		currentExperienceInput->next = newExperienceInput;
 		currentExperienceInput = currentExperienceInput->next;
 
@@ -973,7 +974,7 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	{
 		currentExperienceInput->inputValue = normaliseExperienceInput((double)currentRecord->numberOfThisPartIDInTheUnit, COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
 
-		ExperienceInput * newExperienceInput = new ExperienceInput();
+		ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 		currentExperienceInput->next = newExperienceInput;
 		currentExperienceInput = currentExperienceInput->next;
 
@@ -986,13 +987,13 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 
 	/*
 	currentExperienceInput->inputValue = normaliseExperienceInput((double)combatExperienceResult, COMBAT_EXPERIENCE_INPUT_RESULT_MAX);
-	ExperienceInput * newExperienceInput2 = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput2 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput2;
 	currentExperienceInput = currentExperienceInput->next;
 	*/
 
 		int maximumMovementDistanceForAnyUnit = 0;
-		RulesClass * currentReferenceRulesClass = LRRCrulesUnitTypeCatagories;
+		XMLrulesClass* currentReferenceRulesClass = LRRCrulesUnitTypeCatagories;
 		while(currentReferenceRulesClass->next != NULL)
 		{
 			maximumMovementDistanceForAnyUnit = maxInt(maximumMovementDistanceForAnyUnit, currentReferenceRulesClass->attribute4);
@@ -1006,14 +1007,14 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	double distanceBetweenUnits = calculateTheDistanceBetweenTwoUnits(&(unitReference->absolutePosition), &(unitReferenceOpponent->absolutePosition));
 	currentExperienceInput->inputValue = normaliseExperienceInput(distanceBetweenUnits, maximumMovementDistanceForAnyUnit);
 		//cout << "currentExperienceInput->inputValue = " << currentExperienceInput->inputValue << endl;
-	ExperienceInput * newExperienceInput3 = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput3 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput3;
 	currentExperienceInput = currentExperienceInput->next;
 	//add 2D relationship map information here - can be added to a hypbrid 1D/2D neural network...
 
 
 	currentExperienceInput->inputValue = currentPhase;
-	ExperienceInput * newExperienceInput4 = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput4 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput4;
 	currentExperienceInput = currentExperienceInput->next;
 
@@ -1021,7 +1022,7 @@ void generateExperienceFromUnitPropertiesDecision(Reference * unitReference, Ref
 	//cout << "3d6" << endl;
 }
 
-void generateExperienceFromUnitCombatDecision(Reference * unitReference, Reference * unitReferenceOpponent, long unitDecision, Experience * currentExperience, int currentPhase)
+void generateExperienceFromUnitCombatDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, ANNexperience* currentExperience, int currentPhase)
 {
 
 	/*
@@ -1053,7 +1054,7 @@ void generateExperienceFromUnitCombatDecision(Reference * unitReference, Referen
 	int maximumDefenceTorsoTotalForAnyUnit = 0;
 	int maximumDefenceShieldTotalForAnyUnit = 0;
 	int maximumDefenceTotalForAnyUnit = 0;
-	RulesClass * currentReferenceRulesClass;
+	XMLrulesClass* currentReferenceRulesClass;
 
 	currentReferenceRulesClass = LRRCrulesUnitTypeCatagories;
 	while(currentReferenceRulesClass->next != NULL)
@@ -1107,50 +1108,50 @@ void generateExperienceFromUnitCombatDecision(Reference * unitReference, Referen
 	//cout << "3d1" << endl;
 
 	currentExperience->classTargetValue = unitDecision;
-	ExperienceInput * currentExperienceInput = currentExperience->firstExperienceInput;
+	ANNexperienceInput* currentExperienceInput = currentExperience->firstExperienceInput;
 
-	ModelDetails * unitDetails = unitReference->subModelDetails;
-	ModelDetails * unitDetailsOpponent = unitReferenceOpponent->subModelDetails;
+	ModelDetails* unitDetails = unitReference->subModelDetails;
+	ModelDetails* unitDetailsOpponent = unitReferenceOpponent->subModelDetails;
 
 	//fill experience inputs
 	currentExperienceInput->inputValue = normaliseExperienceInput(unitDetails->movementSpeed, maximumMovementDistanceForAnyUnit);
-	ExperienceInput * newExperienceInput1 = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput1 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput1;
 	currentExperienceInput = currentExperienceInput->next;
 
 	currentExperienceInput->inputValue = normaliseExperienceInput(unitDetails->closeCombatAttackTotal, maximumCloseCombatAttackTotalForAnyUnit*COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
-	ExperienceInput * newExperienceInput2 = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput2 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput2;
 	currentExperienceInput = currentExperienceInput->next;
 
 	currentExperienceInput->inputValue = normaliseExperienceInput(unitDetails->longDistanceAttackTotal, maximumLongDistanceAttackTotalForAnyUnit*COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
-	ExperienceInput * newExperienceInput3 = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput3 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput3;
 	currentExperienceInput = currentExperienceInput->next;
 
 	currentExperienceInput->inputValue = normaliseExperienceInput(unitDetails->defenceTotal, maximumDefenceTotalForAnyUnit*COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
-	ExperienceInput * newExperienceInput4 = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput4 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput4;
 	currentExperienceInput = currentExperienceInput->next;
 
 
 	currentExperienceInput->inputValue = normaliseExperienceInput(unitDetailsOpponent->movementSpeed, maximumMovementDistanceForAnyUnit);
-	ExperienceInput * newExperienceInput5 = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput5 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput5;
 	currentExperienceInput = currentExperienceInput->next;
 
 	currentExperienceInput->inputValue = normaliseExperienceInput(unitDetailsOpponent->closeCombatAttackTotal, maximumCloseCombatAttackTotalForAnyUnit*COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
-	ExperienceInput * newExperienceInput6 = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput6 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput6;
 	currentExperienceInput = currentExperienceInput->next;
 
 	currentExperienceInput->inputValue = normaliseExperienceInput(unitDetailsOpponent->longDistanceAttackTotal, maximumLongDistanceAttackTotalForAnyUnit*COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
-	ExperienceInput * newExperienceInput7 = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput7 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput7;
 	currentExperienceInput = currentExperienceInput->next;
 
 	currentExperienceInput->inputValue = normaliseExperienceInput(unitDetailsOpponent->defenceTotal, maximumDefenceTotalForAnyUnit*COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
-	ExperienceInput * newExperienceInput8 = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput8 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput8;
 	currentExperienceInput = currentExperienceInput->next;
 
@@ -1160,14 +1161,14 @@ void generateExperienceFromUnitCombatDecision(Reference * unitReference, Referen
 
 	double distanceBetweenUnits = calculateTheDistanceBetweenTwoUnits(&(unitReference->absolutePosition), &(unitReferenceOpponent->absolutePosition));
 	currentExperienceInput->inputValue = normaliseExperienceInput(distanceBetweenUnits, maximumMovementDistanceForAnyUnit);
-	ExperienceInput * newExperienceInput9 = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput9 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput9;
 	currentExperienceInput = currentExperienceInput->next;
 	//add 2D relationship map information here - can be added to a hypbrid 1D/2D neural network...
 
 
 	currentExperienceInput->inputValue = currentPhase;
-	ExperienceInput * newExperienceInput10 = new ExperienceInput();
+	ANNexperienceInput* newExperienceInput10 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput10;
 	currentExperienceInput = currentExperienceInput->next;
 
@@ -1178,7 +1179,7 @@ void generateExperienceFromUnitCombatDecision(Reference * unitReference, Referen
 
 #ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
 	//add int currentPhase parameter???
-bool generateExperienceFromGlobalDecision(UnitListClass * firstUnitInUnitList, Reference * initialReferenceInThisPhaseStartScene, Reference * unitReference, Reference * unitReferenceOpponent, Experience * currentExperience)
+bool generateExperienceFromGlobalDecision(UnitListClass* firstUnitInUnitList, LDreference* initialReferenceInThisPhaseStartScene, LDreference* unitReference, LDreference* unitReferenceOpponent, ANNexperience* currentExperience)
 {
 	bool result = true;
 
@@ -1197,7 +1198,7 @@ bool generateExperienceFromGlobalDecision(UnitListClass * firstUnitInUnitList, R
 
 
 	//fill experience input tree with blank input values
-	ExperienceInput * currentExperienceInput = currentExperience->firstExperienceInput;
+	ANNexperienceInput* currentExperienceInput = currentExperience->firstExperienceInput;
 
 	for(int x=-GLOBAL_EXPERIENCE_NUMBER_OF_DIFFERENT_OUTPUT_DECISIONS_RADIUS; x<=GLOBAL_EXPERIENCE_NUMBER_OF_DIFFERENT_OUTPUT_DECISIONS_RADIUS; x++)
 	{
@@ -1205,7 +1206,7 @@ bool generateExperienceFromGlobalDecision(UnitListClass * firstUnitInUnitList, R
 		{
 			for(int t=0; t<GLOBAL_EXPERIENCE_NUM_INPUT_TYPES; t++)
 			{
-				ExperienceInput * newExperienceInput = new ExperienceInput();
+				ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 				currentExperienceInput->next = newExperienceInput;
 				currentExperienceInput = currentExperienceInput->next;
 			}
@@ -1225,10 +1226,10 @@ bool generateExperienceFromGlobalDecision(UnitListClass * firstUnitInUnitList, R
 
 
 
-bool generate2DMemoryMapExperience(UnitListClass * firstUnitInGroup, Reference * initialReferenceInThisPhaseStartScene, Reference * unitReference, Experience * currentExperience)
+bool generate2DMemoryMapExperience(UnitListClass* firstUnitInGroup, LDreference* initialReferenceInThisPhaseStartScene, LDreference* unitReference, ANNexperience* currentExperience)
 {
 	bool result = true;
-	UnitListClass * currentUnitInGroup = firstUnitInGroup;
+	UnitListClass* currentUnitInGroup = firstUnitInGroup;
 
 	int maximumMovementDistanceForAnyUnit = 0;
 	int maximumCloseCombatAttackTotalForAnyUnit = 0;
@@ -1237,7 +1238,7 @@ bool generate2DMemoryMapExperience(UnitListClass * firstUnitInGroup, Reference *
 	int maximumDefenceTorsoTotalForAnyUnit = 0;
 	int maximumDefenceShieldTotalForAnyUnit = 0;
 	int maximumDefenceTotalForAnyUnit = 0;
-	RulesClass * currentReferenceRulesClass;
+	XMLrulesClass* currentReferenceRulesClass;
 
 	currentReferenceRulesClass = LRRCrulesUnitTypeCatagories;
 	while(currentReferenceRulesClass->next != NULL)
@@ -1293,12 +1294,12 @@ bool generate2DMemoryMapExperience(UnitListClass * firstUnitInGroup, Reference *
 		if(currentUnitInGroup->status == true)
 		{
 			//1. create a dummy reference for details calculations
-			Reference * currentReferenceInGroup = new Reference(true);
+			LDreference* currentReferenceInGroup = new LDreference(true);
 			currentReferenceInGroup->colour = currentUnitInGroup->team;
 			currentReferenceInGroup->name = currentUnitInGroup->name;
 			if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(currentReferenceInGroup, initialReferenceInThisPhaseStartScene, NULL, false))
 			{
-				cout << "generate2DMemoryMapExperience(): Error - unit reference not found in reference list" << endl;
+				cout << "generate2DMemoryMapExperience{}: Error - unit reference not found in reference list" << endl;
 				cout << "\terror: cannot find player unit reference in scene file, name = " << currentReferenceInGroup->name << " id=" << currentReferenceInGroup->colour << endl;
 				result = false;
 			}
@@ -1315,7 +1316,7 @@ bool generate2DMemoryMapExperience(UnitListClass * firstUnitInGroup, Reference *
 				}
 				if(refIn2DMemoryMap)
 				{
-					ExperienceInput * currentReferenceExperienceInput = findExperienceInputIn2DMemoryMap(xPosRelToUnit, yPosRelToUnit, 0, currentExperience);
+					ANNexperienceInput* currentReferenceExperienceInput = findExperienceInputIn2DMemoryMap(xPosRelToUnit, yPosRelToUnit, 0, currentExperience);
 
 					//fill experience inputs
 					currentReferenceExperienceInput->inputValue = normaliseExperienceInput(currentReferenceInGroup->subModelDetails->movementSpeed, maximumMovementDistanceForAnyUnit);
@@ -1350,9 +1351,9 @@ bool generate2DMemoryMapExperience(UnitListClass * firstUnitInGroup, Reference *
 
 
 
-ExperienceInput * findExperienceInputIn2DMemoryMap(int xPos, int yPos, int tPos, Experience * currentExperience)
+ANNexperienceInput* findExperienceInputIn2DMemoryMap(int xPos, int yPos, int tPos, ANNexperience* currentExperience)
 {
-	ExperienceInput * currentExperienceInput = currentExperience->firstExperienceInput;
+	ANNexperienceInput* currentExperienceInput = currentExperience->firstExperienceInput;
 	for(int x=-GLOBAL_EXPERIENCE_NUMBER_OF_DIFFERENT_OUTPUT_DECISIONS_RADIUS; x<xPos; x++)
 	{
 		for(int y=-GLOBAL_EXPERIENCE_NUMBER_OF_DIFFERENT_OUTPUT_DECISIONS_RADIUS; y<GLOBAL_EXPERIENCE_NUMBER_OF_DIFFERENT_OUTPUT_DECISIONS_RADIUS; y++)
@@ -1388,7 +1389,7 @@ ExperienceInput * findExperienceInputIn2DMemoryMap(int xPos, int yPos, int tPos,
 
 
 
-bool generateExperienceFromObjectDecision(Reference * objectReference, long objectDecision, Experience * currentExperience, bool createNewRayTracedImage)
+bool generateExperienceFromObjectDecision(LDreference* objectReference, long objectDecision, ANNexperience* currentExperience, bool createNewRayTracedImage)
 {
 	bool result = true;
 
@@ -1398,7 +1399,7 @@ bool generateExperienceFromObjectDecision(Reference * objectReference, long obje
 
 
 	char experienceNumberStringCharStar[10];
-	sprintf(experienceNumberStringCharStar, "%d", objectDecision);
+	experienceNumberStringCharStar = convertIntToString(objectDecision);
 	string experienceNumberString = "";
 	experienceNumberString = experienceNumberString + experienceNumberStringCharStar;
 
@@ -1406,9 +1407,9 @@ bool generateExperienceFromObjectDecision(Reference * objectReference, long obje
 	imageFileNameStart = imageFileNameStart + "objectImageExperience" + experienceNumberString + "fileName" + objectReference->name;
 
 	string raytracedImagePPMNNSceneFileName = imageFileNameStart + RGB_MAP_PPM_EXTENSION;
-	char * charstarraytracedImagePPMNNSceneFileName = const_cast<char*>(raytracedImagePPMNNSceneFileName.c_str());
+	char* charstarraytracedImagePPMNNSceneFileName = const_cast<char*>(raytracedImagePPMNNSceneFileName.c_str());
 
-	//2. generate pixmap using from Reference name [under arbitrary lighting conditions] via raytracing
+	//2. generate pixmap using from LDreference name [under arbitrary lighting conditions] via raytracing
 	if(createNewRayTracedImage)
 	{
 
@@ -1420,13 +1421,13 @@ bool generateExperienceFromObjectDecision(Reference * objectReference, long obje
 	#ifdef TH_USE_RT_FOR_OBJECT_RECOGNITION_VEC_GRAPHICS
 		string sceneFileNameForRayTracing = imageFileNameStart + DAT_EXTENSION;
 		string vectorGraphicsTALNNSceneFileName = imageFileNameStart + TAL_EXTENSION;
-		char * charstarsceneFileNameForRayTracing = const_cast<char*>(sceneFileNameForRayTracing.c_str());
-		char * charstarvectorGraphicsTALNNSceneFileName = const_cast<char*>(vectorGraphicsTALNNSceneFileName.c_str());
+		char* charstarsceneFileNameForRayTracing = const_cast<char*>(sceneFileNameForRayTracing.c_str());
+		char* charstarvectorGraphicsTALNNSceneFileName = const_cast<char*>(vectorGraphicsTALNNSceneFileName.c_str());
 
 
 		//reparse scenefilewithandwithout sprites - to build absolute position information
-		Reference * initialReferenceInSceneFileForRayTracing = new Reference();
-		Reference * topLevelReferenceInSceneFileForRayTracing = new Reference(charstarsceneFileNameForRayTracing, 1, true);	//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+		LDreference* initialReferenceInSceneFileForRayTracing = new LDreference();
+		LDreference* topLevelReferenceInSceneFileForRayTracing = new LDreference(charstarsceneFileNameForRayTracing, 1, true);	//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
 		if(!parseFile(charstarsceneFileNameForRayTracing, initialReferenceInSceneFileForRayTracing, topLevelReferenceInSceneFileForRayTracing, true))
 		{//file does not exist
 			cout << "The file: " << charstarsceneFileNameForRayTracing << " does not exist in the directory" << endl;
@@ -1470,17 +1471,17 @@ bool generateExperienceFromObjectDecision(Reference * objectReference, long obje
 
 	//cout << "3" << endl;
 	//3. load pixmap into RAM objectImage from generated pixmap
-	pixmap * objectImage;
+	pixmap* objectImage;
 	cout << "image file being loaded = " << charstarraytracedImagePPMNNSceneFileName << endl;
 	objectImage = load_ppm(charstarraytracedImagePPMNNSceneFileName);
 
 	//cout << "4" << endl;
 	//4. produce contrast map from pixmap image
-	unsigned char * rgbMap = new unsigned char [objectImage->wide * objectImage->high * RGB_NUM];
-	double * luminosityMap = new double[objectImage->wide * objectImage->high];
-	bool * luminosityBooleanMap = new bool[objectImage->wide * objectImage->high];
-	double * luminosityContrastMap = new double[objectImage->wide * objectImage->high];
-	bool * luminosityContrastBooleanMap = new bool[objectImage->wide * objectImage->high];
+	unsigned char* rgbMap = new unsigned char [objectImage->wide* objectImage->high* RGB_NUM];
+	double* luminosityMap = new double[objectImage->wide* objectImage->high];
+	bool* luminosityBooleanMap = new bool[objectImage->wide* objectImage->high];
+	double* luminosityContrastMap = new double[objectImage->wide* objectImage->high];
+	bool* luminosityContrastBooleanMap = new bool[objectImage->wide* objectImage->high];
 
 	createRGBMapFromPixmapImage(objectImage, rgbMap);
 
@@ -1518,22 +1519,22 @@ bool generateExperienceFromObjectDecision(Reference * objectReference, long obje
 
 	#ifdef DEBUG_ANN_OBJECT_RECOGNITION_EXPERIENCES_OUTPUT_ALL_MAPS
 	string PPMFileNameLuminosity = (imageFileNameStart) + LUMINOSITY_MAP_PPM_EXTENSION;
-	char * PPMFileNameLuminosityCharArray = const_cast<char*>(PPMFileNameLuminosity.c_str());
+	char* PPMFileNameLuminosityCharArray = const_cast<char*>(PPMFileNameLuminosity.c_str());
 	cout << "PPMFileNameLuminosityCharArray = " << PPMFileNameLuminosityCharArray << endl;
 	generatePixmapFromLuminosityMap(PPMFileNameLuminosityCharArray, objectImage->wide, objectImage->high, luminosityMap);
 
 	string PPMFileNameContrast = (imageFileNameStart) + LUMINOSITY_CONTRAST_MAP_PPM_EXTENSION;
-	char * PPMFileNameContrastCharArray = const_cast<char*>(PPMFileNameContrast.c_str());
+	char* PPMFileNameContrastCharArray = const_cast<char*>(PPMFileNameContrast.c_str());
 	cout << "PPMFileNameContrastCharArray = " << PPMFileNameContrastCharArray << endl;
 	generatePixmapFromLuminosityContrastMap(PPMFileNameContrastCharArray, objectImage->wide, objectImage->high, luminosityContrastMap);
 
 	string PPMFileNameLuminosityBoolean = (imageFileNameStart) + LUMINOSITY_BOOLEAN_MAP_PPM_EXTENSION;
-	char * PPMFileNameLuminosityBooleanCharArray = const_cast<char*>(PPMFileNameLuminosityBoolean.c_str());
+	char* PPMFileNameLuminosityBooleanCharArray = const_cast<char*>(PPMFileNameLuminosityBoolean.c_str());
 	cout << "PPMFileNameLuminosityBooleanCharArray = " << PPMFileNameLuminosityBooleanCharArray << endl;
 	generatePixmapFromBooleanMap(PPMFileNameLuminosityBooleanCharArray, objectImage->wide, objectImage->high, luminosityBooleanMap);
 
 	string PPMFileNameContrastBoolean = (imageFileNameStart) + LUMINOSITY_CONTRAST_BOOLEAN_MAP_PPM_EXTENSION;
-	char * PPMFileNameContrastBooleanCharArray = const_cast<char*>(PPMFileNameContrastBoolean.c_str());
+	char* PPMFileNameContrastBooleanCharArray = const_cast<char*>(PPMFileNameContrastBoolean.c_str());
 	cout << "PPMFileNameContrastBooleanCharArray = " << PPMFileNameContrastBooleanCharArray << endl;
 	generatePixmapFromBooleanMap(PPMFileNameContrastBooleanCharArray, objectImage->wide, objectImage->high, luminosityContrastBooleanMap);
 	#endif
@@ -1569,9 +1570,9 @@ bool generateExperienceFromObjectDecision(Reference * objectReference, long obje
 
 
 /*
-void generate2DMemoryMapExperience(Reference * firstReferenceInLayer,  Reference * unitReference, Experience * currentExperience)
+void generate2DMemoryMapExperience(LDreference* firstReferenceInLayer,  LDreference* unitReference, ANNexperience* currentExperience)
 {
-	Reference * currentReference = firstReferenceInLayer;
+	LDreference* currentReference = firstReferenceInLayer;
 
 	while(currentReference->next != NULL)
 	{
@@ -1586,7 +1587,7 @@ void generate2DMemoryMapExperience(Reference * firstReferenceInLayer,  Reference
 			}
 			if(refIn2DMemoryMap)
 			{
-				ExperienceInput * currentReferenceExperienceInput = findExperienceInputIn2DMemoryMap(xPosRelToUnit, yPosRelToUnit, 0, currentExperience);
+				ANNexperienceInput* currentReferenceExperienceInput = findExperienceInputIn2DMemoryMap(xPosRelToUnit, yPosRelToUnit, 0, currentExperience);
 			}
 
 			generate2DMemoryMapExperience(currentReference->firstReferenceWithinSubModel, unitReference, currentExperience)
@@ -1626,9 +1627,9 @@ void generate2DMemoryMapExperience(Reference * firstReferenceInLayer,  Reference
 
 
 
-void addAllUnitExperiencesToOFStream(ofstream * experienceDataSetOFStreamObject, UnitListClass * firstUnitInUnitGroup, int nnIndex)
+void addAllUnitExperiencesToOFStream(ofstream* experienceDataSetOFStreamObject, UnitListClass* firstUnitInUnitGroup, int nnIndex)
 {
-	UnitListClass * currentUnitInList = firstUnitInUnitGroup;
+	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
 	while(currentUnitInList->next != NULL)
 	{
@@ -1650,9 +1651,9 @@ void addAllUnitExperiencesToOFStream(ofstream * experienceDataSetOFStreamObject,
 	}
 }
 
-void addPlayerUnitExperiencesToOFStream(ofstream * experienceDataSetOFStreamObject, UnitListClass * firstUnitInUnitGroup, int unitGroupTeam, int nnIndex)
+void addPlayerUnitExperiencesToOFStream(ofstream* experienceDataSetOFStreamObject, UnitListClass* firstUnitInUnitGroup, int unitGroupTeam, int nnIndex)
 {
-	UnitListClass * currentUnitInList = firstUnitInUnitGroup;
+	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
 	while(currentUnitInList->next != NULL)
 	{
@@ -1680,13 +1681,13 @@ void addPlayerUnitExperiencesToOFStream(ofstream * experienceDataSetOFStreamObje
 
 #ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
 	//NB this routine [for ADD_EXPERIENCE] records player experiences rather than unit experiences
-double addOrCompareAllObjectExperiences(Player * currentPlayer, int NNBeingTested, bool addOrCompareExperience, bool justCountNumberOfExperiences)
+double addOrCompareAllObjectExperiences(Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, bool justCountNumberOfExperiences)
 {
 	double totalError = 0.0;
 	int numberOfExperiences = 0;
 
-	RulesClass * currentReferenceRulesClass;
-	Reference * unitReference = new Reference();
+	XMLrulesClass* currentReferenceRulesClass;
+	LDreference* unitReference = new LDreference();
 
 	currentReferenceRulesClass = LRRCrulesUnitTypeDetails;
 	while(currentReferenceRulesClass->next != NULL)
@@ -1814,6 +1815,6 @@ void addExperienceToByteArray()
 
 	long ExperienceDataSetByteArrayCurrentPosition = 0;
 	long ExperienceDataSetByteArraySize = XML_FILE_MAX_SIZE;
-	char * ExperienceDataSetByteArray = new char[EXPERIENCE_DATASET_MAX_SIZE];
+	char* ExperienceDataSetByteArray = new char[EXPERIENCE_DATASET_MAX_SIZE];
 
 */

@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCmodelClass.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -45,7 +45,7 @@ double LDRAW_UNITS_PER_CM;
 
 void fillInModelClassExternVariables()
 {
-	RulesClass * currentReferenceRulesClass = LRRCrulesMiscellaneous;
+	XMLrulesClass* currentReferenceRulesClass = LRRCrulesMiscellaneous;
 
 	while(currentReferenceRulesClass->next != NULL)
 	{
@@ -78,18 +78,18 @@ ModelDetails::ModelDetails(void)
 	movementSpeed = 0;
 
 	/*ModelDetails Type Details*/
-	RulesClass * currentReferenceRulesClass;
-	RecordClass * currentReferenceRecordClass;
+	XMLrulesClass* currentReferenceRulesClass;
+	RecordClass* currentReferenceRecordClass;
 
 
-	//assumes fill and initialise recordClass linked list with same number of references as the RulesClass linked list
+	//assumes fill and initialise recordClass linked list with same number of references as the XMLrulesClass linked list
 	currentReferenceRulesClass = LRRCrulesUnitTypeDetails;
 	recordOfUnitTypeDetails = new RecordClass();
 	currentReferenceRecordClass = recordOfUnitTypeDetails;
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		currentReferenceRecordClass->name = currentReferenceRulesClass->name;
-		RecordClass * newObject = new RecordClass();
+		RecordClass* newObject = new RecordClass();
 		currentReferenceRecordClass->next = newObject;
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
@@ -102,62 +102,62 @@ ModelDetails::ModelDetails(void)
 
 	/*Combat Details*/
 
-	//assumes fill and initialise recordClass linked list with same number of references as the RulesClass linked list
+	//assumes fill and initialise recordClass linked list with same number of references as the XMLrulesClass linked list
 	currentReferenceRulesClass = LRRCrulesUnitCombatDetailsDefenceHead;
 	recordOfUnitCombatDetailsDefenceHead = new RecordClass();
 	currentReferenceRecordClass = recordOfUnitCombatDetailsDefenceHead;
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		currentReferenceRecordClass->name = currentReferenceRulesClass->name;
-		RecordClass * newObject = new RecordClass();
+		RecordClass* newObject = new RecordClass();
 		currentReferenceRecordClass->next = newObject;
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
 	}
-	//assumes fill and initialise recordClass linked list with same number of references as the RulesClass linked list
+	//assumes fill and initialise recordClass linked list with same number of references as the XMLrulesClass linked list
 	currentReferenceRulesClass = LRRCrulesUnitCombatDetailsDefenceTorso;
 	recordOfUnitCombatDetailsDefenceTorso = new RecordClass();
 	currentReferenceRecordClass = recordOfUnitCombatDetailsDefenceTorso;
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		currentReferenceRecordClass->name = currentReferenceRulesClass->name;
-		RecordClass * newObject = new RecordClass();
+		RecordClass* newObject = new RecordClass();
 		currentReferenceRecordClass->next = newObject;
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
 	}
-	//assumes fill and initialise recordClass linked list with same number of references as the RulesClass linked list
+	//assumes fill and initialise recordClass linked list with same number of references as the XMLrulesClass linked list
 	currentReferenceRulesClass = LRRCrulesUnitCombatDetailsDefenceShield;
 	recordOfUnitCombatDetailsDefenceShield = new RecordClass();
 	currentReferenceRecordClass = recordOfUnitCombatDetailsDefenceShield;
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		currentReferenceRecordClass->name = currentReferenceRulesClass->name;
-		RecordClass * newObject = new RecordClass();
+		RecordClass* newObject = new RecordClass();
 		currentReferenceRecordClass->next = newObject;
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
 	}
-	//assumes fill and initialise recordClass linked list with same number of references as the RulesClass linked list
+	//assumes fill and initialise recordClass linked list with same number of references as the XMLrulesClass linked list
 	currentReferenceRulesClass = LRRCrulesUnitCombatDetailsAttackCloseCombat;
 	recordOfUnitCombatDetailsAttackCloseCombat = new RecordClass();
 	currentReferenceRecordClass = recordOfUnitCombatDetailsAttackCloseCombat;
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		currentReferenceRecordClass->name = currentReferenceRulesClass->name;
-		RecordClass * newObject = new RecordClass();
+		RecordClass* newObject = new RecordClass();
 		currentReferenceRecordClass->next = newObject;
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
 	}
-	//assumes fill and initialise recordClass linked list with same number of references as the RulesClass linked list
+	//assumes fill and initialise recordClass linked list with same number of references as the XMLrulesClass linked list
 	currentReferenceRulesClass = LRRCrulesUnitCombatDetailsAttackLongDistance;
 	recordOfUnitCombatDetailsAttackLongDistance = new RecordClass();
 	currentReferenceRecordClass = recordOfUnitCombatDetailsAttackLongDistance;
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		currentReferenceRecordClass->name = currentReferenceRulesClass->name;
-		RecordClass * newObject = new RecordClass();
+		RecordClass* newObject = new RecordClass();
 		currentReferenceRecordClass->next = newObject;
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
@@ -191,14 +191,14 @@ ModelDetails::ModelDetails(void)
 	/*building details*/
 	numBuildingOther = 0;
 
-	//assumes fill and initialise recordClass linked list with same number of references as the RulesClass linked list
+	//assumes fill and initialise recordClass linked list with same number of references as the XMLrulesClass linked list
 	currentReferenceRulesClass = LRRCrulesBuildingDetails;
 	recordOfBuildingDetails = new RecordClass();
 	currentReferenceRecordClass = recordOfBuildingDetails;
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		currentReferenceRecordClass->name = currentReferenceRulesClass->name;
-		RecordClass * newObject = new RecordClass();
+		RecordClass* newObject = new RecordClass();
 		currentReferenceRecordClass->next = newObject;
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
@@ -251,7 +251,7 @@ ModelDetails::~ModelDetails()
 
 
 	/*OLD:
-	RecordClass * currentReferenceRulesClass;
+	RecordClass* currentReferenceRulesClass;
 
 	currentReferenceRulesClass = recordOfUnitTypeDetails;
 	while(currentReferenceRulesClass->next != NULL)
@@ -313,14 +313,14 @@ ModelDetails::~ModelDetails()
 
 
 /*
-void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails * u)
+void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails* u)
 
 preconditions:
 to calculate groupIndex (of unit group) correctly, all units within group must be of same type (and if the units are machines/vehicles, they must be of the same form, eg same number of wheels etc)
 to calculate movementSpeed (min of unit group) correctly there is currenlty no known preconditions.
 to calculate unitType (min of unit group) correctly there is currenlty no known preconditions
 */
-void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails * u)
+void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails* u)
 {
 	/*
 	2x large wheels && >=2x wheel axels && 1x horses && (numHorseHitch || numHorseHitchWithHinge) && > 1x person && < 2x persons = 15 (small/large cart),
@@ -349,7 +349,7 @@ void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails * u)
 	int numSkeleton = 0;
 	int numGhost = 0;
 
-	RecordClass * currentReferenceRecordClass = u->recordOfUnitTypeDetails;
+	RecordClass* currentReferenceRecordClass = u->recordOfUnitTypeDetails;
 	while(currentReferenceRecordClass->next != NULL)
 	{
 		if(currentReferenceRecordClass->name == PERSON_HEAD_NAME)
@@ -527,10 +527,10 @@ void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails * u)
 }
 
 
-bool calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(ModelDetails * u)
+bool calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(ModelDetails* u)
 {
 	bool result = false;
-	RulesClass * currentReferenceRulesClass = LRRCrulesUnitTypeCatagories;
+	XMLrulesClass* currentReferenceRulesClass = LRRCrulesUnitTypeCatagories;
 	while(currentReferenceRulesClass->next != NULL)
 	{
 		if(int(currentReferenceRulesClass->fractionalValue) == u->unitType)
@@ -548,10 +548,10 @@ bool calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(ModelDetails *
 
 
 
-void copyRecordLists(RecordClass * recordToFill, RecordClass * recordToCopy)
+void copyRecordLists(RecordClass* recordToFill, RecordClass* recordToCopy)
 {
-	RecordClass * currentReferenceRecordToFill = recordToFill;
-	RecordClass * currentReferenceRecordToCopy = recordToCopy;
+	RecordClass* currentReferenceRecordToFill = recordToFill;
+	RecordClass* currentReferenceRecordToCopy = recordToCopy;
 	while(currentReferenceRecordToFill->next != NULL)
 	{
 		//currentReferenceRecordToFill->name = currentReferenceRecordToCopy->name;	//not required
@@ -563,10 +563,10 @@ void copyRecordLists(RecordClass * recordToFill, RecordClass * recordToCopy)
 }
 
 
-void addRecordLists(RecordClass * recordToFill, RecordClass * recordToAdd)
+void addRecordLists(RecordClass* recordToFill, RecordClass* recordToAdd)
 {
-	RecordClass * currentReferenceRecordToFill = recordToFill;
-	RecordClass * currentReferenceRecordToAdd = recordToAdd;
+	RecordClass* currentReferenceRecordToFill = recordToFill;
+	RecordClass* currentReferenceRecordToAdd = recordToAdd;
 	while(currentReferenceRecordToFill->next != NULL)
 	{
 		//currentReferenceRecordToFill->name = currentReferenceRecordToCopy->name;	//not required
@@ -580,7 +580,7 @@ void addRecordLists(RecordClass * recordToFill, RecordClass * recordToAdd)
 
 
 
-void copyAllUnitDetails(ModelDetails * u, ModelDetails * unitToCopy)
+void copyAllUnitDetails(ModelDetails* u, ModelDetails* unitToCopy)
 {
 
 	u->unitType = unitToCopy->unitType;
@@ -639,7 +639,7 @@ void copyAllUnitDetails(ModelDetails * u, ModelDetails * unitToCopy)
 
 
 //This is an example of a generic function that does not need to be defined within unitClass.cpp
-void copyEnvironmentRelevantChildUnitDetailsIntoParentObject(ModelDetails * unitChild, ModelDetails * unitParent)
+void copyEnvironmentRelevantChildUnitDetailsIntoParentObject(ModelDetails* unitChild, ModelDetails* unitParent)
 {
 	//terrain/structure details
 	unitParent->numBattlement = unitParent->numBattlement + unitChild->numBattlement; //BEFORE 2007: + unitChild->numBuildingBricks;	//used to potentially hide behind
@@ -648,7 +648,7 @@ void copyEnvironmentRelevantChildUnitDetailsIntoParentObject(ModelDetails * unit
 
 
 //This is an example of a generic function that does not need to be defined within unitClass.cpp
-void addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails * unitChild, ModelDetails * unitParent)
+void addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails* unitChild, ModelDetails* unitParent)
 {
 	addRecordLists(unitParent->recordOfUnitTypeDetails, unitChild->recordOfUnitTypeDetails);
 
@@ -717,7 +717,7 @@ void addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails * unitChi
 
 //no longer used due to algorithm break down
 /*
-void copyCombatRelevantInheritedImmediateParentUnitDetailsIntoChildObject(ModelDetails * unitChild, ModelDetails * unitParent)
+void copyCombatRelevantInheritedImmediateParentUnitDetailsIntoChildObject(ModelDetails* unitChild, ModelDetails* unitParent)
 {
 	//unitChild->numShields = unitChild->numShields + unitParent->numShields;				//not inherited (armour must be placed on child unit)
 		//weaponary from a person's higher level unit can be used by the person (Eg swords attached to catapults, castle walls, horse saddle clips etc)

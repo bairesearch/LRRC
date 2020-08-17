@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCmain.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -40,24 +40,14 @@
 #include "LRRCindependant.h"
 #include "LRRCgame.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <string.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <math.h>
-using namespace std;
-
 int main()
 {
 	bool UIstatus = true;
 
-	char answerAsString[100];
+	string answerAsString = "";
 	long answerAsInt;
 
-	srand( (unsigned)time(NULL) );	//seeds randomness
+	srand((unsigned)time(NULL));	//seeds randomness
 
 //#define TESTXMLPARSER
 #ifdef TESTXMLPARSER
@@ -80,7 +70,7 @@ int main()
 
 
 		cin >> answerAsString;
-		answerAsInt = long(atof(answerAsString));
+		answerAsInt = convertStringToLong(answerAsString);
 
 		if(answerAsInt == 1)
 		{

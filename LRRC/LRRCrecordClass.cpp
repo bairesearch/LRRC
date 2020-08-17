@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCrecordClass.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -34,6 +34,7 @@
  * Project Fifth Internal Release: 2d11a 3-June-07
  *
  *******************************************************************************/
+
 
 #include "LRRCrecordClass.h"
 

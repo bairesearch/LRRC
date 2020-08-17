@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCsprite.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -64,7 +64,7 @@ static double SPRITE_SUBMODEL_RANGE_SCALE_FACTOR;
 
 void fillInLRRCSpriteExternVariables()
 {
-	RulesClass * currentReferenceRulesClass = LRRCrulesSprite;
+	XMLrulesClass* currentReferenceRulesClass = LRRCrulesSprite;
 
 	while(currentReferenceRulesClass->next != NULL)
 	{
@@ -127,10 +127,10 @@ bool LRRCaddUnitDetailsSpritesToSceneFile(char* sceneFileName, char* sceneFileNa
 	bool result = true;
 
 	//declare initial scene references
-	Reference * initialReferenceInSceneFile = new Reference();
-	Reference * topLevelReferenceInSceneFile = new Reference(true);		//The model details information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+	LDreference* initialReferenceInSceneFile = new LDreference();
+	LDreference* topLevelReferenceInSceneFile = new LDreference(true);		//The model details information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
 
-	//parse the scene files and build Reference linked lists
+	//parse the scene files and build LDreference linked lists
 	if(!parseFile(sceneFileName, initialReferenceInSceneFile, topLevelReferenceInSceneFile, false))
 	{//file does not exist
 		cout << "The file: " << sceneFileName << " does not exist in the directory" << endl;
@@ -144,7 +144,7 @@ bool LRRCaddUnitDetailsSpritesToSceneFile(char* sceneFileName, char* sceneFileNa
 	eyeCoords.y = 0.0;
 	eyeCoords.z = 0.0;
 
-	Reference * spriteListInitialReference = new Reference();
+	LDreference* spriteListInitialReference = new LDreference();
 	LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(initialReferenceInSceneFile, spriteListInitialReference, &eyeCoords, &numSpritesAdded, sceneFileNameWithSprites, initialReferenceInSceneFile, addTextualSpriteInfo, addRangeSpriteInfo, currentPhase, currentPlayerTurn);
 
 	if(!addSpriteReferenceListToSceneFile(sceneFileName, sceneFileNameWithSprites, spriteListInitialReference, numSpritesAdded))
@@ -159,12 +159,12 @@ bool LRRCaddUnitDetailsSpritesToSceneFile(char* sceneFileName, char* sceneFileNa
 	return result;
 }
 
-bool LRRCaddUnitDetailsSpritesToScene(char* sceneFileName, char* sceneFileNameWithSprites, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn, Reference * firstReferenceInScene)
+bool LRRCaddUnitDetailsSpritesToScene(char* sceneFileName, char* sceneFileNameWithSprites, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn, LDreference* firstReferenceInScene)
 {
 	bool result = true;
 
 	//declare initial scene references
-	Reference * initialReferenceInSceneFile = firstReferenceInScene;
+	LDreference* initialReferenceInSceneFile = firstReferenceInScene;
 
 	int numSpritesAdded = 0;
 	vec eyeCoords;
@@ -172,7 +172,7 @@ bool LRRCaddUnitDetailsSpritesToScene(char* sceneFileName, char* sceneFileNameWi
 	eyeCoords.y = 0.0;
 	eyeCoords.z = 0.0;
 
-	Reference * spriteListInitialReference = new Reference();
+	LDreference* spriteListInitialReference = new LDreference();
 	LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(initialReferenceInSceneFile, spriteListInitialReference, &eyeCoords, &numSpritesAdded, sceneFileNameWithSprites, initialReferenceInSceneFile, addTextualSpriteInfo, addRangeSpriteInfo, currentPhase, currentPlayerTurn);
 
 	if(!addSpriteReferenceListToSceneFile(sceneFileName, sceneFileNameWithSprites, spriteListInitialReference, numSpritesAdded))
@@ -189,16 +189,16 @@ bool LRRCaddUnitDetailsSpritesToScene(char* sceneFileName, char* sceneFileNameWi
 
 
 //preconditions; assumes scene file has more than 1 person
-void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(Reference * referenceInSceneFile, Reference * spriteListInitialReference, vec * eyeCoords, int * numSpritesAdded, char* sceneFileName, Reference * initialReferenceInSceneFile, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn)
+void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referenceInSceneFile, LDreference* spriteListInitialReference, vec* eyeCoords, int* numSpritesAdded, char* sceneFileName, LDreference* initialReferenceInSceneFile, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn)
 {
 	//cout << "here03" << endl;
 
-	Reference * unusedTargetReference;
+	LDreference* unusedTargetReference;
 	bool addTargetSpriteInfo = false;
 
 	bool result = true;
 
-	Reference * currentReference = referenceInSceneFile;
+	LDreference* currentReference = referenceInSceneFile;
 
 	while(currentReference->next != NULL)
 	{
@@ -212,7 +212,7 @@ void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(Reference * referenc
 			//cout << "here031" << endl;
 
 			//declare current submodel top level reference
-			Reference * topLevelReferenceInCurrentSubmodel = new Reference(currentReference->name, currentReference->colour, true);
+			LDreference* topLevelReferenceInCurrentSubmodel = new LDreference(currentReference->name, currentReference->colour, true);
 			//cout << "here0311" << endl;
 				copyReferencePosition(topLevelReferenceInCurrentSubmodel, currentReference);
 				copyAllUnitDetails(topLevelReferenceInCurrentSubmodel->subModelDetails, currentReference->subModelDetails);
@@ -310,7 +310,7 @@ void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(Reference * referenc
 
 /*medium level sprite routines - these can be used by LRRCsprite.cpp top level routines or by LRRCgame.cpp routines*/
 
-bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(Reference * unitReference, Reference * targetReference, Reference * spriteListInitialReference, vec * eyeCoords, int * numSpritesAdded, char* sceneFileName, bool addTextualSpriteInfo, bool addRangeSpriteInfo, bool addTargetSpriteInfo, int currentPhase, int currentPlayerTurn)
+bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReference, LDreference* targetReference, LDreference* spriteListInitialReference, vec* eyeCoords, int* numSpritesAdded, char* sceneFileName, bool addTextualSpriteInfo, bool addRangeSpriteInfo, bool addTargetSpriteInfo, int currentPhase, int currentPlayerTurn)
 {
 	bool result = true;
 
@@ -336,11 +336,11 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(Reference * unitReferenc
 
 	//cout << "here1" << endl;
 
-	int * numSpritesAddedLocal;
-	Reference * spriteSubmodelCurrentReference;
+	int* numSpritesAddedLocal;
+	LDreference* spriteSubmodelCurrentReference;
 #ifdef DEBUG_ADD_INDIVIDUAL_SPRITES
 	//add sprite info [textual + range info] to reference list:
-	Reference * spriteSubmodelInitialReference = new Reference();
+	LDreference* spriteSubmodelInitialReference = new LDreference();
 	spriteSubmodelCurrentReference = spriteSubmodelInitialReference;
 	int numSpritesAddedLocalUnused = 0;
 	numSpritesAddedLocal = &numSpritesAddedLocalUnused;
@@ -360,7 +360,7 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(Reference * unitReferenc
 
 		int spriteNumberOfLines;
 		spriteNumberOfLines = SPRITE_TEXTUAL_NUM_OF_LINES;
-		int spriteColourArray[spriteNumberOfLines];
+		int spriteColourArray[SPRITE_TEXTUAL_NUM_OF_LINES];
 		LRRCgenerateTextualSpriteInfoString(unitReference, &spriteTextString, spriteColourArray);
 
 		#ifdef DEBUG_ADD_INDIVIDUAL_SPRITES
@@ -400,12 +400,12 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(Reference * unitReferenc
 	//cout << "here2" << endl;
 
 	//generate sprite reference name
-	char * spriteReferenceFileName = new char[DAT_FILE_REF_SUBMODEL_NAME_LENGTH_MAX];
+	char* spriteReferenceFileName = new char[DAT_FILE_REF_SUBMODEL_NAME_LENGTH_MAX];
 
 
 
 	//cout << "here2a" << endl;
-	LDcreateSpriteReferenceName(spriteReferenceFileName, *numSpritesAdded, sceneFileName);
+	LDcreateSpriteReferenceName(spriteReferenceFileName,* numSpritesAdded, sceneFileName);
 	#ifdef DEBUG_SPRITES
 	cout << "spriteReferenceFileName = " << spriteReferenceFileName << endl;
 	#endif
@@ -415,7 +415,7 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(Reference * unitReferenc
 	//cout << "here3" << endl;
 
 	#ifdef CPLUSPLUSERRORCORRECTION3
-		char * CHICKENDEBUG = new char[DAT_FILE_REF_MAX_SIZE*DAT_FILE_MAX_NUM_OF_REFERENCES];
+		char* CHICKENDEBUG = new char[DAT_FILE_REF_MAX_SIZE*DAT_FILE_MAX_NUM_OF_REFERENCES];
 	#endif
 
 
@@ -452,10 +452,10 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(Reference * unitReferenc
 
 
 //currently this function just adds a plain line between the unit and the target, in the future it could be more complex
-Reference * LRRCaddTargetSpriteInfoToReferenceList(Reference * spriteSubmodelInitialReference, Reference * unitReference, Reference * targetReference, int currentPhase, int * numSpritesAdded)
+LDreference* LRRCaddTargetSpriteInfoToReferenceList(LDreference* spriteSubmodelInitialReference, LDreference* unitReference, LDreference* targetReference, int currentPhase, int* numSpritesAdded)
 {
 	bool result = true;
-	Reference * spriteSubmodelCurrentReference = spriteSubmodelInitialReference;
+	LDreference* spriteSubmodelCurrentReference = spriteSubmodelInitialReference;
 
 	//add movement/longdistance/closecombat target line [red/orange/green line]
 	spriteSubmodelCurrentReference->type = REFERENCE_TYPE_LINE;
@@ -492,7 +492,7 @@ Reference * LRRCaddTargetSpriteInfoToReferenceList(Reference * spriteSubmodelIni
 	copyVectors(&(spriteSubmodelCurrentReference->vertex2relativePosition), &localvec);
 	#endif
 
-	Reference * newReference1 = new Reference();
+	LDreference* newReference1 = new LDreference();
 	spriteSubmodelCurrentReference -> next = newReference1;
 	spriteSubmodelCurrentReference = spriteSubmodelCurrentReference -> next;
 
@@ -501,13 +501,13 @@ Reference * LRRCaddTargetSpriteInfoToReferenceList(Reference * spriteSubmodelIni
 	return spriteSubmodelCurrentReference;
 }
 
-Reference * LRRCaddRangeSpriteInfoToReferenceList(Reference * spriteSubmodelInitialReference, Reference * unitReference, int currentPhase, int * numSpritesAdded)
+LDreference* LRRCaddRangeSpriteInfoToReferenceList(LDreference* spriteSubmodelInitialReference, LDreference* unitReference, int currentPhase, int* numSpritesAdded)
 {
-	Reference * spriteSubmodelCurrentReference = spriteSubmodelInitialReference;
+	LDreference* spriteSubmodelCurrentReference = spriteSubmodelInitialReference;
 
 	mat currentDeformationMatrix;
 
-	ModelDetails * unitDetails = unitReference->subModelDetails;
+	ModelDetails* unitDetails = unitReference->subModelDetails;
 
 	//cout << "currentPhase = " << GAME_PHASE_GENERIC << endl;
 
@@ -530,7 +530,7 @@ Reference * LRRCaddRangeSpriteInfoToReferenceList(Reference * spriteSubmodelInit
 		addVectors(&(spriteSubmodelCurrentReference->relativePosition), &(spriteSubmodelCurrentReference->relativePosition), &(unitReference->absolutePosition));
 		#endif
 		//cout << "vv1c" << endl;
-		Reference * newReference1 = new Reference();
+		LDreference* newReference1 = new LDreference();
 		spriteSubmodelCurrentReference -> next = newReference1;
 		//cout << "vv1d" << endl;
 		spriteSubmodelCurrentReference = spriteSubmodelCurrentReference -> next;
@@ -551,7 +551,7 @@ Reference * LRRCaddRangeSpriteInfoToReferenceList(Reference * spriteSubmodelInit
 		#ifndef DEBUG_ADD_INDIVIDUAL_SPRITES
 		addVectors(&(spriteSubmodelCurrentReference->relativePosition), &(spriteSubmodelCurrentReference->relativePosition), &(unitReference->absolutePosition));
 		#endif
-		Reference * newReference2 = new Reference();
+		LDreference* newReference2 = new LDreference();
 		spriteSubmodelCurrentReference -> next = newReference2;
 		spriteSubmodelCurrentReference = spriteSubmodelCurrentReference -> next;
 
@@ -570,7 +570,7 @@ Reference * LRRCaddRangeSpriteInfoToReferenceList(Reference * spriteSubmodelInit
 		#ifndef DEBUG_ADD_INDIVIDUAL_SPRITES
 		addVectors(&(spriteSubmodelCurrentReference->relativePosition), &(spriteSubmodelCurrentReference->relativePosition), &(unitReference->absolutePosition));
 		#endif
-		Reference * newReference3 = new Reference();
+		LDreference* newReference3 = new LDreference();
 		spriteSubmodelCurrentReference -> next = newReference3;
 		spriteSubmodelCurrentReference = spriteSubmodelCurrentReference -> next;
 
@@ -592,11 +592,11 @@ Reference * LRRCaddRangeSpriteInfoToReferenceList(Reference * spriteSubmodelInit
 /*primary sprite routines*/
 
 
-void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, string * spriteTextString, int spriteColourArray[])
+void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, string* spriteTextString, int spriteColourArray[])
 {
 	*spriteTextString = "";
 	
-	ModelDetails * unitDetailsInSceneFile = unitReferenceInSceneFile->subModelDetails;
+	ModelDetails* unitDetailsInSceneFile = unitReferenceInSceneFile->subModelDetails;
 
 	/*Start Sprite Text Creation*/
 #ifdef SPRITE_TEXTUAL_INCLUDE_ALL_COMBAT_INFO
@@ -646,17 +646,17 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 		cout << "tempString without fullstop = " << tempString << endl;
 		fullstopFound = true;
 	}
-	//cout << "*spriteTextString=" << *spriteTextString << endl;
+	//cout << "*spriteTextString=" <<* spriteTextString << endl;
 #endif
 
 	/*Player ID Information*/
 	*spriteTextString = *spriteTextString + '\n';
 #ifdef SPRITE_TEXTUAL_INCLUDE_PLAYERID_INFO
 	//itoa(obtainReferencePlayerID(unitReferenceInSceneFile), tempString, 10);
-	sprintf(tempString, "%d", obtainReferencePlayerID(unitReferenceInSceneFile));
+	tempString = convertIntToString(obtainReferencePlayerID(unitReferenceInSceneFile));
 
 	*spriteTextString = *spriteTextString + "ID = " + tempString;
-	//cout << "*spriteTextString=" << *spriteTextString << endl;
+	//cout << "*spriteTextString=" <<* spriteTextString << endl;
 #endif
 
 
@@ -674,7 +674,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 	#ifdef SPRITE_ALWAYS_ADD_TEXT
 		if(unitDetailsInSceneFile->defenceBonus > 0)
 		{
-			sprintf(tempString, "%d", unitDetailsInSceneFile->defenceBonus);
+			tempString = convertIntToString(unitDetailsInSceneFile->defenceBonus);
 			*spriteTextString = *spriteTextString + " - " + tempString;
 		}
 	#endif
@@ -687,7 +687,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 		else
 		{
 	#ifndef SPRITE_ALWAYS_ADD_TEXT
-			sprintf(tempString, "%d", (unitDetailsInSceneFile->defenceTotal)*2);
+			tempString = convertIntToString((unitDetailsInSceneFile->defenceTotal)*2);
 			*spriteTextString = *spriteTextString + tempString;
 	#endif
 		}
@@ -697,7 +697,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 	{
 		*spriteTextString = *spriteTextString + CHAR_DASH;
 	}
-	//cout << "*spriteTextString=" << *spriteTextString << endl;
+	//cout << "*spriteTextString=" <<* spriteTextString << endl;
 
 	//cout << "DEBUG 1i" << endl;
 
@@ -714,11 +714,11 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 			//cout << "DEBUG 1i1" << endl;
 		#ifdef SPRITE_ALWAYS_ADD_TEXT
 			//itoa(baseLongDistanceAttackLevel, tempString, 10);
-			sprintf(tempString, "%d", baseLongDistanceAttackLevel);
+			tempString = convertIntToString(baseLongDistanceAttackLevel);
 			*spriteTextString = *spriteTextString + tempString;
 			if(unitDetailsInSceneFile->longDistanceAttackBonus > 0)
 			{
-				sprintf(tempString, "%d", unitDetailsInSceneFile->longDistanceAttackBonus);
+				tempString = convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
 				*spriteTextString = *spriteTextString + " - " + tempString;
 			}
 		#endif
@@ -732,7 +732,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 			else
 			{
 			#ifndef SPRITE_ALWAYS_ADD_TEXT
-				sprintf(tempString, "%d", (unitDetailsInSceneFile->longDistanceAttackTotal)*2);
+				tempString = convertIntToString((unitDetailsInSceneFile->longDistanceAttackTotal)*2);
 				*spriteTextString = *spriteTextString + tempString;
 			#endif
 			}
@@ -743,7 +743,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 			//cout << "DEBUG 1i6" << endl;
 			*spriteTextString = *spriteTextString + CHAR_DASH;
 		}
-		//cout << "*spriteTextString=" << *spriteTextString << endl;
+		//cout << "*spriteTextString=" <<* spriteTextString << endl;
 
 		//cout << "DEBUG 1j" << endl;
 
@@ -756,12 +756,12 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 		{
 		#ifdef SPRITE_ALWAYS_ADD_TEXT
 			//itoa(baseCloseCombatAttackLevel, tempString, 10);
-			sprintf(tempString, "%d", baseCloseCombatAttackLevel);
+			tempString = convertIntToString(baseCloseCombatAttackLevel);
 			*spriteTextString = *spriteTextString + tempString;
 			if(unitDetailsInSceneFile->closeCombatAttackBonus > 0)
 			{
 				//itoa(unitDetailsInSceneFile->closeCombatAttackBonus, tempString, 10);
-				sprintf(tempString, "%d", unitDetailsInSceneFile->closeCombatAttackBonus);
+				tempString = convertIntToString(unitDetailsInSceneFile->closeCombatAttackBonus);
 				*spriteTextString = *spriteTextString + " + " + tempString;
 			}
 		#endif
@@ -773,7 +773,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 			else
 			{
 			#ifndef SPRITE_ALWAYS_ADD_TEXT
-				sprintf(tempString, "%d", (unitDetailsInSceneFile->closeCombatAttackTotal)*2);
+				tempString = convertIntToString((unitDetailsInSceneFile->closeCombatAttackTotal)*2);
 				*spriteTextString = *spriteTextString + tempString;
 			#endif
 			}
@@ -783,7 +783,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 		{
 			*spriteTextString = *spriteTextString + CHAR_DASH;
 		}
-		//cout << "*spriteTextString=" << *spriteTextString << endl;
+		//cout << "*spriteTextString=" <<* spriteTextString << endl;
 
 #else
 
@@ -798,11 +798,11 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 			if((unitDetailsInSceneFile->closeCombatAttackValue) > (unitDetailsInSceneFile->longDistanceAttackValue))
 			{
 			#ifdef SPRITE_ALWAYS_ADD_TEXT
-				sprintf(tempString, "%d", baseCloseCombatAttackLevel);
+				tempString = convertIntToString(baseCloseCombatAttackLevel);
 				*spriteTextString = *spriteTextString + tempString;
 				if(unitDetailsInSceneFile->closeCombatAttackBonus > 0)
 				{
-					sprintf(tempString, "%d", unitDetailsInSceneFile->closeCombatAttackBonus);
+					tempString = convertIntToString(unitDetailsInSceneFile->closeCombatAttackBonus);
 					*spriteTextString = *spriteTextString + " + " + tempString;
 				}
 			#endif
@@ -815,7 +815,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 				else
 				{
 				#ifndef SPRITE_ALWAYS_ADD_TEXT
-					sprintf(tempString, "%d", (unitDetailsInSceneFile->closeCombatAttackTotal)*2);
+					tempString = convertIntToString((unitDetailsInSceneFile->closeCombatAttackTotal)*2);
 					*spriteTextString = *spriteTextString + tempString;
 				#endif
 				}
@@ -824,11 +824,11 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 			else
 			{
 			#ifdef SPRITE_ALWAYS_ADD_TEXT
-				sprintf(tempString, "%d", baseLongDistanceAttackLevel);
+				tempString = convertIntToString(baseLongDistanceAttackLevel);
 				*spriteTextString = *spriteTextString + tempString;
 				if(unitDetailsInSceneFile->longDistanceAttackBonus > 0)
 				{
-					sprintf(tempString, "%d", unitDetailsInSceneFile->longDistanceAttackBonus);
+					tempString = convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
 					*spriteTextString = *spriteTextString + " - " + tempString;
 				}
 			#endif
@@ -843,7 +843,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 				else
 				{
 				#ifndef SPRITE_ALWAYS_ADD_TEXT
-					sprintf(tempString, "%d", (unitDetailsInSceneFile->longDistanceAttackTotal)*2);
+					tempString = convertIntToString((unitDetailsInSceneFile->longDistanceAttackTotal)*2);
 					*spriteTextString = *spriteTextString + tempString;
 				#endif
 				}
@@ -854,7 +854,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 		{
 			*spriteTextString = *spriteTextString + CHAR_DASH;
 		}
-		//cout << "*spriteTextString=" << *spriteTextString << endl;
+		//cout << "*spriteTextString=" <<* spriteTextString << endl;
 
 #endif
 
@@ -870,12 +870,12 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 	if(unitDetailsInSceneFile->movementSpeed > 0)
 	{
 		//itoa(unitDetailsInSceneFile->movementSpeed, tempString, 10);
-		sprintf(tempString, "%d", unitDetailsInSceneFile->movementSpeed);
+		tempString = convertIntToString(unitDetailsInSceneFile->movementSpeed);
 		*spriteTextString = *spriteTextString + tempString;
 
 		if(unitDetailsInSceneFile->longDistanceAttackBonus > 0)
 		{
-			sprintf(tempString, "%d", unitDetailsInSceneFile->longDistanceAttackBonus);
+			tempString = convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
 			*spriteTextString = *spriteTextString + " + " + tempString;
 		}
 	}
@@ -887,7 +887,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 
 	//cout << "DEBUG 1l" << endl;
 
-	//cout << "DEBUG: *spriteTextString = \n" << *spriteTextString << "\n\n" << endl;
+	//cout << "DEBUG:* spriteTextString = \n" <<* spriteTextString << "\n\n" << endl;
 	/*End Start Sprite Text Creation*/
 }
 

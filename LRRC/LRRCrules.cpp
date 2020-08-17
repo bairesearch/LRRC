@@ -21,9 +21,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCrules.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -68,17 +68,17 @@
 #define RULES_XML_ATTRIBUTE_maxTravel ((string)"maxTravel")
 #define RULES_XML_ATTRIBUTE_buildingMod ((string)"buildingMod")
 
-RulesClass * LRRCrulesUnitTypeDetails;
-RulesClass * LRRCrulesUnitCombatDetailsDefenceHead;
-RulesClass * LRRCrulesUnitCombatDetailsDefenceTorso;
-RulesClass * LRRCrulesUnitCombatDetailsDefenceShield;
-RulesClass * LRRCrulesUnitCombatDetailsAttackCloseCombat;
-RulesClass * LRRCrulesUnitCombatDetailsAttackLongDistance;
-RulesClass * LRRCrulesBuildingDetails;
-RulesClass * LRRCrulesTerrainDetails;
-RulesClass * LRRCrulesUnitTypeCatagories;
-RulesClass * LRRCrulesMiscellaneous;
-RulesClass * LRRCrulesSprite;
+XMLrulesClass* LRRCrulesUnitTypeDetails;
+XMLrulesClass* LRRCrulesUnitCombatDetailsDefenceHead;
+XMLrulesClass* LRRCrulesUnitCombatDetailsDefenceTorso;
+XMLrulesClass* LRRCrulesUnitCombatDetailsDefenceShield;
+XMLrulesClass* LRRCrulesUnitCombatDetailsAttackCloseCombat;
+XMLrulesClass* LRRCrulesUnitCombatDetailsAttackLongDistance;
+XMLrulesClass* LRRCrulesBuildingDetails;
+XMLrulesClass* LRRCrulesTerrainDetails;
+XMLrulesClass* LRRCrulesUnitTypeCatagories;
+XMLrulesClass* LRRCrulesMiscellaneous;
+XMLrulesClass* LRRCrulesSprite;
 
 static string nullString;
 
@@ -86,7 +86,7 @@ bool parseLRRCrulesXMLfile()
 {
 	bool result = true;
 
- 	XMLparserTag * firstTagInXMLFile = new XMLparserTag();	//the firstTagInXMLFile object must be initialised here (in XMLrulesClass.cpp scope). if it is initialised in XMLParserClass.cpp else it will be come corrupted,
+ 	XMLparserTag* firstTagInXMLFile = new XMLparserTag();	//the firstTagInXMLFile object must be initialised here (in XMLrulesClass.cpp scope). if it is initialised in XMLParserClass.cpp else it will be come corrupted,
  	if(!readXMLfile(LRRC_RULES_XML_FILE_NAME, firstTagInXMLFile))
  	{
 		result = false;
@@ -100,19 +100,19 @@ bool parseLRRCrulesXMLfile()
 	}
 	*/
 
-	XMLparserTag * currentTag = firstTagInXMLFile;
+	XMLparserTag* currentTag = firstTagInXMLFile;
 
-	LRRCrulesUnitTypeDetails = new RulesClass();
-	LRRCrulesUnitCombatDetailsDefenceHead = new RulesClass();
-	LRRCrulesUnitCombatDetailsDefenceTorso = new RulesClass();
-	LRRCrulesUnitCombatDetailsDefenceShield = new RulesClass();
-	LRRCrulesUnitCombatDetailsAttackCloseCombat = new RulesClass();
-	LRRCrulesUnitCombatDetailsAttackLongDistance = new RulesClass();
-	LRRCrulesBuildingDetails = new RulesClass();
-	LRRCrulesTerrainDetails = new RulesClass();
-	LRRCrulesUnitTypeCatagories = new RulesClass();
-	LRRCrulesMiscellaneous = new RulesClass();
-	LRRCrulesSprite = new RulesClass();
+	LRRCrulesUnitTypeDetails = new XMLrulesClass();
+	LRRCrulesUnitCombatDetailsDefenceHead = new XMLrulesClass();
+	LRRCrulesUnitCombatDetailsDefenceTorso = new XMLrulesClass();
+	LRRCrulesUnitCombatDetailsDefenceShield = new XMLrulesClass();
+	LRRCrulesUnitCombatDetailsAttackCloseCombat = new XMLrulesClass();
+	LRRCrulesUnitCombatDetailsAttackLongDistance = new XMLrulesClass();
+	LRRCrulesBuildingDetails = new XMLrulesClass();
+	LRRCrulesTerrainDetails = new XMLrulesClass();
+	LRRCrulesUnitTypeCatagories = new XMLrulesClass();
+	LRRCrulesMiscellaneous = new XMLrulesClass();
+	LRRCrulesSprite = new XMLrulesClass();
 
 
 
@@ -126,7 +126,7 @@ bool parseLRRCrulesXMLfile()
 
 
 	/*
-	RulesClass * currentReferenceToObjectClass;
+	XMLrulesClass* currentReferenceToObjectClass;
 
 	currentReferenceToObjectClass = LRRCrulesUnitTypeDetails;
 	while(currentReferenceToObjectClass->next != NULL)
@@ -290,11 +290,11 @@ bool parseLRRCrulesXMLfile()
 	return result;
 }
 
-bool parseLRRCrulesTag(XMLparserTag * currentTag)
+bool parseLRRCrulesTag(XMLparserTag* currentTag)
 {
 	bool result = true;
 
-	XMLparserTag * currentTagUpdated = currentTag;
+	XMLparserTag* currentTagUpdated = currentTag;
 	currentTagUpdated = parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_rules, &result);
 	if(result)
 	{
@@ -337,11 +337,11 @@ bool parseLRRCrulesTag(XMLparserTag * currentTag)
 	return result;
 }
 
-bool parseTagUnitCombatDetails(XMLparserTag * currentTag)
+bool parseTagUnitCombatDetails(XMLparserTag* currentTag)
 {
 	bool result = true;
 
-	XMLparserTag * currentTagUpdated = currentTag;
+	XMLparserTag* currentTagUpdated = currentTag;
 	currentTagUpdated = parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_unitCombatDetails, &result);
 	if(result)
 	{
@@ -359,11 +359,11 @@ bool parseTagUnitCombatDetails(XMLparserTag * currentTag)
 	return result;
 }
 
-bool parseTagArmour(XMLparserTag * currentTag)
+bool parseTagArmour(XMLparserTag* currentTag)
 {
 	bool result = true;
 
-	XMLparserTag * currentTagUpdated = currentTag;
+	XMLparserTag* currentTagUpdated = currentTag;
 	currentTagUpdated = parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_armour, &result);
 	if(result)
 	{
@@ -386,7 +386,7 @@ bool parseTagArmour(XMLparserTag * currentTag)
 	return result;
 }
 
-bool parseTagHead(XMLparserTag * currentTag)
+bool parseTagHead(XMLparserTag* currentTag)
 {
 	bool result = true;
 
@@ -395,7 +395,7 @@ bool parseTagHead(XMLparserTag * currentTag)
 	return result;
 }
 
-bool parseTagTorso(XMLparserTag * currentTag)
+bool parseTagTorso(XMLparserTag* currentTag)
 {
 	bool result = true;
 
@@ -404,7 +404,7 @@ bool parseTagTorso(XMLparserTag * currentTag)
 	return result;
 }
 
-bool parseTagShield(XMLparserTag * currentTag)
+bool parseTagShield(XMLparserTag* currentTag)
 {
 	bool result = true;
 
@@ -413,11 +413,11 @@ bool parseTagShield(XMLparserTag * currentTag)
 	return result;
 }
 
-bool parseTagWeapons(XMLparserTag * currentTag)
+bool parseTagWeapons(XMLparserTag* currentTag)
 {
 	bool result = true;
 
-	XMLparserTag * currentTagUpdated = currentTag;
+	XMLparserTag* currentTagUpdated = currentTag;
 	currentTagUpdated = parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_weapons, &result);
 	if(result)
 	{
@@ -435,7 +435,7 @@ bool parseTagWeapons(XMLparserTag * currentTag)
 	return result;
 }
 
-bool parseTagCloseCombat(XMLparserTag * currentTag)
+bool parseTagCloseCombat(XMLparserTag* currentTag)
 {
 	bool result = true;
 
@@ -444,7 +444,7 @@ bool parseTagCloseCombat(XMLparserTag * currentTag)
 	return result;
 }
 
-bool parseTagLongDistanceCombat(XMLparserTag * currentTag)
+bool parseTagLongDistanceCombat(XMLparserTag* currentTag)
 {
 	bool result = true;
 

@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCmovement.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -34,7 +34,6 @@
  * Project Fifth Internal Release: 2d11a 3-June-07
  *
  *******************************************************************************/
-
 
 
 #include "LRRCmovement.h"
@@ -53,7 +52,7 @@ static int numberOfCombatPointsUsedByPlayerSoFarDuringRound;
 	//NOTE THIS MUST BE DECLARED DYNAMICALLY IN THE FUTURE. CURRENTLY IT IS ASSUMED THE PLAYER HAS A BUDGET OF 1000
 
 
-ModelDetails * buildingSection;
+ModelDetails* buildingSection;
 
 
 
@@ -79,17 +78,17 @@ ModelDetails * buildingSection;
 
 
 
-bool compareSceneFilesMovementPhase(char* preMovementPhaseSceneFileName, char* thisPhaseStartSceneFileName, Player * currentPlayer, char * targetSpritesSceneFileName, bool addSprites)
+bool compareSceneFilesMovementPhase(char* preMovementPhaseSceneFileName, char* thisPhaseStartSceneFileName, Player* currentPlayer, char* targetSpritesSceneFileName, bool addSprites)
 {
 	bool result = true;
 
 	buildingSection = new ModelDetails();	//NEW
 
 	//declare initial scene references
-	Reference * initialReferenceInThisPhaseStartScene = new Reference();
-	Reference * initialReferenceInPreMovementPhaseScene = new Reference();
-	Reference * topLevelReferenceInThisPhaseStartScene = new Reference(true);
-	Reference * topLevelReferenceInPreMovementPhaseScene = new Reference(true);
+	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
+	LDreference* initialReferenceInPreMovementPhaseScene = new LDreference();
+	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);
+	LDreference* topLevelReferenceInPreMovementPhaseScene = new LDreference(true);
 
 	if(!parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
 	{//file does not exist
@@ -122,7 +121,7 @@ bool compareSceneFilesMovementPhase(char* preMovementPhaseSceneFileName, char* t
 
 
 
-bool compareScenesMovementPhase(char * preMovementPhaseSceneFileName, Reference * initialReferenceInPreMovementPhaseScene, Reference * initialReferenceInThisPhaseStartScene, Player * currentPlayer, char * targetSpritesSceneFileName, bool addSprites)
+bool compareScenesMovementPhase(char* preMovementPhaseSceneFileName, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, Player* currentPlayer, char* targetSpritesSceneFileName, bool addSprites)
 {
 	bool result = true;
 
@@ -134,7 +133,7 @@ bool compareScenesMovementPhase(char * preMovementPhaseSceneFileName, Reference 
 	maxNumCombatRitualPointsAllowedDuringRound = PLAYER_ROUND_RITUAL_COMBAT_POINTS_ALLOCATED;
 
 	//initialise sprite list variables
-	Reference * targetSpriteListInitialReference = new Reference();
+	LDreference* targetSpriteListInitialReference = new LDreference();
 	int numTargetSpritesAdded = 0;
 
 	//parsingUnitFileAndCalculatingItsCharacteristics = false; //this is assumed already!
@@ -172,10 +171,10 @@ bool compareScenesMovementPhase(char * preMovementPhaseSceneFileName, Reference 
 
 
 
-bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(Reference * referenceInThisPhaseStartSceneFile, Reference * initialReferenceInPreMovementPhaseScene, int parentUnitSpeed, bool isAChildOfAMovingReference, Player * currentPlayer, char * targetSpritesSceneFileName, Reference * spriteListInitialReference, int * numTargetSpritesAdded)
+bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDreference* referenceInThisPhaseStartSceneFile, LDreference* initialReferenceInPreMovementPhaseScene, int parentUnitSpeed, bool isAChildOfAMovingReference, Player* currentPlayer, char* targetSpritesSceneFileName, LDreference* spriteListInitialReference, int* numTargetSpritesAdded)
 {
 	bool playerMoveStatus = true;
-	Reference * currentReference = referenceInThisPhaseStartSceneFile;
+	LDreference* currentReference = referenceInThisPhaseStartSceneFile;
 	while(currentReference->next != NULL)
 	{
 		#ifdef DEBUG_MOVEMENT_CPP
@@ -193,7 +192,7 @@ bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(Refe
 			if(currentReference->isSubModelReference)
 			{
 
-				Reference * topLevelReferenceInUnit1 = new Reference(currentReference->name, currentReference->colour, true);
+				LDreference* topLevelReferenceInUnit1 = new LDreference(currentReference->name, currentReference->colour, true);
 				//copyReferences(topLevelReferenceInUnit1, currentReference, REFERENCE_TYPE_SUBMODEL);	//this is required to use topLevelReferenceInUnit1 in sprite addition
 
 				copyAllUnitDetails(topLevelReferenceInUnit1->subModelDetails, currentReference->subModelDetails);
@@ -206,7 +205,7 @@ bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(Refe
 				#ifdef DEBUG_MOVEMENT_CPP
 				cout << "Current reference being compared: " << currentReference->name  << endl;
 				cout << "topLevelReferenceInUnit1.subModelDetails->numPerson = " << topLevelReferenceInUnit1.subModelDetails->numPerson << endl;
-				cout << "Reference unit speed based on determineUnitTypeAndMinSpeedOfUnitGroup = " <<  currentReferenceUnitSpeed << endl;
+				cout << "LDreference unit speed based on determineUnitTypeAndMinSpeedOfUnitGroup = " <<  currentReferenceUnitSpeed << endl;
 				#endif
 
 				delete topLevelReferenceInUnit1;
@@ -223,7 +222,7 @@ bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(Refe
 		aPartWithSameIDMovedRelativeSinceLastRound = resultOfComparison[3]
 		*/
 
-		Reference * referenceInPreviousSceneRefList;
+		LDreference* referenceInPreviousSceneRefList;
 		bool searchResult = true;
 		bool unitIDFound = false;
 		bool resultOfComparison[4];
@@ -281,10 +280,10 @@ bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(Refe
 	return playerMoveStatus;
 }
 
-Reference * compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(Reference * referenceInThisPhaseStartSceneFileBeingLocated, Reference * referenceInPreMovementPhaseSceneFile, bool resultOfComparison[], int parentUnitSpeed, bool * unitIDFound, bool * result)
+LDreference* compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(LDreference* referenceInThisPhaseStartSceneFileBeingLocated, LDreference* referenceInPreMovementPhaseSceneFile, bool resultOfComparison[], int parentUnitSpeed, bool* unitIDFound, bool* result)
 {
-	Reference * currentReference = referenceInPreMovementPhaseSceneFile;
-	Reference * referenceInPreviousSceneFile;
+	LDreference* currentReference = referenceInPreMovementPhaseSceneFile;
+	LDreference* referenceInPreviousSceneFile;
 
 	while(currentReference->next != NULL)
 	{
@@ -308,7 +307,7 @@ Reference * compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferen
 		if(currentReference->isSubModelReference)
 		{
 			bool unitIDFoundInChild = false;
-			Reference * referenceOfUnitIDFoundInChild;
+			LDreference* referenceOfUnitIDFoundInChild;
 			referenceOfUnitIDFoundInChild = compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(referenceInThisPhaseStartSceneFileBeingLocated, currentReference->firstReferenceWithinSubModel, resultOfComparison, parentUnitSpeed, &unitIDFoundInChild, result);
 			if(unitIDFoundInChild == true)
 			{
@@ -332,7 +331,7 @@ Reference * compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferen
 }
 
 
-bool compareSubmodelNamesAndIfSameCheckIfValidMove(Reference * referenceInThisPhaseStartSceneSearchedFor, Reference * referenceInPreMovementPhaseSceneFoundDuringSearch, bool resultOfComparison[], int parentUnitSpeed)
+bool compareSubmodelNamesAndIfSameCheckIfValidMove(LDreference* referenceInThisPhaseStartSceneSearchedFor, LDreference* referenceInPreMovementPhaseSceneFoundDuringSearch, bool resultOfComparison[], int parentUnitSpeed)
 {
 	//cout << "DEBUG: here4" << endl;
 
@@ -367,7 +366,7 @@ bool compareSubmodelNamesAndIfSameCheckIfValidMove(Reference * referenceInThisPh
 			/*old - try to calculate movement rule obedience based upon absolute movement calculations - difficult and unnecessary*/
 
 		#ifdef DEBUG_MOVEMENT_CPP
-		cout << "D: Reference names and colours have been found to be the same" << endl;
+		cout << "D: LDreference names and colours have been found to be the same" << endl;
 		#endif
 
 		int preMovementPhaseSceneFileRelativeX = (int)referenceInPreMovementPhaseSceneFoundDuringSearch->relativePosition.x;
@@ -505,7 +504,7 @@ bool compareSubmodelNamesAndIfSameCheckIfValidMove(Reference * referenceInThisPh
 
 
 
-bool dealWithResultsOfComparison(Reference * referenceInThisPhaseStartSceneFile, bool resultOfComparison[], Player * currentPlayer, Reference * spriteListInitialReference, Reference * referenceInPreMovementPhaseSceneFile, int * numTargetSpritesAdded, char * targetSpritesSceneFileName, bool unitIDFound, bool isChildOfMovingReference)
+bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile, bool resultOfComparison[], Player* currentPlayer, LDreference* spriteListInitialReference, LDreference* referenceInPreMovementPhaseSceneFile, int* numTargetSpritesAdded, char* targetSpritesSceneFileName, bool unitIDFound, bool isChildOfMovingReference)
 {
 
 	/*	"aPartWithSameName" = a part with same name and colour as part being compared
@@ -615,7 +614,7 @@ bool dealWithResultsOfComparison(Reference * referenceInThisPhaseStartSceneFile,
 			int thisPhaseStartSceneFileY = (int)referenceInThisPhaseStartSceneFile->absolutePosition.y;
 			int thisPhaseStartSceneFileZ = (int)referenceInThisPhaseStartSceneFile->absolutePosition.z;
 
-			//see if the the new Reference/ModelDetails lies within the players starting post.
+			//see if the the new LDreference/ModelDetails lies within the players starting post.
 			double XYZDisplacementFromStartingPost;
 			double differenceXDouble = ((double)thisPhaseStartSceneFileX - (double)currentPlayer->startPosition.x)/(LDRAW_UNITS_PER_CM);
 			double differenceYDouble = ((double)thisPhaseStartSceneFileY - (double)currentPlayer->startPosition.y)/(LDRAW_UNITS_PER_CM);
@@ -624,7 +623,7 @@ bool dealWithResultsOfComparison(Reference * referenceInThisPhaseStartSceneFile,
 
 			if(XYZDisplacementFromStartingPost <= PLAYER_MAXIMUM_BUILD_DISTANCE_FROM_STARTING_POST)
 			{
-				//see if the user has enough A)Budget and B)ritual round points to complete the new Reference creation
+				//see if the user has enough A)Budget and B)ritual round points to complete the new LDreference creation
 
 				if(referenceInThisPhaseStartSceneFile->isSubModelReference)
 				{
@@ -633,8 +632,8 @@ bool dealWithResultsOfComparison(Reference * referenceInThisPhaseStartSceneFile,
 					//Building Calculations	- During parsing these are calculated now on a per part basis and a finalisation basis (instead of a per unit parsed basis). At this stage the user is just notified if a new building has been added to the scene
 					int referencedSubmodelTotalDefinateBuildingSpecificPoints = 0;
 
-					RulesClass * currentReferenceRulesClass;
-					RecordClass * currentReferenceRecordClass;
+					XMLrulesClass* currentReferenceRulesClass;
+					RecordClass* currentReferenceRecordClass;
 
 					currentReferenceRulesClass = LRRCrulesBuildingDetails;
 					currentReferenceRecordClass = referenceInThisPhaseStartSceneFile->subModelDetails->recordOfBuildingDetails;
@@ -642,7 +641,7 @@ bool dealWithResultsOfComparison(Reference * referenceInThisPhaseStartSceneFile,
 					{
 						if(currentReferenceRecordClass->numberOfThisPartIDInTheUnit > 0)
 						{
-							referencedSubmodelTotalDefinateBuildingSpecificPoints+=(currentReferenceRulesClass->attribute4 * currentReferenceRecordClass->numberOfThisPartIDInTheUnit);
+							referencedSubmodelTotalDefinateBuildingSpecificPoints+=(currentReferenceRulesClass->attribute4* currentReferenceRecordClass->numberOfThisPartIDInTheUnit);
 						}
 
 						currentReferenceRecordClass = currentReferenceRecordClass->next;
@@ -676,12 +675,12 @@ bool dealWithResultsOfComparison(Reference * referenceInThisPhaseStartSceneFile,
 				}
 				else
 				{
-					cout << "New Reference detected in scene " << referenceInThisPhaseStartSceneFile->name << endl;
+					cout << "New LDreference detected in scene " << referenceInThisPhaseStartSceneFile->name << endl;
 					//cout << "\td:Relative Positions: X = " << referenceInThisPhaseStartSceneFile->relativePosition.x << ", Y = " << referenceInThisPhaseStartSceneFile->relativePosition.y << ", Z = " << referenceInThisPhaseStartSceneFile->relativePosition.z << endl;
 
 
-					const char * constantCharStarString = referenceInThisPhaseStartSceneFile->name.c_str();
-					char * charStarString = new char[referenceInThisPhaseStartSceneFile->name.size()+1];
+					const char* constantCharStarString = referenceInThisPhaseStartSceneFile->name.c_str();
+					char* charStarString = new char[referenceInThisPhaseStartSceneFile->name.size()+1];
 					strcpy(charStarString, constantCharStarString);
 
 					updateUnitDetailsWithBuildingDetails(charStarString, buildingSection);
@@ -695,7 +694,7 @@ bool dealWithResultsOfComparison(Reference * referenceInThisPhaseStartSceneFile,
 			}
 			else
 			{
-				cout << referenceInThisPhaseStartSceneFile->name << " cannot be considered a new ModelDetails/Reference in the scene, as it cannot be placed greater than " << PLAYER_MAXIMUM_BUILD_DISTANCE_FROM_STARTING_POST << " units from the players starting post" << endl;
+				cout << referenceInThisPhaseStartSceneFile->name << " cannot be considered a new ModelDetails/LDreference in the scene, as it cannot be placed greater than " << PLAYER_MAXIMUM_BUILD_DISTANCE_FROM_STARTING_POST << " units from the players starting post" << endl;
 				playerMoveStatus = false;
 			}
 		}
@@ -714,7 +713,7 @@ bool dealWithResultsOfComparison(Reference * referenceInThisPhaseStartSceneFile,
 
 //Building Options
 
-bool performFinalRoundPointsCalculations(Player * currentPlayer)
+bool performFinalRoundPointsCalculations(Player* currentPlayer)
 {
 	bool result = true;
 
@@ -723,15 +722,15 @@ bool performFinalRoundPointsCalculations(Player * currentPlayer)
 	int referencedSubmodelTotalDefinateBuildingSpecificPoints;
 
 	int pointsUsedByBuildingBricks = 0;
-	int pointsUsedByBuildingOthers = buildingSection->numBuildingOther * BUILDING_DEFAULT_MOD;
+	int pointsUsedByBuildingOthers = buildingSection->numBuildingOther* BUILDING_DEFAULT_MOD;
 
-	RulesClass * currentReferenceRulesClass = LRRCrulesBuildingDetails;
-	RecordClass * currentReferenceRecordClass = buildingSection->recordOfBuildingDetails;
+	XMLrulesClass* currentReferenceRulesClass = LRRCrulesBuildingDetails;
+	RecordClass* currentReferenceRecordClass = buildingSection->recordOfBuildingDetails;
 	while(currentReferenceRecordClass->next != NULL)
 	{
 		if(currentReferenceRecordClass->numberOfThisPartIDInTheUnit > 0)
 		{
-			pointsUsedByBuildingBricks = pointsUsedByBuildingBricks + (currentReferenceRecordClass->numberOfThisPartIDInTheUnit * currentReferenceRulesClass->attribute4);
+			pointsUsedByBuildingBricks = pointsUsedByBuildingBricks + (currentReferenceRecordClass->numberOfThisPartIDInTheUnit* currentReferenceRulesClass->attribute4);
 		}
 
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
@@ -757,7 +756,7 @@ bool performFinalRoundPointsCalculations(Player * currentPlayer)
 	pointsUsedByBuildingWalls = totalNumBuildingWallWindow + totalNumBuildingWallCorner;
 	numberOfFreeBuldingBricksBasedOnBuildingWalls = pointsUsedByBuildingWalls*NUMBER_OF_FREE_BUILDING_BRICKS_BASED_ON_BUILDING_WALLS_RATIO;
 	pointsUsedByBuildingBricks = totalNumBuildingBricks - numberOfFreeBuldingBricksBasedOnBuildingWalls;
-	pointsUsedByBuildingOthers = totalNumBuildingOther * BUILDING_DEFAULT_MOD;
+	pointsUsedByBuildingOthers = totalNumBuildingOther* BUILDING_DEFAULT_MOD;
 	pointsUsedByBuildingRocks = totalNumBuildingRockLarge*BUILDING_ROCK_LARGE_MOD + totalNumBuildingRockSmall*BUILDING_ROCK_SMALL_MOD;
 	pointsUsedByBuildingBattlements = totalNumBuildingBattlementTower*BUILDING_BATTLEMENT_TOWER_MOD;
 

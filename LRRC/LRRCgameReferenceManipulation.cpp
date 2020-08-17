@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCgameReferenceManipulation.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3e3a 01-September-2014
+ * Project Version: 3f4a 11-July-2015
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -35,32 +35,22 @@
  *
  *******************************************************************************/
 
+
 #include "LRRCgameReferenceManipulation.h"
 #include "LDreferenceManipulation.h"
 #include "SHAREDvector.h"
 #include "LDparser.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <string.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <math.h>
-using namespace std;
-
-
 
 
 /*secondary game routines*/
 
-Reference * searchReferenceListRemoveReference(Reference * initialReferenceInSceneFile, char * unitFileName, int unitColour, bool * unitIDFound, bool * result)
+LDreference* searchReferenceListRemoveReference(LDreference* initialReferenceInSceneFile, char* unitFileName, int unitColour, bool* unitIDFound, bool* result)
 {
-	Reference * modInitialReferenceInSceneFile = initialReferenceInSceneFile;
+	LDreference* modInitialReferenceInSceneFile = initialReferenceInSceneFile;
 
-	Reference * currentReference = initialReferenceInSceneFile;
-	Reference * previousReference = NULL;
+	LDreference* currentReference = initialReferenceInSceneFile;
+	LDreference* previousReference = NULL;
 
 	while(currentReference->next != NULL)
 	{
@@ -117,9 +107,9 @@ Reference * searchReferenceListRemoveReference(Reference * initialReferenceInSce
 
 
 /*
-void searchReferenceListAssignHasPerformedCombat(int currentPhase, Reference * initialReferenceInSceneFile, char * unitFileName, int unitColour, bool * unitIDFound, bool * result)
+void searchReferenceListAssignHasPerformedCombat(int currentPhase, LDreference* initialReferenceInSceneFile, char* unitFileName, int unitColour, bool* unitIDFound, bool* result)
 {
-	Reference * currentReference = initialReferenceInSceneFile;
+	LDreference* currentReference = initialReferenceInSceneFile;
 	while(currentReference->next != NULL)
 	{
 		if(currentReference->isSubModelReference)
@@ -147,10 +137,10 @@ void searchReferenceListAssignHasPerformedCombat(int currentPhase, Reference * i
 }
 */
 
-Reference * searchReferenceListFindReference(Reference * initialReferenceInSceneFile, string unitFileName, int unitColour, bool * unitIDFound, bool * result)
+LDreference* searchReferenceListFindReference(LDreference* initialReferenceInSceneFile, string unitFileName, int unitColour, bool* unitIDFound, bool* result)
 {
-	Reference * foundReference = NULL;
-	Reference * currentReference = initialReferenceInSceneFile;
+	LDreference* foundReference = NULL;
+	LDreference* currentReference = initialReferenceInSceneFile;
 	while(currentReference->next != NULL)
 	{
 		if(currentReference->isSubModelReference)
@@ -175,7 +165,7 @@ Reference * searchReferenceListFindReference(Reference * initialReferenceInScene
 			}
 
 			bool tempUnitIDFound = false;
-			Reference * tempReferenceFound;
+			LDreference* tempReferenceFound;
 			tempReferenceFound = searchReferenceListFindReference(currentReference->firstReferenceWithinSubModel, unitFileName, unitColour, &tempUnitIDFound , result);
 			if(tempUnitIDFound)
 			{
@@ -191,9 +181,9 @@ Reference * searchReferenceListFindReference(Reference * initialReferenceInScene
 }
 
 
-void searchReferenceListPrintReferenceDetails(Reference * initialReferenceInSceneFile)
+void searchReferenceListPrintReferenceDetails(LDreference* initialReferenceInSceneFile)
 {
-	Reference * currentReference = initialReferenceInSceneFile;
+	LDreference* currentReference = initialReferenceInSceneFile;
 	while(currentReference->next != NULL)
 	{
 
@@ -220,12 +210,12 @@ void searchReferenceListPrintReferenceDetails(Reference * initialReferenceInScen
 
 
 
-bool obtainUserInputInt(int * userInputInt)
+bool obtainUserInputInt(int* userInputInt)
 {
 	bool result = true;
 
 	bool UIstatus = true;
-	char answerAsString[100];
+	string answerAsString = "";
 	int answerAsInt;
 
 	while(UIstatus == true)
@@ -233,7 +223,7 @@ bool obtainUserInputInt(int * userInputInt)
 
 		cout << ">> ";
 		cin >> answerAsString;
-		answerAsInt = int(atof(answerAsString));
+		answerAsInt = convertStringToInt(answerAsString);
 
 		if(answerAsInt > 0)
 		{
@@ -260,12 +250,12 @@ bool obtainUserInputInt(int * userInputInt)
 
 
 
-bool obtainUnitDetailsFromUserWOSceneRef(int currentPhase, char * unit1FileName, char * unit2FileName, int * unit1ID, int * unit2ID, char * sceneFileName)
+bool obtainUnitDetailsFromUserWOSceneRef(int currentPhase, char* unit1FileName, char* unit2FileName, int* unit1ID, int* unit2ID, char* sceneFileName)
 {
 	bool result = true;
 
-	Reference * initialReferenceInSceneFile = new Reference();
-	Reference * topLevelReferenceInSceneFile = new Reference(sceneFileName, 1, true);	//The submodel information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+	LDreference* initialReferenceInSceneFile = new LDreference();
+	LDreference* topLevelReferenceInSceneFile = new LDreference(sceneFileName, 1, true);	//The submodel information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
 
 	if(!parseFile(sceneFileName, initialReferenceInSceneFile, topLevelReferenceInSceneFile, false))
 	{//file does not exist
@@ -276,13 +266,13 @@ bool obtainUnitDetailsFromUserWOSceneRef(int currentPhase, char * unit1FileName,
 	obtainUnitDetailsFromUserForCombat(unit1FileName, unit2FileName, unit1ID, unit2ID, initialReferenceInSceneFile);
 
 #ifdef GAME_USE_COLOUR_AS_UNIQUE_UNIT_IDS
-	if(!determineUnitNamesWithColours(currentPhase, unit1FileName, unit2FileName, *unit1ID, *unit2ID, initialReferenceInSceneFile))
+	if(!determineUnitNamesWithColours(currentPhase, unit1FileName, unit2FileName,* unit1ID,* unit2ID, initialReferenceInSceneFile))
 	{
 		result = false;
 	}
 #else
 
-	if(!determineIfUnitsExists(currentPhase, unit1FileName, unit2FileName, *unit1ID, *unit2ID, initialReferenceInSceneFile))
+	if(!determineIfUnitsExists(currentPhase, unit1FileName, unit2FileName,* unit1ID,* unit2ID, initialReferenceInSceneFile))
 	{
 		result = false;
 	}
@@ -296,21 +286,21 @@ bool obtainUnitDetailsFromUserWOSceneRef(int currentPhase, char * unit1FileName,
 
 
 
-bool obtainUnitDetailsFromUserForCombat(char * unit1FileName, char * unit2FileName, int * unit1ID, int * unit2ID, Reference * initialReferenceInSceneFile)
+bool obtainUnitDetailsFromUserForCombat(char* unit1FileName, char* unit2FileName, int* unit1ID, int* unit2ID, LDreference* initialReferenceInSceneFile)
 {
 	bool result = true;
 
-	char answerAsString[100];
+	string answerAsString = "";
 	long answerAsInt;
 
 	cout << "Enter Unit 1 ID (Eg '1'):";
 	cin >> answerAsString;
-	answerAsInt = int(atof(answerAsString));
+	answerAsInt = convertStringToInt(answerAsString);
 	*unit1ID = answerAsInt;
 
 	cout << "Enter Unit 2 ID (Eg '2'):";
 	cin >> answerAsString;
-	answerAsInt = int(atof(answerAsString));
+	answerAsInt = convertStringToInt(answerAsString);
 	*unit2ID = answerAsInt;
 
 
@@ -328,7 +318,7 @@ bool obtainUnitDetailsFromUserForCombat(char * unit1FileName, char * unit2FileNa
 }
 
 
-bool determineIfUnitsExists(int currentPhase, char * unitAttackerFileName, char * unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, Reference * initialReferenceInSceneFile)
+bool determineIfUnitsExists(int currentPhase, char* unitAttackerFileName, char* unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* initialReferenceInSceneFile)
 {
 	bool result = true;
 
@@ -353,7 +343,7 @@ bool determineIfUnitsExists(int currentPhase, char * unitAttackerFileName, char 
 }
 
 
-bool determineUnitNamesWithColours(int currentPhase, char * unit1FileName, char * unit2FileName, int unit1ID, int unit2ID, Reference * initialReferenceInSceneFile)
+bool determineUnitNamesWithColours(int currentPhase, char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, LDreference* initialReferenceInSceneFile)
 {
 	bool result = true;
 
@@ -378,9 +368,9 @@ bool determineUnitNamesWithColours(int currentPhase, char * unit1FileName, char 
 }
 
 
-void parseRefListCheckUnitExists(int currentPhase, Reference * initialReferenceInSceneFile, char * unitFileName, int unitColour, bool * unitIDFound, bool * result)
+void parseRefListCheckUnitExists(int currentPhase, LDreference* initialReferenceInSceneFile, char* unitFileName, int unitColour, bool* unitIDFound, bool* result)
 {
-	Reference * currentReference = initialReferenceInSceneFile;
+	LDreference* currentReference = initialReferenceInSceneFile;
 	while(currentReference->next != NULL)
 	{
 		if(currentReference->isSubModelReference)
@@ -407,9 +397,9 @@ void parseRefListCheckUnitExists(int currentPhase, Reference * initialReferenceI
 }
 
 
-void parseRefListDetRefNames(int currentPhase, Reference * reference, char * referenceName, int referenceColour, bool * unitIDFound, bool * result)
+void parseRefListDetRefNames(int currentPhase, LDreference* reference, char* referenceName, int referenceColour, bool* unitIDFound, bool* result)
 {
-	Reference * currentReference = reference;
+	LDreference* currentReference = reference;
 	while(currentReference->next != NULL)
 	{
 		if(currentReference->isSubModelReference)
