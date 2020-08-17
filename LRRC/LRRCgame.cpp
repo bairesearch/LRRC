@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCgame.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3f4a 11-July-2015
+ * Project Version: 3i19c 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -913,7 +913,7 @@ bool executePhase(int currentGame, int currentRound, int currentPlayerTurn, int 
 	else
 	{
 		result = false;
-		cout << "error: executePhase() illegal phase " << endl;
+		cout << "error: executePhase{} illegal phase " << endl;
 	}
 
 	return result;
@@ -1408,7 +1408,7 @@ bool executeGenericCombat(int currentRound, int currentPlayerTurn, int currentPh
 			else
 			{
 				result = false;
-				cout << "error: executeGenericCombat() illegal phase " << endl;
+				cout << "error: executeGenericCombat{} illegal phase " << endl;
 			}
 
 			cin >> answerAsString;
@@ -2631,7 +2631,7 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(int currentRound, i
 	else
 	{
 		result = false;
-		cout << "error: performGenericCombatWithTwoCombatReadyUnitsAndAddSprites() illegal phase " << endl;
+		cout << "error: performGenericCombatWithTwoCombatReadyUnitsAndAddSprites{} illegal phase " << endl;
 	}
 
 	if((combatResult == ATTACK_ERROR_FILE_IO) || (combatResult == ATTACK_NEITHER_UNIT_CAN_STRIKE) || (combatResult == ATTACK_UNIT2_STRIKES_UNIT2_CAN_STRIKE) || (combatResult == ATTACK_NEITHER_STRIKES_UNIT2_CAN_STRIKE))
@@ -2794,7 +2794,7 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(int currentRound, i
 		else
 		{
 			//result = false;
-			cout << "error: THperformGenericCombatWithTwoCombatReadyUnitsAndCompareExperienceWithNN() illegal phase " << endl;
+			cout << "error: THperformGenericCombatWithTwoCombatReadyUnitsAndCompareExperienceWithNN{} illegal phase " << endl;
 		}
 
 		int combatExperienceResult;
@@ -2948,7 +2948,7 @@ bool generateSceneFileName(int currentGame, int currentRound, int currentPlayerT
 	else
 	{
 		result = false;
-		cout << "error: generateSceneFileName() illegal phase " << endl;
+		cout << "error: generateSceneFileName{} illegal phase " << endl;
 	}
 	if(phaseExecutionStage ==  GAME_PHASE_EXECUTION_DISPLAY_START)
 	{
@@ -3168,7 +3168,7 @@ void trainAndOutputNeuralNetwork(ANNneuronContainer* firstInputNeuronInNetwork, 
 		#endif
 	}
 
-	trainAndOutputNeuralNetworkWithFileNames(firstInputNeuronInNetwork, firstOutputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, firstExperienceInList, addSprites, allowRaytrace, XMLNNSceneFileName, charstarvectorGraphicsLDRNNSceneFileName, charstarvectorGraphicsLDRNNSceneFileNameWithSprites, charstarvectorGraphicsTALNNSceneFileName, charstarraytracedImagePPMNNSceneFileName, charstarexperienceNNSceneFileName, useFoldsDuringTraining, maxOrSetNumEpochs);
+	trainAndOutputNeuralNetworkWithFileNames(firstInputNeuronInNetwork, firstOutputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, firstExperienceInList, addSprites, allowRaytrace, XMLNNSceneFileName, charstarvectorGraphicsLDRNNSceneFileName, charstarvectorGraphicsTALNNSceneFileName, charstarraytracedImagePPMNNSceneFileName, charstarexperienceNNSceneFileName, useFoldsDuringTraining, maxOrSetNumEpochs);
 
 }
 #endif

@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCTHgame.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3f4a 11-July-2015
+ * Project Version: 3i19c 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -854,7 +854,7 @@ double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(in
 		else
 		{
 			//result = false;
-			cout << "error: THperformGenericCombatWithTwoCombatReadyUnitsAndCompareExperienceWithNN() illegal phase " << endl;
+			cout << "error: THperformGenericCombatWithTwoCombatReadyUnitsAndCompareExperienceWithNN{} illegal phase " << endl;
 		}
 	#endif
 
@@ -873,7 +873,7 @@ double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(in
 		else
 		{
 			//result = false;
-			cout << "error: THperformGenericCombatWithTwoCombatReadyUnitsAndCompareExperienceWithNN() illegal phase " << endl;
+			cout << "error: THperformGenericCombatWithTwoCombatReadyUnitsAndCompareExperienceWithNN{} illegal phase " << endl;
 		}
 
 
@@ -1008,7 +1008,7 @@ int repeatCombatAndFindMostSuccessfulContendor(int currentPhase, LDreference* un
 		else
 		{
 			//result = false;
-			cout << "error: THperformGenericCombatWithTwoCombatReadyUnitsAndCompareExperienceWithNN() illegal phase " << endl;
+			cout << "error: THperformGenericCombatWithTwoCombatReadyUnitsAndCompareExperienceWithNN{} illegal phase " << endl;
 		}
 
 
@@ -1046,7 +1046,7 @@ int repeatCombatAndFindMostSuccessfulContendor(int currentPhase, LDreference* un
 	else
 	{
 		//result = false;
-		cout << "error: THperformGenericCombatWithTwoCombatReadyUnitsAndCompareExperienceWithNN() illegal phase " << endl;
+		cout << "error: THperformGenericCombatWithTwoCombatReadyUnitsAndCompareExperienceWithNN{} illegal phase " << endl;
 	}
 
 

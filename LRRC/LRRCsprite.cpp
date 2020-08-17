@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCsprite.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2015 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3f4a 11-July-2015
+ * Project Version: 3i19c 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -400,12 +400,10 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReferen
 	//cout << "here2" << endl;
 
 	//generate sprite reference name
-	char* spriteReferenceFileName = new char[DAT_FILE_REF_SUBMODEL_NAME_LENGTH_MAX];
-
 
 
 	//cout << "here2a" << endl;
-	LDcreateSpriteReferenceName(spriteReferenceFileName,* numSpritesAdded, sceneFileName);
+	string spriteReferenceFileName = LDcreateSpriteReferenceName(*numSpritesAdded, sceneFileName);
 	#ifdef DEBUG_SPRITES
 	cout << "spriteReferenceFileName = " << spriteReferenceFileName << endl;
 	#endif
@@ -413,11 +411,6 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReferen
 	//cout << "DEBUG unitBeingSprited = " << unitReference->name << endl;
 
 	//cout << "here3" << endl;
-
-	#ifdef CPLUSPLUSERRORCORRECTION3
-		char* CHICKENDEBUG = new char[DAT_FILE_REF_MAX_SIZE*DAT_FILE_MAX_NUM_OF_REFERENCES];
-	#endif
-
 
 	//writeReferencesToFile
 	if(!writeReferencesToFile(spriteReferenceFileName, spriteSubmodelInitialReference))
@@ -478,7 +471,7 @@ LDreference* LRRCaddTargetSpriteInfoToReferenceList(LDreference* spriteSubmodelI
 	else
 	{
 		result = false;
-		cout << "error: LRRCaddTargetSpriteInfoToReferenceList() illegal phase " << endl;
+		cout << "error: LRRCaddTargetSpriteInfoToReferenceList{} illegal phase " << endl;
 	}
 
 	#ifndef DEBUG_ADD_INDIVIDUAL_SPRITES
@@ -595,7 +588,7 @@ LDreference* LRRCaddRangeSpriteInfoToReferenceList(LDreference* spriteSubmodelIn
 void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, string* spriteTextString, int spriteColourArray[])
 {
 	*spriteTextString = "";
-	
+
 	ModelDetails* unitDetailsInSceneFile = unitReferenceInSceneFile->subModelDetails;
 
 	/*Start Sprite Text Creation*/
