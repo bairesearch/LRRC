@@ -26,7 +26,7 @@
  * File Name: LRRCTHgame.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7b 17-August-2020
+ * Project Version: 3n7c 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -36,38 +36,13 @@
  *******************************************************************************/
 
 
-#include "LRRCglobalDefs.hpp"
 #include "LRRCTHgame.hpp"
-#include "LRRCgame.hpp"
-#include "LRRCmovement.hpp"
-#include "LRRCcombat.hpp"
-#include "LRRCsprite.hpp"
-#include "LDparser.hpp"
-#include "LDreferenceManipulation.hpp"
-#include "RTreferenceManipulation.hpp"
-#include "LRRCgameReferenceManipulation.hpp"
-#include "LRRCrules.hpp"
-
-#ifdef USE_RT
-#include "RTscene.hpp"
-#endif
-
-
-#include "ANNneuronClass.hpp"
-#include "ANNFormation.hpp"
-#include "LRRCgameAI.hpp"
-#include "LRRCunitClass.hpp"
-#include "ANNTraining.hpp"
-#include "ANNXMLconversion.hpp"
-#include "ANNsprite.hpp"
-#include "ANNUpdateAlgorithm.hpp"
-#include "ANNdisplay.hpp"
 
 
 //Test Harness Code:
 
 
-bool cullUnitList(UnitListClass* firstUnitInUnitList, int numberOfUnitsRequired)
+bool LRRCTHgameClass::cullUnitList(UnitListClass* firstUnitInUnitList, int numberOfUnitsRequired)
 {
 	UnitListClass* currentUnitInUnitList = firstUnitInUnitList;
 
@@ -80,7 +55,7 @@ bool cullUnitList(UnitListClass* firstUnitInUnitList, int numberOfUnitsRequired)
 	return true;
 }
 
-bool randomiseUnitList(UnitListClass* firstUnitInNonRandomisedUnitList, UnitListClass* firstUnitInUnitList, long numberOfUnits)
+bool LRRCTHgameClass::randomiseUnitList(UnitListClass* firstUnitInNonRandomisedUnitList, UnitListClass* firstUnitInUnitList, long numberOfUnits)
 {
 	UnitListClass* currentUnitInNonRandomisedUnitList = firstUnitInNonRandomisedUnitList->next;
 	UnitListClass* previousUnitInNonRandomisedUnitList = firstUnitInNonRandomisedUnitList;
@@ -121,7 +96,7 @@ bool randomiseUnitList(UnitListClass* firstUnitInNonRandomisedUnitList, UnitList
 			newUnit->number = currentUnitInNonRandomisedUnitList->number;
 			ModelDetails* newUnitDetails = new ModelDetails();
 			newUnit->unitDetails = newUnitDetails;
-			copyAllUnitDetails(newUnit->unitDetails, currentUnitInNonRandomisedUnitList->unitDetails);
+			LRRCmodelClass.copyAllUnitDetails(newUnit->unitDetails, currentUnitInNonRandomisedUnitList->unitDetails);
 			currentUnitInUnitList->next = newUnit;
 			currentUnitInUnitList = currentUnitInUnitList->next;
 
@@ -164,7 +139,7 @@ bool randomiseUnitList(UnitListClass* firstUnitInNonRandomisedUnitList, UnitList
 
 
 
-int THtestANNusingCombatExperiences()
+int LRRCTHgameClass::THtestANNusingCombatExperiences()
 {
 	//************************
 	//PART 0: Standard Initialisations
@@ -172,17 +147,17 @@ int THtestANNusingCombatExperiences()
 
 	bool result = true;
 
-	if(!parseLRRCrulesXMLfile())
+	if(!LRRCrules.parseLRRCrulesXMLfile())
 	{
 		result = false;
 	}
 
-	fillInCombatExternVariables();
-	fillInGameExternVariables();
-	fillInModelClassExternVariables();
-	fillInParserExternVariables();
-	fillInPlayerClassExternVariables();
-	fillInLRRCSpriteExternVariables();
+	LRRCcombat.fillInCombatExternVariables();
+	LRRCgame.fillInGameExternVariables();
+	LRRCmodelClass.fillInModelClassExternVariables();
+	LRRCparser.fillInParserExternVariables();
+	LRRCplayerClass.fillInPlayerClassExternVariables();
+	LRRCsprite.fillInLRRCSpriteExternVariables();
 
 	Player* currentPlayer = new Player();
 
@@ -196,26 +171,26 @@ int THtestANNusingCombatExperiences()
 	long numberOfOutputNeurons;
 
 #ifdef TH_LRRC_GAME_USE_CC_EXPERIENCES
-	initialiseNeuralNetwork(GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);		//create neural network 1 (for unit/group targetting/combat decisions)
-	initialiseNeuralNetwork(GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);		//create neural network 2 (for unit/group targetting/combat decisions)
+	LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);		//create neural network 1 (for unit/group targetting/combat decisions)
+	LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);		//create neural network 2 (for unit/group targetting/combat decisions)
 #endif
 #ifdef TH_LRRC_GAME_USE_LD_EXPERIENCES
 #ifdef ANN_SEPARATE_CC_FROM_LD_NETWORK
-	initialiseNeuralNetwork(GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, currentPlayer, GAME_PHASE_LONGDISTANCECOMBAT);	//create neural network 1 (for unit/group targetting/combat decisions)
-	initialiseNeuralNetwork(GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, currentPlayer, GAME_PHASE_LONGDISTANCECOMBAT);	//create neural network 2 (for unit/group targetting/combat decisions)
+	LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, currentPlayer, GAME_PHASE_LONGDISTANCECOMBAT);	//create neural network 1 (for unit/group targetting/combat decisions)
+	LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, currentPlayer, GAME_PHASE_LONGDISTANCECOMBAT);	//create neural network 2 (for unit/group targetting/combat decisions)
 #endif
 #endif
 
 /*
 #ifdef TH_LRRC_GAME_USE_GLOBAL_EXPERIENCES
 	//create neural network 3 (for global targetting/combat decisions)
-	initialiseNeuralNetwork(GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);
+	LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);
 #endif
 */
 
 #ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
 	//create neural network 4 (for object recognition)
-	initialiseNeuralNetwork(GAME_INDEX_OF_OBJECT_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);
+	LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_OBJECT_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);
 #endif
 
 	//************************
@@ -231,7 +206,7 @@ int THtestANNusingCombatExperiences()
 	firstUnitInUnitList->number = 0;
 	ModelDetails* newUnitDetails = new ModelDetails();
 	firstUnitInUnitList->unitDetails = newUnitDetails;
-	copyAllUnitDetails(firstUnitInUnitList->unitDetails, firstUnitInNonRandomisedUnitList->unitDetails);
+	LRRCmodelClass.copyAllUnitDetails(firstUnitInUnitList->unitDetails, firstUnitInNonRandomisedUnitList->unitDetails);
 
 	randomiseUnitList(firstUnitInNonRandomisedUnitList, firstUnitInUnitList, (numberOfUnitsBeforeCull-1));
 
@@ -323,7 +298,7 @@ int THtestANNusingCombatExperiences()
 #ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
 	NNBeingTested = GAME_INDEX_OF_OBJECT_EXPERIENCE_NN;
 	//cout << "here1"
-	addOrCompareAllObjectExperiences(currentPlayer, NNBeingTested, ADD_EXPERIENCE, false);
+	LRRCgameAI.addOrCompareAllObjectExperiences(currentPlayer, NNBeingTested, ADD_EXPERIENCE, false);
 #endif
 
 
@@ -364,7 +339,7 @@ int THtestANNusingCombatExperiences()
 
 		//create player experience list
 		//currentPlayer->currentExperience[nn] = currentPlayer->firstExperience[nn];	//assumed true already
-		mergeAllUnitExperiencesIntoPlayerExperienceList(currentPlayer, currentPlayer->firstUnitInUnitList, nn);
+		LRRCgameAI.mergeAllUnitExperiencesIntoPlayerExperienceList(currentPlayer, currentPlayer->firstUnitInUnitList, nn);
 
 		/*
 		feedNeuralNetworkWithGameUnitExperiences(firstInputNeuronInNetwork,firstOutputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, firstUnitInUnitList, nn);
@@ -404,7 +379,7 @@ int THtestANNusingCombatExperiences()
 		allowRaytrace = false;
 	#endif
 
-		trainAndOutputNeuralNetwork(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn], currentPlayer->numberOfInputNeurons[nn], currentPlayer->numberOfOutputNeurons[nn], currentPlayer->firstExperience[nn], addSprites, allowRaytrace, nn, currentGame);
+		LRRCgame.trainAndOutputNeuralNetwork(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn], currentPlayer->numberOfInputNeurons[nn], currentPlayer->numberOfOutputNeurons[nn], currentPlayer->firstExperience[nn], addSprites, allowRaytrace, nn, currentGame);
 
 
 		//cout << "H7" << endl;
@@ -484,9 +459,9 @@ int THtestANNusingCombatExperiences()
 	double totalErrorObjectExperience = 0;
 
 	NNBeingTested = GAME_INDEX_OF_OBJECT_EXPERIENCE_NN;
-	totalErrorObjectExperience = addOrCompareAllObjectExperiences(currentPlayer, NNBeingTested, COMPARE_EXPERIENCE, false);
+	totalErrorObjectExperience = LRRCgameAI.addOrCompareAllObjectExperiences(currentPlayer, NNBeingTested, COMPARE_EXPERIENCE, false);
 
-	long numberOfObjectExperiences = (long)addOrCompareAllObjectExperiences(NULL, NULL, NULL, true);
+	long numberOfObjectExperiences = (long)LRRCgameAI.addOrCompareAllObjectExperiences(NULL, NULL, NULL, true);
 	double averageErrorObjectExperience = totalErrorObjectExperience/((double)numberOfObjectExperiences);
 
 	//cout << "averageErrorObjectExperience = " << averageErrorObjectExperience << endl;
@@ -499,7 +474,7 @@ int THtestANNusingCombatExperiences()
 
 
 	//assume units can only have 1 part of each part type (Ie - NO UNIT GROUPS!)
-long THgenerateUnitListwithAllUnitProperties(UnitListClass* firstUnitInUnitList)
+long LRRCTHgameClass::THgenerateUnitListwithAllUnitProperties(UnitListClass* firstUnitInUnitList)
 {
 	bool result = true;
 	long numberOfUnits = 0;
@@ -605,7 +580,7 @@ long THgenerateUnitListwithAllUnitProperties(UnitListClass* firstUnitInUnitList)
 	return numberOfUnits;
 }
 
-bool generateUnitDetails(ModelDetails* unitDetails, int selectionUnitTypeCatagories, int selectionUnitCombatDetailsAttackCloseCombat, int selectionUnitCombatDetailsAttackLongDistance, int selectionUnitCombatDetailsDefenceHead, int selectionUnitCombatDetailsDefenceTorso, int selectionUnitCombatDetailsDefenceShield)
+bool LRRCTHgameClass::generateUnitDetails(ModelDetails* unitDetails, int selectionUnitTypeCatagories, int selectionUnitCombatDetailsAttackCloseCombat, int selectionUnitCombatDetailsAttackLongDistance, int selectionUnitCombatDetailsDefenceHead, int selectionUnitCombatDetailsDefenceTorso, int selectionUnitCombatDetailsDefenceShield)
 {
 	RecordClass* currentRecord;
 
@@ -687,7 +662,7 @@ bool generateUnitDetails(ModelDetails* unitDetails, int selectionUnitTypeCatagor
 
 }
 
-double THperformGenericCombatWithAllPermutationsOfUnitsInListAndAddOrCompareExperiences(int currentPhase, UnitListClass* firstUnitInUnitList, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork)	//firstPlayerInList contains the NN
+double LRRCTHgameClass::THperformGenericCombatWithAllPermutationsOfUnitsInListAndAddOrCompareExperiences(int currentPhase, UnitListClass* firstUnitInUnitList, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork)	//firstPlayerInList contains the NN
 {
 	//bool result = true;
 	double totalError = 0.0;
@@ -716,7 +691,7 @@ double THperformGenericCombatWithAllPermutationsOfUnitsInListAndAddOrCompareExpe
 
 
 
-double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(int currentPhase, UnitListClass* unitAttacker, UnitListClass* unitDefender, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork)
+double LRRCTHgameClass::THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(int currentPhase, UnitListClass* unitAttacker, UnitListClass* unitDefender, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork)
 {
 	double totalError = 0.0;
 	//bool result = true;
@@ -766,8 +741,8 @@ double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(in
 	#endif
 		LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.y = 0;
 		LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.z = 0;
-		copyVectors(&(unitAttackerReference->absolutePosition), &LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
-		copyVectors(&(unitDefenderReference->absolutePosition), &LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition);
+		SHAREDvector.copyVectors(&(unitAttackerReference->absolutePosition), &LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
+		SHAREDvector.copyVectors(&(unitDefenderReference->absolutePosition), &LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition);
 		//cout << "longDistanceAttackBaseRange = " << longDistanceAttackBaseRange << endl;
 	}
 	else if(currentPhase == GAME_PHASE_CLOSECOMBAT)
@@ -782,15 +757,15 @@ double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(in
 		LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.x = (CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY-1)*LDRAW_UNITS_PER_CM;
 		LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.y = 0;
 		LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.z = 0;
-		copyVectors(&(unitAttackerReference->absolutePosition), &LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
-		copyVectors(&(unitDefenderReference->absolutePosition), &LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition);
+		SHAREDvector.copyVectors(&(unitAttackerReference->absolutePosition), &LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
+		SHAREDvector.copyVectors(&(unitDefenderReference->absolutePosition), &LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition);
 	}
 
 	//Save ideal positions
 	vec savedUnitAttackerReferenceAbsolutePosition;
 	vec savedUnitDefenderReferenceAbsolutePosition;
-	copyVectors(&savedUnitAttackerReferenceAbsolutePosition, &(unitAttackerReference->absolutePosition));
-	copyVectors(&savedUnitDefenderReferenceAbsolutePosition, &(unitDefenderReference->absolutePosition));
+	SHAREDvector.copyVectors(&savedUnitAttackerReferenceAbsolutePosition, &(unitAttackerReference->absolutePosition));
+	SHAREDvector.copyVectors(&savedUnitDefenderReferenceAbsolutePosition, &(unitDefenderReference->absolutePosition));
 
 #ifdef TH_LRRC_GAME_USE_RANDOM_DISTANCES_TO_TRAIN_NETWORKS
 	for(int i=0; i<numberOfDistancesToTrainNetwork; i++)
@@ -811,8 +786,8 @@ double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(in
 			LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.x = randomDistanceSelected*LDRAW_UNITS_PER_CM;
 			LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.y = 0;
 			LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.z = 0;
-			copyVectors(&(unitAttackerReference->absolutePosition), &LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
-			copyVectors(&(unitDefenderReference->absolutePosition), &LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition);
+			SHAREDvector.copyVectors(&(unitAttackerReference->absolutePosition), &LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
+			SHAREDvector.copyVectors(&(unitDefenderReference->absolutePosition), &LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition);
 		}
 		else if(currentPhase == GAME_PHASE_CLOSECOMBAT)
 		{
@@ -828,8 +803,8 @@ double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(in
 			LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.x = randomDistanceSelected*LDRAW_UNITS_PER_CM;
 			LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.y = 0;
 			LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.z = 0;
-			copyVectors(&(unitAttackerReference->absolutePosition), &LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
-			copyVectors(&(unitDefenderReference->absolutePosition), &LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition);
+			SHAREDvector.copyVectors(&(unitAttackerReference->absolutePosition), &LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
+			SHAREDvector.copyVectors(&(unitDefenderReference->absolutePosition), &LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition);
 		}
 	#endif
 
@@ -845,11 +820,11 @@ double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(in
 		bool unit2intendsToPerformLongDistanceAttack = true;
 		if(currentPhase == GAME_PHASE_CLOSECOMBAT)
 		{
-			combatResult = performCloseCombatWithReferences(unitAttackerReference, unitDefenderReference,  unit1intendsToPerformCloseCombatAttack,  unit2intendsToPerformCloseCombatAttack, unit1TakesTheInitative, unit2TakesTheInitative);
+			combatResult = LRRCcombat.performCloseCombatWithReferences(unitAttackerReference, unitDefenderReference,  unit1intendsToPerformCloseCombatAttack,  unit2intendsToPerformCloseCombatAttack, unit1TakesTheInitative, unit2TakesTheInitative);
 		}
 		else if(currentPhase == GAME_PHASE_LONGDISTANCECOMBAT)
 		{
-			combatResult = performLongDistanceCombatWithReferences(unitAttackerReference, unitDefenderReference,  unit1intendsToPerformLongDistanceAttack, unit2intendsToPerformLongDistanceAttack);
+			combatResult = LRRCcombat.performLongDistanceCombatWithReferences(unitAttackerReference, unitDefenderReference,  unit1intendsToPerformLongDistanceAttack, unit2intendsToPerformLongDistanceAttack);
 		}
 		else
 		{
@@ -911,17 +886,17 @@ double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(in
 				*/
 
 			unitTheoreticalBestDecisionToCompare = attackDecision;
-			totalError = totalError + addOrCompareExperienceFromUnitDecision(currentPhase, unitAttacker, unitAttackerReference, unitDefenderReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
+			totalError = totalError + LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitAttacker, unitAttackerReference, unitDefenderReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
 
 
-			//cout << "\terror = " << addOrCompareExperienceFromUnitDecision(currentPhase, unitAttacker, unitAttackerReference, unitDefenderReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL) << endl;
+			//cout << "\terror = " << LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitAttacker, unitAttackerReference, unitDefenderReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL) << endl;
 
 
 			unitTheoreticalBestDecisionToCompare = evadeDecision;
 		#ifndef TH_LRRC_GAME_DO_NOT_CHECK_EVASION_IN_NN_ERROR
-			totalError = totalError + addOrCompareExperienceFromUnitDecision(currentPhase, unitDefender, unitDefenderReference, unitAttackerReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
+			totalError = totalError + LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitDefender, unitDefenderReference, unitAttackerReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
 		#else
-			addOrCompareExperienceFromUnitDecision(currentPhase, unitDefender, unitDefenderReference, unitAttackerReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
+			LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitDefender, unitDefenderReference, unitAttackerReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
 		#endif
 
 		}
@@ -944,15 +919,15 @@ double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(in
 			 	*/
 
 			unitTheoreticalBestDecisionToCompare = attackDecision;
-			totalError = totalError + addOrCompareExperienceFromUnitDecision(currentPhase, unitDefender, unitDefenderReference, unitAttackerReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
+			totalError = totalError + LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitDefender, unitDefenderReference, unitAttackerReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
 
-			//cout << "\terror = " << addOrCompareExperienceFromUnitDecision(currentPhase, unitDefender, unitDefenderReference, unitAttackerReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL) << endl;
+			//cout << "\terror = " << LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitDefender, unitDefenderReference, unitAttackerReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL) << endl;
 
 			unitTheoreticalBestDecisionToCompare = evadeDecision;
 		#ifndef TH_LRRC_GAME_DO_NOT_CHECK_EVASION_IN_NN_ERROR
-			totalError = totalError + addOrCompareExperienceFromUnitDecision(currentPhase, unitAttacker, unitAttackerReference, unitDefenderReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
+			totalError = totalError + LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitAttacker, unitAttackerReference, unitDefenderReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
 		#else
-			addOrCompareExperienceFromUnitDecision(currentPhase, unitAttacker, unitAttackerReference, unitDefenderReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
+			LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitAttacker, unitAttackerReference, unitDefenderReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
 		#endif
 		}
 #ifdef TH_LRRC_GAME_USE_RANDOM_DISTANCES_TO_TRAIN_NETWORKS
@@ -960,8 +935,8 @@ double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(in
 #endif
 
 	//Restore ideal positions
-	copyVectors(&(unitAttackerReference->absolutePosition), &savedUnitAttackerReferenceAbsolutePosition);
-	copyVectors(&(unitDefenderReference->absolutePosition), &savedUnitDefenderReferenceAbsolutePosition);
+	SHAREDvector.copyVectors(&(unitAttackerReference->absolutePosition), &savedUnitAttackerReferenceAbsolutePosition);
+	SHAREDvector.copyVectors(&(unitDefenderReference->absolutePosition), &savedUnitDefenderReferenceAbsolutePosition);
 
 
 	unitAttackerReference->subModelDetails = NULL;
@@ -976,7 +951,7 @@ double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(in
 
 
 #ifdef TH_LRRC_GAME_USE_AVERAGED_COMBAT_OUTCOMES
-int repeatCombatAndFindMostSuccessfulContendor(int currentPhase, LDreference* unitAttackerReference, LDreference* unitDefenderReference, int numberOfCombatSequences, bool addOrCompareExperience)
+int LRRCTHgameClass::repeatCombatAndFindMostSuccessfulContendor(int currentPhase, LDreference* unitAttackerReference, LDreference* unitDefenderReference, int numberOfCombatSequences, bool addOrCompareExperience)
 {
 	int result;
 
@@ -997,12 +972,12 @@ int repeatCombatAndFindMostSuccessfulContendor(int currentPhase, LDreference* un
 
 		if(currentPhase == GAME_PHASE_CLOSECOMBAT)
 		{
-			combatResult = performCloseCombatWithReferences(unitAttackerReference, unitDefenderReference,  unit1intendsToPerformCloseCombatAttack,  unit2intendsToPerformCloseCombatAttack, unit1TakesTheInitative, unit2TakesTheInitative);
+			combatResult = LRRCcombat.performCloseCombatWithReferences(unitAttackerReference, unitDefenderReference,  unit1intendsToPerformCloseCombatAttack,  unit2intendsToPerformCloseCombatAttack, unit1TakesTheInitative, unit2TakesTheInitative);
 			resultsForAllCombatSequences[combatResult] = resultsForAllCombatSequences[combatResult]+1;
 		}
 		else if(currentPhase == GAME_PHASE_LONGDISTANCECOMBAT)
 		{
-			combatResult = performLongDistanceCombatWithReferences(unitAttackerReference, unitDefenderReference,  unit1intendsToPerformLongDistanceAttack, unit2intendsToPerformLongDistanceAttack);
+			combatResult = LRRCcombat.performLongDistanceCombatWithReferences(unitAttackerReference, unitDefenderReference,  unit1intendsToPerformLongDistanceAttack, unit2intendsToPerformLongDistanceAttack);
 			resultsForAllCombatSequences[combatResult] = resultsForAllCombatSequences[combatResult]+1;
 		}
 		else

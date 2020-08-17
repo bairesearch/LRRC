@@ -26,7 +26,7 @@
  * File Name: LRRCTHgame.hpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7b 17-August-2020
+ * Project Version: 3n7c 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -39,9 +39,31 @@
 #ifndef HEADER_TH_LRRC_GAME
 #define HEADER_TH_LRRC_GAME
 
-//#include "LDreferenceClass.hpp"
-#include "LRRCplayerClass.hpp"
 #include "LRRCglobalDefs.hpp"
+#include "LRRCgame.hpp"
+#include "LRRCmovement.hpp"
+#include "LRRCcombat.hpp"
+#include "LRRCsprite.hpp"
+#include "LRRCgameReferenceManipulation.hpp"
+#include "LRRCrules.hpp"
+#include "LRRCgameAI.hpp"
+#include "LRRCunitClass.hpp"
+#include "LRRCplayerClass.hpp"
+//#include "LDreferenceClass.hpp"
+#include "LDparser.hpp"
+#include "LDreferenceManipulation.hpp"
+//#include "LDsprite.hpp"
+#include "RTreferenceManipulation.hpp"
+#ifdef USE_RT
+#include "RTscene.hpp"
+#endif
+#include "ANNneuronClass.hpp"
+#include "ANNformation.hpp"
+#include "ANNxmlConversion.hpp"
+#include "ANNalgorithmBackpropagationTraining.hpp"
+#include "ANNalgorithmBackpropagationUpdate.hpp"
+#include "ANNdisplay.hpp"
+
 
 #ifdef DEMONSTRATION_SCENARIO1
 	#define TH_LRRC_GAME_NUMBER_OF_UNITS_TO_FEED (10)	//default = 50
@@ -69,17 +91,33 @@
 
 
 
+class LRRCTHgameClass
+{
+	private: LRRCplayerClassClass LRRCplayerClass;
+	private: LRRCmodelClassClass LRRCmodelClass;
+	private: LRRCrulesClass LRRCrules;
+	private: LRRCspriteClass LRRCsprite;
+	private: LRRCcombatClass LRRCcombat;
+	private: LRRCparserClass LRRCparser;
+	private: LRRCunitClassClass LRRCunitClass;
+	private: LRRCmovementClass LRRCmovement;
+	private: LRRCgameClass LRRCgame;
+	private: LRRCgameAIClass LRRCgameAI;
 
-int THtestANNusingCombatExperiences();
-	long THgenerateUnitListwithAllUnitProperties(UnitListClass* firstUnitInUnitList);
-		bool generateUnitDetails(ModelDetails* unitDetails, int selectionUnitTypeCatagories, int selectionUnitCombatDetailsAttackCloseCombat, int selectionUnitCombatDetailsAttackLongDistance, int selectionUnitCombatDetailsDefenceHead, int selectionUnitCombatDetailsDefenceTorso, int selectionUnitCombatDetailsDefenceShield);
-	bool randomiseUnitList(UnitListClass* firstUnitInNonRandomisedUnitList, UnitListClass* firstUnitInUnitList, long numberOfUnits);
-	bool cullUnitList(UnitListClass* firstUnitInUnitList, int numberOfUnitsRequired);
-	double THperformGenericCombatWithAllPermutationsOfUnitsInListAndAddOrCompareExperiences(int currentPhase, UnitListClass* firstUnitInUnitList, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork);
-		double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(int currentPhase, UnitListClass* unitAttacker, UnitListClass* unitDefender, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork);
-			#ifdef TH_LRRC_GAME_USE_AVERAGED_COMBAT_OUTCOMES
-			int repeatCombatAndFindMostSuccessfulContendor(int currentPhase, LDreference* unitAttackerReference, LDreference* unitDefenderReference, int numberOfCombatSequences, bool addOrCompareExperience);
-			#endif
+	private: SHAREDvectorClass SHAREDvector;
+
+	int THtestANNusingCombatExperiences();
+		long THgenerateUnitListwithAllUnitProperties(UnitListClass* firstUnitInUnitList);
+			bool generateUnitDetails(ModelDetails* unitDetails, int selectionUnitTypeCatagories, int selectionUnitCombatDetailsAttackCloseCombat, int selectionUnitCombatDetailsAttackLongDistance, int selectionUnitCombatDetailsDefenceHead, int selectionUnitCombatDetailsDefenceTorso, int selectionUnitCombatDetailsDefenceShield);
+		bool randomiseUnitList(UnitListClass* firstUnitInNonRandomisedUnitList, UnitListClass* firstUnitInUnitList, long numberOfUnits);
+		bool cullUnitList(UnitListClass* firstUnitInUnitList, int numberOfUnitsRequired);
+		double THperformGenericCombatWithAllPermutationsOfUnitsInListAndAddOrCompareExperiences(int currentPhase, UnitListClass* firstUnitInUnitList, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork);
+			double THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCompareExperience(int currentPhase, UnitListClass* unitAttacker, UnitListClass* unitDefender, Player* currentPlayer, int NNBeingTested, bool addOrCompareExperience, int numberOfDistancesToTrainNetwork);
+				#ifdef TH_LRRC_GAME_USE_AVERAGED_COMBAT_OUTCOMES
+				int repeatCombatAndFindMostSuccessfulContendor(int currentPhase, LDreference* unitAttackerReference, LDreference* unitDefenderReference, int numberOfCombatSequences, bool addOrCompareExperience);
+				#endif
+};
+
 
 #endif
 

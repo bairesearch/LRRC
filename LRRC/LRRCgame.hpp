@@ -26,7 +26,7 @@
  * File Name: LRRCgame.hpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7b 17-August-2020
+ * Project Version: 3n7c 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -138,16 +138,16 @@ class LRRCgameClass
 	private: LRRCrulesClass LRRCrules;
 	private: LRRCspriteClass LRRCsprite;
 	private: LRRCcombatClass LRRCcombat;
-	private: LDparserClass LDparser;
 	private: LRRCparserClass LRRCparser;
-	private: LDreferenceManipulationClass LDreferenceManipulation;
+	private: LRRCunitClassClass LRRCunitClass;
+	private: LRRCmovementClass LRRCmovement;
 	private: LRRCgameReferenceManipulationClass LRRCgameReferenceManipulation;
 	#ifdef USE_ANN
 	private: LRRCgameAIClass LRRCgameAI;
 	#endif
+	private: LDparserClass LDparser;
+	private: LDreferenceManipulationClass LDreferenceManipulation;
 	private: SHAREDvarsClass SHAREDvars;
-	private: LRRCunitClassClass LRRCunitClass;
-	private: LRRCmovementClass LRRCmovement;
 	private: SHAREDvectorClass SHAREDvector;
 	private: ANNalgorithmBackpropagationTrainingClass ANNalgorithmBackpropagationTraining;
 	private: ANNdisplayClass ANNdisplay;
@@ -192,8 +192,8 @@ class LRRCgameClass
 	private: void copyReferencesAndSubmodelDetails(LDreference* referenceNew, LDreference* referenceToCopy, const int type);
 
 #ifdef USE_ANN
-	private: void feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const long numberOfInputNeurons, const long numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn);
-	private: void trainAndOutputNeuralNetwork(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const int numberOfInputNeurons, int numberOfOutputNeurons, ANNexperience* firstExperienceInList, bool addSprites, const bool allowRaytrace, const int nn, const int currentGame);
+	public: void feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const long numberOfInputNeurons, const long numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn);
+	public: void trainAndOutputNeuralNetwork(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const int numberOfInputNeurons, int numberOfOutputNeurons, ANNexperience* firstExperienceInList, bool addSprites, const bool allowRaytrace, const int nn, const int currentGame);
 #endif
 
 	private: void updatePlayerStatus(Player* initialPlayerInList);
