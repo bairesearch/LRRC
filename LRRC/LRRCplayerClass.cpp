@@ -26,7 +26,7 @@
  * File Name: LRRCplayerClass.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7c 17-August-2020
+ * Project Version: 3n7d 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -41,9 +41,9 @@
 #include "LRRCplayerClass.hpp"
 //#include "LRRCmodelClass.hpp"
 
-long PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT;
-long PLAYER_ROUND_RITUAL_COMBAT_POINTS_ALLOCATED;
-long PLAYER_ROUND_RITUAL_BUILDING_POINTS_ALLOCATED;
+int64_t PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT;
+int64_t PLAYER_ROUND_RITUAL_COMBAT_POINTS_ALLOCATED;
+int64_t PLAYER_ROUND_RITUAL_BUILDING_POINTS_ALLOCATED;
 double PLAYER_MAXIMUM_BUILD_DISTANCE_FROM_STARTING_POST;
 int BUILDING_DEFAULT_MOD;
 
@@ -56,15 +56,15 @@ void LRRCplayerClassClass::fillInPlayerClassExternVariables()
 	{
 		if(currentReferenceRulesClass->name == PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT_NAME)
 		{
-			PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT = long(currentReferenceRulesClass->fractionalValue);
+			PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT = int64_t(currentReferenceRulesClass->fractionalValue);
 		}
 		else if(currentReferenceRulesClass->name == PLAYER_ROUND_RITUAL_COMBAT_POINTS_ALLOCATED_NAME)
 		{
-			PLAYER_ROUND_RITUAL_COMBAT_POINTS_ALLOCATED = long(currentReferenceRulesClass->fractionalValue);
+			PLAYER_ROUND_RITUAL_COMBAT_POINTS_ALLOCATED = int64_t(currentReferenceRulesClass->fractionalValue);
 		}
 		else if(currentReferenceRulesClass->name == PLAYER_ROUND_RITUAL_BUILDING_POINTS_ALLOCATED_NAME)
 		{
-			PLAYER_ROUND_RITUAL_BUILDING_POINTS_ALLOCATED = long(currentReferenceRulesClass->fractionalValue);
+			PLAYER_ROUND_RITUAL_BUILDING_POINTS_ALLOCATED = int64_t(currentReferenceRulesClass->fractionalValue);
 		}
 		else if(currentReferenceRulesClass->name == PLAYER_MAXIMUM_BUILD_DISTANCE_FROM_STARTING_POST_NAME)
 		{

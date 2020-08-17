@@ -26,7 +26,7 @@
  * File Name: LRRCplayerClass.hpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7c 17-August-2020
+ * Project Version: 3n7d 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -81,9 +81,9 @@
 
 
 
-extern long PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT;
-extern long PLAYER_ROUND_RITUAL_COMBAT_POINTS_ALLOCATED;
-extern long PLAYER_ROUND_RITUAL_BUILDING_POINTS_ALLOCATED;
+extern int64_t PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT;
+extern int64_t PLAYER_ROUND_RITUAL_COMBAT_POINTS_ALLOCATED;
+extern int64_t PLAYER_ROUND_RITUAL_BUILDING_POINTS_ALLOCATED;
 extern double PLAYER_MAXIMUM_BUILD_DISTANCE_FROM_STARTING_POST;		//the max distance any ModelDetails / building part can be initially placed away from the starting post
 extern int BUILDING_DEFAULT_MOD;
 
@@ -101,7 +101,7 @@ public:
 	vec startPosition;
 	string name;
 	int id;			//player ID - Eg colour/team
-	long credits;	//bank account balance
+	int64_t credits;	//bank account balance
 	int currentPhase;
 
 	bool playerIsAI;
@@ -124,8 +124,8 @@ public:
 
 	ANNneuron* firstInputNeuronInNetwork[GAME_NUMBER_OF_EXPERIENCE_NN];
 	ANNneuron* firstOutputNeuronInNetwork[GAME_NUMBER_OF_EXPERIENCE_NN];
-	long numberOfInputNeurons[GAME_NUMBER_OF_EXPERIENCE_NN];
-	long numberOfOutputNeurons[GAME_NUMBER_OF_EXPERIENCE_NN];
+	int64_t numberOfInputNeurons[GAME_NUMBER_OF_EXPERIENCE_NN];
+	int64_t numberOfOutputNeurons[GAME_NUMBER_OF_EXPERIENCE_NN];
 #endif
 
 	Player* next;

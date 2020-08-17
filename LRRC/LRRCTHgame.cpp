@@ -26,7 +26,7 @@
  * File Name: LRRCTHgame.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7c 17-August-2020
+ * Project Version: 3n7d 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -55,16 +55,16 @@ bool LRRCTHgameClass::cullUnitList(UnitListClass* firstUnitInUnitList, int numbe
 	return true;
 }
 
-bool LRRCTHgameClass::randomiseUnitList(UnitListClass* firstUnitInNonRandomisedUnitList, UnitListClass* firstUnitInUnitList, long numberOfUnits)
+bool LRRCTHgameClass::randomiseUnitList(UnitListClass* firstUnitInNonRandomisedUnitList, UnitListClass* firstUnitInUnitList, int64_t numberOfUnits)
 {
 	UnitListClass* currentUnitInNonRandomisedUnitList = firstUnitInNonRandomisedUnitList->next;
 	UnitListClass* previousUnitInNonRandomisedUnitList = firstUnitInNonRandomisedUnitList;
 	UnitListClass* currentUnitInUnitList = firstUnitInUnitList;
 
-	long indexOfCurrentUnitInNonRandomisedUnitList = 0;
-	long currentNumberOfUnitsInRandomisedUnitList = numberOfUnits;
+	int64_t indexOfCurrentUnitInNonRandomisedUnitList = 0;
+	int64_t currentNumberOfUnitsInRandomisedUnitList = numberOfUnits;
 	double randomNumberBetween0And1 = ((double(abs((short)rand())))/(ABS_OF_SHORT));
-	long randomUnitSelected = (long)(randomNumberBetween0And1*(double)currentNumberOfUnitsInRandomisedUnitList);
+	int64_t randomUnitSelected = (int64_t)(randomNumberBetween0And1*(double)currentNumberOfUnitsInRandomisedUnitList);
 	//cout << "randomUnitSelected = " << randomUnitSelected << endl;
 
 	while(currentNumberOfUnitsInRandomisedUnitList != 0)		//(currentNumberOfUnitsInRandomisedUnitList != 0) or currentUnitInNonRandomisedUnitList->next != NULL)	//or (currentNumberOfUnitsInRandomisedUnitList != 0)
@@ -78,7 +78,7 @@ bool LRRCTHgameClass::randomiseUnitList(UnitListClass* firstUnitInNonRandomisedU
 
 		//cout << "0" << endl;
 		randomNumberBetween0And1 = ((double(abs((short)rand())))/(ABS_OF_SHORT));
-		randomUnitSelected = (long)(randomNumberBetween0And1*(double)currentNumberOfUnitsInRandomisedUnitList);
+		randomUnitSelected = (int64_t)(randomNumberBetween0And1*(double)currentNumberOfUnitsInRandomisedUnitList);
 		//cout << "randomUnitSelected = " << randomUnitSelected << endl;
 
 		/*
@@ -167,8 +167,8 @@ int LRRCTHgameClass::THtestANNusingCombatExperiences()
 	//PART 1: Standard Initialisations; create neural network 1 (for unit properties and unit combat decisions)
 	//************************
 
-	long numberOfInputNeurons;
-	long numberOfOutputNeurons;
+	int64_t numberOfInputNeurons;
+	int64_t numberOfOutputNeurons;
 
 #ifdef TH_LRRC_GAME_USE_CC_EXPERIENCES
 	LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);		//create neural network 1 (for unit/group targetting/combat decisions)
@@ -461,7 +461,7 @@ int LRRCTHgameClass::THtestANNusingCombatExperiences()
 	NNBeingTested = GAME_INDEX_OF_OBJECT_EXPERIENCE_NN;
 	totalErrorObjectExperience = LRRCgameAI.addOrCompareAllObjectExperiences(currentPlayer, NNBeingTested, COMPARE_EXPERIENCE, false);
 
-	long numberOfObjectExperiences = (long)LRRCgameAI.addOrCompareAllObjectExperiences(NULL, NULL, NULL, true);
+	int64_t numberOfObjectExperiences = (int64_t)LRRCgameAI.addOrCompareAllObjectExperiences(NULL, NULL, NULL, true);
 	double averageErrorObjectExperience = totalErrorObjectExperience/((double)numberOfObjectExperiences);
 
 	//cout << "averageErrorObjectExperience = " << averageErrorObjectExperience << endl;
@@ -474,10 +474,10 @@ int LRRCTHgameClass::THtestANNusingCombatExperiences()
 
 
 	//assume units can only have 1 part of each part type (Ie - NO UNIT GROUPS!)
-long LRRCTHgameClass::THgenerateUnitListwithAllUnitProperties(UnitListClass* firstUnitInUnitList)
+int64_t LRRCTHgameClass::THgenerateUnitListwithAllUnitProperties(UnitListClass* firstUnitInUnitList)
 {
 	bool result = true;
-	long numberOfUnits = 0;
+	int64_t numberOfUnits = 0;
 
 	UnitListClass* currentUnitInUnitList = firstUnitInUnitList;
 
@@ -776,7 +776,7 @@ double LRRCTHgameClass::THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCom
 		{
 			//Long Distance Consideration
 			//find range of the ideal long range weapon (most powerful)
-			double randomDistanceSelected = (long)(randomNumberBetween0And1*(double)TH_LRRC_GAME_RANGE_OF_RANDOM_LD_DISTANCES_TO_TRAIN_NETWORK);
+			double randomDistanceSelected = (int64_t)(randomNumberBetween0And1*(double)TH_LRRC_GAME_RANGE_OF_RANDOM_LD_DISTANCES_TO_TRAIN_NETWORK);
 						//set range of the ideal long range weapon (most powerful)
 			vec LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition;
 			LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition.x = 0;
@@ -793,7 +793,7 @@ double LRRCTHgameClass::THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCom
 		{
 		//Close Combat Consideration [CHECK THIS; this needs to be done only for the units most probable for LD attack]
 			//set range of close combat
-			double randomDistanceSelected = (long)(randomNumberBetween0And1*(double)TH_LRRC_GAME_RANGE_OF_RANDOM_LD_DISTANCES_TO_TRAIN_NETWORK);
+			double randomDistanceSelected = (int64_t)(randomNumberBetween0And1*(double)TH_LRRC_GAME_RANGE_OF_RANDOM_LD_DISTANCES_TO_TRAIN_NETWORK);
 
 			vec LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition;
 			LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition.x = 0;
@@ -857,7 +857,7 @@ double LRRCTHgameClass::THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCom
 		//add experience info for units
 
 		int combatExperienceResult;
-		long unitTheoreticalBestDecisionToCompare;
+		int64_t unitTheoreticalBestDecisionToCompare;
 		if((combatResult == ATTACK_NEITHER_UNIT_CAN_STRIKE) || (combatResult == ATTACK_NEITHER_STRIKES_UNIT2_CAN_STRIKE) || (combatResult == ATTACK_NEITHER_STRIKES_UNIT1_CAN_STRIKE))
 		{
 			//cout << "SCENARIO A" << endl;

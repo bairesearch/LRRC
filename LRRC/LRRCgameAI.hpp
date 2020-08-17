@@ -26,7 +26,7 @@
  * File Name: LRRCgameAI.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7c 17-August-2020
+ * Project Version: 3n7d 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -168,8 +168,8 @@ class LRRCgameAIClass
 	private: RTreferenceManipulationClass RTreferenceManipulation;
 	public: void initialiseNeuralNetwork(const int NNBeingTested, Player* currentPlayer, int currentPhase);
 
-	private: long mergePlayerUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, const int unitGroupTeam, int nnIndex);
-	public: long mergeAllUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, int nnIndex);
+	private: int64_t mergePlayerUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, const int unitGroupTeam, int nnIndex);
+	public: int64_t mergeAllUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, int nnIndex);
 
 
 	private: void parseSceneFileAndFillUnitLists(string sceneFileName, UnitListClass* firstUnitInUnitList, int currentRound);
@@ -192,17 +192,17 @@ class LRRCgameAIClass
 	public: double addOrCompareAllObjectExperiences(Player* currentPlayer, const int NNBeingTested, const bool addOrCompareExperience, const bool justCountNumberOfExperiences);
 #endif
 
-	public: double addExperiencesFromUnitDecision(UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, LDreference* initialReferenceInThisPhaseStartScene, int NNcurrentPhase, Player* currentPlayer);
-		public: double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, Player* currentPlayer, const int NNBeingTested, const bool addOrCompareExperience, LDreference* initialReferenceInThisPhaseStartScene);
-			private: void generateExperienceFromUnitPropertiesDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, ANNexperience* currentExperience, int currentPhase);
-			private: void generateExperienceFromUnitCombatDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, ANNexperience* currentExperience, int currentPhase);
+	public: double addExperiencesFromUnitDecision(UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, int64_t unitDecision, LDreference* initialReferenceInThisPhaseStartScene, int NNcurrentPhase, Player* currentPlayer);
+		public: double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, int64_t unitDecision, Player* currentPlayer, const int NNBeingTested, const bool addOrCompareExperience, LDreference* initialReferenceInThisPhaseStartScene);
+			private: void generateExperienceFromUnitPropertiesDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, int64_t unitDecision, ANNexperience* currentExperience, int currentPhase);
+			private: void generateExperienceFromUnitCombatDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, int64_t unitDecision, ANNexperience* currentExperience, int currentPhase);
 		#ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
 			public: bool generateExperienceFromGlobalDecision(const UnitListClass* firstUnitInUnitList, LDreference* initialReferenceInThisPhaseStartScene, const LDreference* unitReference, const LDreference* unitReferenceOpponent, ANNexperience* currentExperience);
 				private: bool generate2DMemoryMapExperience(const UnitListClass* firstUnitInGroup, LDreference* initialReferenceInThisPhaseStartScene, const LDreference* unitReference, ANNexperience* currentExperience);
 					private: ANNexperienceInput* findExperienceInputIn2DMemoryMap(const int xPos, const int yPos, const int tPos, ANNexperience* currentExperience);
 		#endif
 		#ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
-			private: bool generateExperienceFromObjectDecision(const LDreference* objectReference, long objectDecision, ANNexperience* currentExperience, const bool createNewRayTracedImage);
+			private: bool generateExperienceFromObjectDecision(const LDreference* objectReference, int64_t objectDecision, ANNexperience* currentExperience, const bool createNewRayTracedImage);
 		#endif
 
 

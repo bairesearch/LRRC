@@ -26,7 +26,7 @@
  * File Name: LRRCgameAI.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7c 17-August-2020
+ * Project Version: 3n7d 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -55,13 +55,13 @@ void LRRCgameAIClass::initialiseNeuralNetwork(const int NNBeingTested, Player* c
 	ANNneuron* firstInputNeuronInNetwork = new ANNneuron();
 	ANNneuron* firstOutputNeuronInNetwork;
 
-	long numberOfInputNeurons;
-	long numberOfOutputNeurons;
-	long numberOfLayers;
+	int64_t numberOfInputNeurons;
+	int64_t numberOfOutputNeurons;
+	int64_t numberOfLayers;
 
 	LDreference* tempUnitReference = new LDreference(true);
 	LDreference* tempUnitRefenceOpponent = new LDreference(true);
-	long tempUnitDecision = IRRELEVANT;
+	int64_t tempUnitDecision = IRRELEVANT;
 	ANNexperience* tempExperience = new ANNexperience;
 	if(NNBeingTested == GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN)
 	{
@@ -85,11 +85,11 @@ void LRRCgameAIClass::initialiseNeuralNetwork(const int NNBeingTested, Player* c
 #ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
 	else if(NNBeingTested == GAME_INDEX_OF_OBJECT_EXPERIENCE_NN)
 	{
-		numberOfOutputNeurons = (long)this->addOrCompareAllObjectExperiences(NULL, NULL, NULL, true);
+		numberOfOutputNeurons = (int64_t)this->addOrCompareAllObjectExperiences(NULL, NULL, NULL, true);
 		/*
 		ANNexperience* tempExperience2 = new ANNexperience;
 		LDreference* tempUnitReference2 = new LDreference(true);
-		long tempUnitDecision2 = IRRELEVANT;
+		int64_t tempUnitDecision2 = IRRELEVANT;
 		this->generateExperienceFromUnitPropertiesDecision(tempUnitReference2, tempUnitRefenceOpponent, tempUnitDecision2, tempExperience2, currentPhase);
 		numberOfOutputNeurons = ANNexperienceClass.countNumberOfExperienceInputs(tempExperience2) - 2;	//-2 for distanceBetweenUnits and currentPhase properties experience inputs
 		delete tempExperience2;
@@ -172,7 +172,7 @@ void LRRCgameAIClass::initialiseNeuralNetwork(const int NNBeingTested, Player* c
 
 
 
-long LRRCgameAIClass::mergePlayerUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, const int unitGroupTeam, int nnIndex)
+int64_t LRRCgameAIClass::mergePlayerUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, const int unitGroupTeam, int nnIndex)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
@@ -215,7 +215,7 @@ long LRRCgameAIClass::mergePlayerUnitExperiencesIntoPlayerExperienceList(Player*
 
 
 
-long LRRCgameAIClass::mergeAllUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, int nnIndex)
+int64_t LRRCgameAIClass::mergeAllUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, int nnIndex)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
@@ -606,7 +606,7 @@ void addExperienceInputToExperience(ANNexperienceInput* experienceInput, ANNexpe
 
 
 
-double LRRCgameAIClass::addExperiencesFromUnitDecision(UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, LDreference* initialReferenceInThisPhaseStartScene, int NNcurrentPhase, Player* currentPlayer)
+double LRRCgameAIClass::addExperiencesFromUnitDecision(UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, int64_t unitDecision, LDreference* initialReferenceInThisPhaseStartScene, int NNcurrentPhase, Player* currentPlayer)
 {
 	//bool result = true;
 
@@ -624,7 +624,7 @@ double LRRCgameAIClass::addExperiencesFromUnitDecision(UnitListClass* unit, LDre
 	return totalError;
 }
 
-double LRRCgameAIClass::addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, Player* currentPlayer, const int NNBeingTested, const bool addOrCompareExperience, LDreference* initialReferenceInThisPhaseStartScene)
+double LRRCgameAIClass::addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, int64_t unitDecision, Player* currentPlayer, const int NNBeingTested, const bool addOrCompareExperience, LDreference* initialReferenceInThisPhaseStartScene)
 {
 	double experienceBackPropagationPassError = 0.0;
 	//bool result = true;
@@ -722,7 +722,7 @@ double LRRCgameAIClass::addOrCompareExperienceFromUnitDecision(int currentPhase,
 	else if(addOrCompareExperience == COMPARE_EXPERIENCE)
 	{
 		ANNexperience* experienceWithoutKnownOutput = new ANNexperience;
-		long unitHypotheticalDecisionToTest;
+		int64_t unitHypotheticalDecisionToTest;
 		unitHypotheticalDecisionToTest = unitDecision;
 		//generate proposed experience
 		if(NNBeingTested == GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN)
@@ -763,7 +763,7 @@ double LRRCgameAIClass::addOrCompareExperienceFromUnitDecision(int currentPhase,
 
 
 
-void LRRCgameAIClass::generateExperienceFromUnitPropertiesDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, ANNexperience* currentExperience, int currentPhase)
+void LRRCgameAIClass::generateExperienceFromUnitPropertiesDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, int64_t unitDecision, ANNexperience* currentExperience, int currentPhase)
 {
 
 	/*
@@ -1004,7 +1004,7 @@ void LRRCgameAIClass::generateExperienceFromUnitPropertiesDecision(LDreference* 
 	//cout << "3d6" << endl;
 }
 
-void LRRCgameAIClass::generateExperienceFromUnitCombatDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, long unitDecision, ANNexperience* currentExperience, int currentPhase)
+void LRRCgameAIClass::generateExperienceFromUnitCombatDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, int64_t unitDecision, ANNexperience* currentExperience, int currentPhase)
 {
 
 	/*
@@ -1371,7 +1371,7 @@ ANNexperienceInput* LRRCgameAIClass::findExperienceInputIn2DMemoryMap(const int 
 
 
 
-bool LRRCgameAIClass::generateExperienceFromObjectDecision(const LDreference* objectReference, long objectDecision, ANNexperience* currentExperience, const bool createNewRayTracedImage)
+bool LRRCgameAIClass::generateExperienceFromObjectDecision(const LDreference* objectReference, int64_t objectDecision, ANNexperience* currentExperience, const bool createNewRayTracedImage)
 {
 	bool result = true;
 
@@ -1792,8 +1792,8 @@ void addExperienceToByteArray()
 
 }
 
-	long ExperienceDataSetByteArrayCurrentPosition = 0;
-	long ExperienceDataSetByteArraySize = XML_FILE_MAX_SIZE;
+	int64_t ExperienceDataSetByteArrayCurrentPosition = 0;
+	int64_t ExperienceDataSetByteArraySize = XML_FILE_MAX_SIZE;
 	char* ExperienceDataSetByteArray = new char[EXPERIENCE_DATASET_MAX_SIZE];
 
 */

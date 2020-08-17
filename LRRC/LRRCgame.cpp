@@ -26,7 +26,7 @@
  * File Name: LRRCgame.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7c 17-August-2020
+ * Project Version: 3n7d 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -828,7 +828,7 @@ bool LRRCgameClass::gamePlay(const int initialRound, int initialPlayerTurn, int 
 }
 
 #ifdef USE_ANN
-void LRRCgameClass::feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const long numberOfInputNeurons, const long numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn)
+void LRRCgameClass::feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const int64_t numberOfInputNeurons, const int64_t numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn)
 {
 	//cout << "h111" << endl;
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
@@ -1901,7 +1901,7 @@ bool LRRCgameClass::AIsearchUnitListForPhaseActionSelectionInitialisation(const 
 
 							//if(checkAverageKillRatioForUnitGroup(thisPlayerCurrentUnit->firstUnitInUnitGroup))
 							//{
-							long unitTheoreticalBestDecisionToRecord;
+							int64_t unitTheoreticalBestDecisionToRecord;
 							unitTheoreticalBestDecisionToRecord = currentPhase;
 
 					#ifndef DEBUG_DO_NOT_USE_ADVANCED_LEARNING_BASED_UPON_DISTANCES
@@ -2026,7 +2026,7 @@ bool LRRCgameClass::AIsearchUnitListForPhaseActionSelectionInitialisation(const 
 									//add experience info for units
 									UnitListClass* unitMoverInUnitList = thisPlayerCurrentUnit;
 
-									long unitTheoreticalBestDecisionToRecord;
+									int64_t unitTheoreticalBestDecisionToRecord;
 									unitTheoreticalBestDecisionToRecord = currentPhase;
 
 									//cout << "here6b4b2b" << endl;
@@ -2264,7 +2264,7 @@ bool LRRCgameClass::AIsearchUnitListAndCalculateWorthOfOpponents(const int curre
 
 			double experienceBackPropagationPassError;
 			int nn;
-			long unitHypotheticalDecisionToTest;
+			int64_t unitHypotheticalDecisionToTest;
 
 			double optimumPositionAttackLDpropertiesExperienceBackPropagationPassError;
 			double optimumPositionAttackLDcombatExperienceBackPropagationPassError;

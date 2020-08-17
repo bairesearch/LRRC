@@ -26,7 +26,7 @@
  * File Name: LRRCgameReferenceManipulation.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7c 17-August-2020
+ * Project Version: 3n7d 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -288,7 +288,7 @@ bool LRRCgameReferenceManipulationClass::obtainUnitDetailsFromUserForCombat(stri
 	bool result = true;
 
 	string answerAsString = "";
-	long answerAsInt;
+	int64_t answerAsInt;
 
 	cout << "Enter Unit 1 ID (Eg '1'):";
 	cin >> answerAsString;
