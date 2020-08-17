@@ -23,10 +23,10 @@
 
 /*******************************************************************************
  *
- * File Name: LRRCplayerClass.h
+ * File Name: LRRCplayerClass.hpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1b 14-January-2017
+ * Project Version: 3j2a 17-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -41,14 +41,14 @@
 #ifndef HEADER_LRRC_PLAYER_CLASS
 #define HEADER_LRRC_PLAYER_CLASS
 
-#include "SHAREDvector.h"
-#include "LRRCglobalDefs.h"
-#include "LRRCunitClass.h"
+#include "SHAREDvector.hpp"
+#include "LRRCglobalDefs.hpp"
+#include "LRRCunitClass.hpp"
 
 #ifdef USE_ANN
-#include "ANNexperienceClass.h"
-#include "ANNneuronClass.h"
-#include "LRRCrules.h"
+#include "ANNexperienceClass.hpp"
+#include "ANNneuronClass.hpp"
+#include "LRRCrules.hpp"
 #define DEFAULT_AI_PLAYER_CREATIVITY (0.3)
 #define PERFORM_MOVEMENT_FOR_CC_BIAS (2.0)	//PERFORM_MOVEMENT_FOR_CC_BIAS*DEFAULT_AI_PLAYER_CREATIVITY must be less than 1
 #endif

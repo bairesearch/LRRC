@@ -20,10 +20,10 @@
 
 /*******************************************************************************
  *
- * File Name: LRRCrules.h
+ * File Name: LRRCrules.hpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1b 14-January-2017
+ * Project Version: 3j2a 17-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -36,9 +36,9 @@
 #ifndef HEADER_LRRC_RULES
 #define HEADER_LRRC_RULES
 
-#include "SHAREDglobalDefs.h"
-#include "XMLparserClass.h"
-#include "XMLrulesClass.h"
+#include "SHAREDglobalDefs.hpp"
+#include "XMLparserClass.hpp"
+#include "XMLrulesClass.hpp"
 
 extern XMLrulesClass* LRRCrulesUnitTypeDetails;
 extern XMLrulesClass* LRRCrulesUnitCombatDetailsDefenceHead;

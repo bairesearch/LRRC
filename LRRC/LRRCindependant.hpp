@@ -23,10 +23,10 @@
 
 /*******************************************************************************
  *
- * File Name: LRRCindependant.h
+ * File Name: LRRCindependant.hpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1b 14-January-2017
+ * Project Version: 3j2a 17-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -39,18 +39,18 @@
 #ifndef HEADER_LRRC_INDEPENDANT
 #define HEADER_LRRC_INDEPENDANT
 
-#include "LRRCglobalDefs.h"
-#include "LRRCmovement.h"
-#include "LRRCcombat.h"
-#include "LRRCsprite.h"
-#include "LDreferenceManipulation.h"
-#include "LRRCgameReferenceManipulation.h"
-#include "LRRCplayerClass.h"
-#include "LRRCgame.h"
-#include "LRRCrules.h"
-#include "LRRCparser.h"
-#include "LRRCsprite.h"	//required for extern variable initialisation only
-#include "LDparser.h"	//is this required?
+#include "LRRCglobalDefs.hpp"
+#include "LRRCmovement.hpp"
+#include "LRRCcombat.hpp"
+#include "LRRCsprite.hpp"
+#include "LDreferenceManipulation.hpp"
+#include "LRRCgameReferenceManipulation.hpp"
+#include "LRRCplayerClass.hpp"
+#include "LRRCgame.hpp"
+#include "LRRCrules.hpp"
+#include "LRRCparser.hpp"
+#include "LRRCsprite.hpp"	//required for extern variable initialisation only
+#include "LDparser.hpp"	//is this required?
 
 class LRRCindependantClass
 {

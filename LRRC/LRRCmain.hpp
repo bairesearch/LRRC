@@ -23,10 +23,10 @@
 
 /*******************************************************************************
  *
- * File Name: LRRCrecordClass.h
+ * File Name: LRRCmain.hpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1b 14-January-2017
+ * Project Version: 3j2a 17-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -36,25 +36,17 @@
  *******************************************************************************/
 
 
-#ifndef HEADER_LRRC_RECORD_CLASS
-#define HEADER_LRRC_RECORD_CLASS
+#ifndef HEADER_LRRC_MAIN
 
-#include "LRRCglobalDefs.h"
+#include "LRRCindependant.hpp"
+#include "LRRCgame.hpp"#define HEADER_LRRC_MAIN
 
-class RecordClass
+class LRRCmainClass
 {
-private:
-	/*There are currently no private attributes of this class*/
-public:
-
-	RecordClass(void); // constructor
-	~RecordClass();	// and destructor.
-
-	string name;
-	int numberOfThisPartIDInTheUnit;
-
-	RecordClass* next;
+	int main();
 };
 
 #endif
+
+
 

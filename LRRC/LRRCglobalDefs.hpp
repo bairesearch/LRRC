@@ -23,10 +23,10 @@
 
 /*******************************************************************************
  *
- * File Name: LRRCglobalDefs.h
+ * File Name: LRRCglobalDefs.hpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1b 14-January-2017
+ * Project Version: 3j2a 17-January-2017
  * Description: LRRC specific global definitions
  *
  *******************************************************************************/
@@ -35,7 +35,7 @@
 #ifndef HEADER_LRRC_GLOBAL_DEFS
 #define HEADER_LRRC_GLOBAL_DEFS
 
-#include "SHAREDglobalDefs.h"
+#include "SHAREDglobalDefs.hpp"
 
 
 #define DEBUG_IN_TEXTPAD
@@ -46,9 +46,9 @@
 
 	#ifdef TH_USE_ANN_TEST_HARNESS
 
-		//#define DEMONSTRATION_SCENARIO1		//combat/properties experience testing	//LRRCTHgame.cpp + LRRCTHgame.h
-		#define DEMONSTRATION_SCENARIO2			//object experience testing		//LRRCTHgame.cpp + LRRCTHgame.h
-		//#define DEMONSTRATION_SCENARIO3		//contains functions not yet tested	//LRRCTHgame.cpp + LRRCTHgame.h
+		//#define DEMONSTRATION_SCENARIO1		//combat/properties experience testing	//LRRCTHgame.cpp + LRRCTHgame.hpp
+		#define DEMONSTRATION_SCENARIO2			//object experience testing		//LRRCTHgame.cpp + LRRCTHgame.hpp
+		//#define DEMONSTRATION_SCENARIO3		//contains functions not yet tested	//LRRCTHgame.cpp + LRRCTHgame.hpp
 
 
 			//Primary variables been tested by TH;
@@ -127,12 +127,12 @@
 
 	//#define DEBUG_DO_NOT_USE_ADVANCED_LEARNING_BASED_UPON_DISTANCES			//LRRCgame.cpp
 	#ifdef DEBUG_DO_NOT_USE_ADVANCED_LEARNING_BASED_UPON_DISTANCES
-		#define DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES					//LRRCgameAI.cpp / LRRCgame.cpp / LRRCgameAI.h / LRRCunitClass.h:
+		#define DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES					//LRRCgameAI.cpp / LRRCgame.cpp / LRRCgameAI.hpp / LRRCunitClass.hpp:
 	#endif
 
-	#ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES					//LRRCgameAI.h + LRRCgameAI.cpp + LRRCTHgame.cpp
+	#ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES					//LRRCgameAI.hpp + LRRCgameAI.cpp + LRRCTHgame.cpp
 		#define DEBUG_ANN_OBJECT_RECOGNITION_EXPERIENCES_OUTPUT_ALL_MAPS		//LRRCgameAI.cpp {OLD: + ORTHimageCategorisationNN.cpp}
-		#define USE_HI_RES_PRIMITIVE_REPLACEMENT_DURING_RENDERING			//ANNexperienceClass.h
+		#define USE_HI_RES_PRIMITIVE_REPLACEMENT_DURING_RENDERING			//ANNexperienceClass.hpp
 		//#define ANN_OBJECT_RECOGNITION_EXPERIENCES_RANDOMISE_LIGHTING_CONDITIONS	//LRRCgameAI.cpp	//not available yet
 
 		//#define GAME_OBJECT_RECOGNITION_EXPERIENCE_FEED_RGB_MAP			//LRRCgameAI.cpp

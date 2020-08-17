@@ -23,10 +23,10 @@
 
 /*******************************************************************************
  *
- * File Name: LRRCcombat.h
+ * File Name: LRRCcombat.hpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1b 14-January-2017
+ * Project Version: 3j2a 17-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -39,12 +39,12 @@
 #ifndef HEADER_LRRC_COMBAT
 #define HEADER_LRRC_COMBAT
 
-#include "LDreferenceClass.h"
-#include "LDparser.h"
-#include "LRRCrules.h"
-#include "LRRCparser.h"
-#include "SHAREDvector.h"
-#include "SHAREDvars.h"
+#include "LDreferenceClass.hpp"
+#include "LDparser.hpp"
+#include "LRRCrules.hpp"
+#include "LRRCparser.hpp"
+#include "SHAREDvector.hpp"
+#include "SHAREDvars.hpp"
 
 #define CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY_NAME "CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY"
 #define RANGE_MODIFIER_BASED_ON_INCREASED_HEIGHT_NAME "RANGE_MODIFIER_BASED_ON_INCREASED_HEIGHT"

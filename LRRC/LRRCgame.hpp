@@ -23,10 +23,10 @@
 
 /*******************************************************************************
  *
- * File Name: LRRCgame.h
+ * File Name: LRRCgame.hpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1b 14-January-2017
+ * Project Version: 3j2a 17-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -39,25 +39,25 @@
 #ifndef HEADER_LRRC_GAME
 #define HEADER_LRRC_GAME
 
-//#include "LRRCunitClass.h"
-#include "LRRCplayerClass.h"
-#include "LRRCglobalDefs.h"
-#include "LDreferenceClass.h"
-#include "LRRCmovement.h"
-#include "LRRCcombat.h"
-#include "LRRCsprite.h"
-#include "LRRCgameReferenceManipulation.h"
-#include "LRRCrules.h"
-#include "LRRCparser.h"
-#include "LDparser.h"
-#include "LDreferenceManipulation.h"
-	#include "ANNneuronClass.h"
-	#include "ANNformation.h"
-	#include "LRRCgameAI.h"
-	#include "ANNalgorithmBackpropagationTraining.h"
-	#include "ANNxmlConversion.h"
-	#include "ANNalgorithmBackpropagationUpdate.h"
-	#include "ANNdisplay.h"
+//#include "LRRCunitClass.hpp"
+#include "LRRCplayerClass.hpp"
+#include "LRRCglobalDefs.hpp"
+#include "LDreferenceClass.hpp"
+#include "LRRCmovement.hpp"
+#include "LRRCcombat.hpp"
+#include "LRRCsprite.hpp"
+#include "LRRCgameReferenceManipulation.hpp"
+#include "LRRCrules.hpp"
+#include "LRRCparser.hpp"
+#include "LDparser.hpp"
+#include "LDreferenceManipulation.hpp"
+	#include "ANNneuronClass.hpp"
+	#include "ANNformation.hpp"
+	#include "LRRCgameAI.hpp"
+	#include "ANNalgorithmBackpropagationTraining.hpp"
+	#include "ANNxmlConversion.hpp"
+	#include "ANNalgorithmBackpropagationUpdate.hpp"
+	#include "ANNdisplay.hpp"
 
 
 #define XML_NN_SCENE_FILE_NAME_EXTENSION ".xml"
@@ -71,7 +71,7 @@
 #define GAME_MOVEMENT_PHASE_DISPLAY_RESULT
 #define GAME_OUTPUT_COMBAT_ENTRY_STATISTICS
 */
-//see modelclass.h for important definitions regarding game rules
+//see modelclass.hpp for important definitions regarding game rules
 
 #define GAME_PHASE_EXECUTION_DISPLAY_START (1)
 #define GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES (2)

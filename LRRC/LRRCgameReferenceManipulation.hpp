@@ -23,10 +23,10 @@
 
 /*******************************************************************************
  *
- * File Name: LRRCgameReferenceManipulation.h
+ * File Name: LRRCgameReferenceManipulation.hpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1b 14-January-2017
+ * Project Version: 3j2a 17-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -39,10 +39,10 @@
 #ifndef HEADER_LRRC_GAME_REFERENCE_MANIPULATION
 #define HEADER_LRRC_GAME_REFERENCE_MANIPULATION
 
-#include "LDreferenceClass.h"
-#include "LDreferenceManipulation.h"
-#include "SHAREDvector.h"
-#include "LDparser.h"
+#include "LDreferenceClass.hpp"
+#include "LDreferenceManipulation.hpp"
+#include "SHAREDvector.hpp"
+#include "LDparser.hpp"
 
 /*secondary game routines*/
 class LRRCgameReferenceManipulationClass

@@ -26,7 +26,7 @@
  * File Name: LRRCgameAI.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1b 14-January-2017
+ * Project Version: 3j2a 17-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -41,25 +41,25 @@
 #ifndef HEADER_LRRC_GAME_AI
 #define HEADER_LRRC_GAME_AI
 
-#include "LRRCglobalDefs.h"
+#include "LRRCglobalDefs.hpp"
 
 #ifdef USE_ANN
 
-#include "ANNexperienceClass.h"
-#include "LRRCplayerClass.h"
-#include "LRRCunitClass.h"
-#include "LDreferenceClass.h"
-	//#include "ORoperations.h"
-#include "LDparser.h"
-#include "LRRCgameReferenceManipulation.h"
-#include "LRRCrules.h"
-#include "LRRCcombat.h"
-#include "ANNneuronClass.h"
-#include "ANNformation.h"
-#include "ANNalgorithmBackpropagationTraining.h"
-#include "ANNxmlConversion.h"
-#include "ANNalgorithmBackpropagationUpdate.h"
-#include "ANNdisplay.h"
+#include "ANNexperienceClass.hpp"
+#include "LRRCplayerClass.hpp"
+#include "LRRCunitClass.hpp"
+#include "LDreferenceClass.hpp"
+	//#include "ORoperations.hpp"
+#include "LDparser.hpp"
+#include "LRRCgameReferenceManipulation.hpp"
+#include "LRRCrules.hpp"
+#include "LRRCcombat.hpp"
+#include "ANNneuronClass.hpp"
+#include "ANNformation.hpp"
+#include "ANNalgorithmBackpropagationTraining.hpp"
+#include "ANNxmlConversion.hpp"
+#include "ANNalgorithmBackpropagationUpdate.hpp"
+#include "ANNdisplay.hpp"
 
 
 

@@ -26,7 +26,7 @@
  * File Name: LRRCTHgame.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1b 14-January-2017
+ * Project Version: 3j2a 17-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -36,32 +36,32 @@
  *******************************************************************************/
 
 
-#include "LRRCglobalDefs.h"
-#include "LRRCTHgame.h"
-#include "LRRCgame.h"
-#include "LRRCmovement.h"
-#include "LRRCcombat.h"
-#include "LRRCsprite.h"
-#include "LDparser.h"
-#include "LDreferenceManipulation.h"
-#include "RTreferenceManipulation.h"
-#include "LRRCgameReferenceManipulation.h"
-#include "LRRCrules.h"
+#include "LRRCglobalDefs.hpp"
+#include "LRRCTHgame.hpp"
+#include "LRRCgame.hpp"
+#include "LRRCmovement.hpp"
+#include "LRRCcombat.hpp"
+#include "LRRCsprite.hpp"
+#include "LDparser.hpp"
+#include "LDreferenceManipulation.hpp"
+#include "RTreferenceManipulation.hpp"
+#include "LRRCgameReferenceManipulation.hpp"
+#include "LRRCrules.hpp"
 
 #ifdef USE_RT
-#include "RTscene.h"
+#include "RTscene.hpp"
 #endif
 
 
-#include "ANNneuronClass.h"
-#include "ANNFormation.h"
-#include "LRRCgameAI.h"
-#include "LRRCunitClass.h"
-#include "ANNTraining.h"
-#include "ANNXMLconversion.h"
-#include "ANNsprite.h"
-#include "ANNUpdateAlgorithm.h"
-#include "ANNdisplay.h"
+#include "ANNneuronClass.hpp"
+#include "ANNFormation.hpp"
+#include "LRRCgameAI.hpp"
+#include "LRRCunitClass.hpp"
+#include "ANNTraining.hpp"
+#include "ANNXMLconversion.hpp"
+#include "ANNsprite.hpp"
+#include "ANNUpdateAlgorithm.hpp"
+#include "ANNdisplay.hpp"
 
 
 //Test Harness Code:
