@@ -26,7 +26,7 @@
  * File Name: LRRCgameAI.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -39,6 +39,8 @@
 
 
 #include "LRRCglobalDefs.h"
+
+#ifdef USE_ANN
 
 #ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
 	#include "ORoperations.h"
@@ -53,13 +55,12 @@
 
 
 #include "ANNneuronClass.h"
-#include "ANNFormation.h"
+#include "ANNformation.h"
 #include "LRRCgameAI.h"
 #include "LRRCunitClass.h"
-#include "ANNTraining.h"
-#include "ANNXMLconversion.h"
-#include "ANNsprite.h"
-#include "ANNUpdateAlgorithm.h"
+#include "ANNalgorithmBackpropagationTraining.h"
+#include "ANNxmlConversion.h"
+#include "ANNalgorithmBackpropagationUpdate.h"
 #include "ANNdisplay.h"
 
 
@@ -70,8 +71,8 @@
 	//ANNneuronContainer* firstInputNeuronInNetwork = new ANNneuronContainer();
 void initialiseNeuralNetwork(int NNBeingTested, Player* currentPlayer, int currentPhase)
 {
-	ANNneuronContainer* firstInputNeuronInNetwork = new ANNneuronContainer();
-	ANNneuronContainer* firstOutputNeuronInNetwork;
+	ANNneuron* firstInputNeuronInNetwork = new ANNneuron();
+	ANNneuron* firstOutputNeuronInNetwork;
 
 	long numberOfInputNeurons;
 	long numberOfOutputNeurons;
@@ -273,7 +274,7 @@ long mergeAllUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, Unit
 
 
 
-void parseSceneFileAndFillUnitLists(char sceneFileName[], UnitListClass* firstUnitInUnitList, int currentRound)
+void parseSceneFileAndFillUnitLists(string sceneFileName, UnitListClass* firstUnitInUnitList, int currentRound)
 {
 	bool result = true;
 
@@ -438,7 +439,7 @@ void determineAverageKillRatioForUnitGroup(UnitListClass* firstUnitInUnitGroup, 
 
 
 
-void parseSceneFileAndUpdateUnitList(char sceneFileName[], UnitListClass* firstUnitInUnitList, int currentRound)
+void parseSceneFileAndUpdateUnitList(string sceneFileName, UnitListClass* firstUnitInUnitList, int currentRound)
 {
 	bool result = true;
 
@@ -772,7 +773,7 @@ double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass* u
 			cout << "error: addOrCompareExperienceFromUnitDecision{}: illegal NNBeingTested 4" << endl;
 			exit(0);
 		}
-		experienceBackPropagationPassError = calculateExperienceErrorForHypotheticalDecision(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn], currentPlayer->numberOfInputNeurons[nn], currentPlayer->numberOfOutputNeurons[nn], (experienceWithoutKnownOutput));
+		experienceBackPropagationPassError = calculateExperienceErrorForHypotheticalDecisionBackpropagation(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn], currentPlayer->numberOfInputNeurons[nn], currentPlayer->numberOfOutputNeurons[nn], (experienceWithoutKnownOutput));
 		delete experienceWithoutKnownOutput;
 	}
 
@@ -1818,3 +1819,5 @@ void addExperienceToByteArray()
 	char* ExperienceDataSetByteArray = new char[EXPERIENCE_DATASET_MAX_SIZE];
 
 */
+
+#endif

@@ -26,7 +26,7 @@
  * File Name: LRRCgameAI.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -42,7 +42,8 @@
 #define HEADER_LRRC_GAME_AI
 
 #include "LRRCglobalDefs.h"
-//#assert USE_ANN
+
+#ifdef USE_ANN
 
 #include "ANNexperienceClass.h"
 #include "LRRCplayerClass.h"
@@ -144,10 +145,10 @@ long mergePlayerUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, U
 long mergeAllUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, int nnIndex);
 
 
-void parseSceneFileAndFillUnitLists(char sceneFileName[], UnitListClass* firstUnitInUnitList, int currentRound);
+void parseSceneFileAndFillUnitLists(string sceneFileName, UnitListClass* firstUnitInUnitList, int currentRound);
 	void fillUnitList(LDreference* currentReferenceInSceneFile, UnitListClass* firstUnitInUnitGroup, int currentRound);
 
-void parseSceneFileAndUpdateUnitList(char sceneFileName[], UnitListClass* firstUnitInUnitList, int currentRound);
+void parseSceneFileAndUpdateUnitList(string sceneFileName, UnitListClass* firstUnitInUnitList, int currentRound);
 	void updateUnitList(LDreference* initialReferenceInSceneFile, UnitListClass* firstUnitInUnitList, int currentRound);	//required after every round
 		void updateUnitListWithNewUnits(LDreference* currentReferenceInSceneFile, UnitListClass* firstUnitInUnitGroup, int currentRound);
 			UnitListClass* searchUnitListForUnitAndIfNotThereAddToList(UnitListClass* firstUnitInUnitGroup, LDreference* unitReferenceInSceneFile, int currentRound, bool topLevelInTree, bool* foundUnitInList);
@@ -183,6 +184,7 @@ void addPlayerUnitExperiencesToOFStream(ofstream* experienceDataSetOFStreamObjec
 
 #endif
 
+#endif
 
 
 

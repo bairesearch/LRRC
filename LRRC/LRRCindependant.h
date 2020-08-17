@@ -26,7 +26,7 @@
  * File Name: LRRCindependant.h
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -39,11 +39,13 @@
 #ifndef HEADER_LRRC_INDEPENDANT
 #define HEADER_LRRC_INDEPENDANT
 
+#include "LRRCglobalDefs.h"
+
 void executeLRRCfunctionsIndependantly();
 
 bool obtainAttackIntentionsFromUser(bool* unit1intendsToPerformAttack, bool* unit2intendsToPerformAttack);
-bool obtainSceneFileNamesFromUser(char* currentSceneFileName, char* previousSceneFileName);
-bool obtainSceneFileNameFromUser(char* currentSceneFileName);
+bool obtainSceneFileNamesFromUser(string* currentSceneFileName, string* previousSceneFileName);
+bool obtainSceneFileNameFromUser(string* currentSceneFileName);
 
 //User Options	//current routines supported by backend rules checker software
 /*

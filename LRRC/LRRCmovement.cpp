@@ -26,7 +26,7 @@
  * File Name: LRRCmovement.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -78,7 +78,7 @@ ModelDetails* buildingSection;
 
 
 
-bool compareSceneFilesMovementPhase(char* preMovementPhaseSceneFileName, char* thisPhaseStartSceneFileName, Player* currentPlayer, char* targetSpritesSceneFileName, bool addSprites)
+bool compareSceneFilesMovementPhase(string preMovementPhaseSceneFileName, string thisPhaseStartSceneFileName, Player* currentPlayer, string targetSpritesSceneFileName, bool addSprites)
 {
 	bool result = true;
 
@@ -121,7 +121,7 @@ bool compareSceneFilesMovementPhase(char* preMovementPhaseSceneFileName, char* t
 
 
 
-bool compareScenesMovementPhase(char* preMovementPhaseSceneFileName, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, Player* currentPlayer, char* targetSpritesSceneFileName, bool addSprites)
+bool compareScenesMovementPhase(string preMovementPhaseSceneFileName, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, Player* currentPlayer, string targetSpritesSceneFileName, bool addSprites)
 {
 	bool result = true;
 
@@ -171,7 +171,7 @@ bool compareScenesMovementPhase(char* preMovementPhaseSceneFileName, LDreference
 
 
 
-bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDreference* referenceInThisPhaseStartSceneFile, LDreference* initialReferenceInPreMovementPhaseScene, int parentUnitSpeed, bool isAChildOfAMovingReference, Player* currentPlayer, char* targetSpritesSceneFileName, LDreference* spriteListInitialReference, int* numTargetSpritesAdded)
+bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDreference* referenceInThisPhaseStartSceneFile, LDreference* initialReferenceInPreMovementPhaseScene, int parentUnitSpeed, bool isAChildOfAMovingReference, Player* currentPlayer, string targetSpritesSceneFileName, LDreference* spriteListInitialReference, int* numTargetSpritesAdded)
 {
 	bool playerMoveStatus = true;
 	LDreference* currentReference = referenceInThisPhaseStartSceneFile;
@@ -504,7 +504,7 @@ bool compareSubmodelNamesAndIfSameCheckIfValidMove(LDreference* referenceInThisP
 
 
 
-bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile, bool resultOfComparison[], Player* currentPlayer, LDreference* spriteListInitialReference, LDreference* referenceInPreMovementPhaseSceneFile, int* numTargetSpritesAdded, char* targetSpritesSceneFileName, bool unitIDFound, bool isChildOfMovingReference)
+bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile, bool resultOfComparison[], Player* currentPlayer, LDreference* spriteListInitialReference, LDreference* referenceInPreMovementPhaseSceneFile, int* numTargetSpritesAdded, string targetSpritesSceneFileName, bool unitIDFound, bool isChildOfMovingReference)
 {
 
 	/*	"aPartWithSameName" = a part with same name and colour as part being compared

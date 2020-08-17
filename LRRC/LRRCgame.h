@@ -26,7 +26,7 @@
  * File Name: LRRCgame.h
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -64,7 +64,7 @@
 #define GAME_PHASE_EXECUTION_DISPLAY_END (4)
 
 #define GAME_ROUNDS_MAX_NUM (1000000)
-#define GAME_ROUND_STRING_MAX_LEN (8)
+//#define GAME_ROUND_STRING_MAX_LEN (8)
 #define GAME_ROUND_DEFAULT (1)
 #define GAME_NUM_DEFAULT (1)
 
@@ -76,7 +76,7 @@
 
 #define GAME_PLAYERS_NUM_DEFAULT (4)
 #define GAME_PLAYERS_MAX_NUM (1000000)
-#define GAME_PLAYERS_STRING_MAX_LEN (8)
+//#define GAME_PLAYERS_STRING_MAX_LEN (8)
 #define GAME_PLAYER_TURN_DEFAULT (1)
 
 
@@ -109,7 +109,7 @@
 #define SCENE_FILE_NAME_PHASE_CLOSECOMBAT "close"
 #define SCENE_FILE_NAME_EXTENSION ".ldr"
 */
-#define SCENE_FILE_NAME_MAX_LEN (50)
+//#define SCENE_FILE_NAME_MAX_LEN (50)
 
 
 
@@ -130,18 +130,18 @@ bool gamePlay(int initialRound, int initialPlayerTurn, int initialPhase, int num
 		bool executeMovement(int currentGame, int currentRound, int currentPlayerTurn, Player* initialPlayerInList, int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, bool allPlayersAI);
 		bool executeLongDistanceCombat(int currentGame, int currentRound, int currentPlayerTurn, Player* initialPlayerInList, int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, bool allPlayersAI);
 		bool executeCloseCombat(int currentGame, int currentRound, int currentPlayerTurn, Player* initialPlayerInList, int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, bool allPlayersAI);
-			bool executeGenericCombat(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, char preCombatPhaseSceneFileName[], char postCombatPhaseSceneFileName[], char targetSpritesSceneFileName[], Player* initialPlayerInList, bool allPlayersAI);
+			bool executeGenericCombat(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, string preCombatPhaseSceneFileName, string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, Player* initialPlayerInList, bool allPlayersAI);
 			#ifdef USE_ANN
-				bool AIsearchUnitListForPhaseActionSelectionInitialisation(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, char preCombatPhaseSceneFileName[], char postCombatPhaseSceneFileName[], char targetSpritesSceneFileName[], LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* firstUnitInOpponentUnitGroup);
+				bool AIsearchUnitListForPhaseActionSelectionInitialisation(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, string preCombatPhaseSceneFileName, string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* firstUnitInOpponentUnitGroup);
 					bool updateAbsolutePositionOfAllSubModels(LDreference* firstReferenceWithinSubModel, LDreference* parentReference);
 					bool moveUnitTowardsOpponent(LDreference* unitReference, LDreference* opponentReference);
 					bool AIsearchUnitListAndCalculateWorthOfOpponents(int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, Player* initialPlayerInList, UnitListClass* firstUnitInOpponentUnitGroup, UnitListClass* playerUnitThatIsFindingAnOpponent, LDreference* referenceToPlayerUnitThatIsFindingAnOpponent);
 			#endif
-					int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, char targetSpritesSceneFileName[], char* unitAttackerFileName, char* unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, bool checkPreviousSceneFile);
+					int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, string targetSpritesSceneFileName, string unitAttackerFileName, string unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, bool checkPreviousSceneFile);
 
-			bool prepareNextPhaseSceneFiles(int nextPhase, int nextPlayerTurn, char* previousPhaseSceneFileName, char* nextSceneFileName, char* rangeSpritesNextSceneFileName, LDreference* firstReferenceInPreviousScene, bool allPlayersAI);
-		//bool AIsearchSceneFileListAndPerformMovements(int currentPlayerTurn, int currentPhase, char preMovementPhaseSceneFileNameMovement[], char thisPhaseStartSceneFileNameMovement[], char preCombatPhaseSceneFileName[], char postCombatPhaseSceneFileName[], char targetSpritesSceneFileName[], LDreference* initialReferenceInSceneFile, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList);
-bool generateSceneFileName(int currentGame, int currentRound, int currentPlayerTurn, int currentPhase, int phaseExecutionStage, char* sceneFileName);
+			bool prepareNextPhaseSceneFiles(int nextPhase, int nextPlayerTurn, string previousPhaseSceneFileName, string nextSceneFileName, string rangeSpritesNextSceneFileName, LDreference* firstReferenceInPreviousScene, bool allPlayersAI);
+		//bool AIsearchSceneFileListAndPerformMovements(int currentPlayerTurn, int currentPhase, string preMovementPhaseSceneFileNameMovement, string thisPhaseStartSceneFileNameMovement, string preCombatPhaseSceneFileName, string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, LDreference* initialReferenceInSceneFile, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList);
+bool generateSceneFileName(int currentGame, int currentRound, int currentPlayerTurn, int currentPhase, int phaseExecutionStage, string* sceneFileName);
 bool generatePlayerList(int numberOfPlayers, Player* initialPlayerInList, UnitListClass* firstUnitInUnitList);
 bool generatePlayerList(int numberOfPlayers, Player* initialPlayerInList);
 
@@ -155,8 +155,8 @@ void generateRaytracedImagePPMNNSceneFileName(int currentGame, string* sceneFile
 void copyReferencesAndSubmodelDetails(LDreference* referenceNew, LDreference* referenceToCopy, int type);
 
 #ifdef USE_ANN
-void feedNeuralNetworkWithGameUnitExperiences(ANNneuronContainer* firstInputNeuronInNetwork, ANNneuronContainer* firstOutputNeuronInNetwork, long numberOfInputNeurons, long numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn);
-void trainAndOutputNeuralNetwork(ANNneuronContainer* firstInputNeuronInNetwork, ANNneuronContainer* firstOutputNeuronInNetwork, int numberOfInputNeurons, int numberOfOutputNeurons, ANNexperience* firstExperienceInList, bool addSprites, bool allowRaytrace, int nn, int currentGame);
+void feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, long numberOfInputNeurons, long numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn);
+void trainAndOutputNeuralNetwork(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, int numberOfInputNeurons, int numberOfOutputNeurons, ANNexperience* firstExperienceInList, bool addSprites, bool allowRaytrace, int nn, int currentGame);
 #endif
 
 void updatePlayerStatus(Player* initialPlayerInList);

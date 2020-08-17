@@ -23,10 +23,10 @@
 
 /*******************************************************************************
  *
- * File Name: LRRCglobalsDefs.h
+ * File Name: LRRCglobalDefs.h
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Description: LRRC specific global definitions
  *
  *******************************************************************************/

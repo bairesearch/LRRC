@@ -26,7 +26,7 @@
  * File Name: LRRCmodelClass.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -313,8 +313,6 @@ ModelDetails::~ModelDetails()
 
 
 /*
-void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails* u)
-
 preconditions:
 to calculate groupIndex (of unit group) correctly, all units within group must be of same type (and if the units are machines/vehicles, they must be of the same form, eg same number of wheels etc)
 to calculate movementSpeed (min of unit group) correctly there is currenlty no known preconditions.
@@ -417,8 +415,8 @@ void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails* u)
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
 	}
 
-	//u->numPerson = numPerson;		//2007 NB this may not be required; added for backwards compatability for movment.cpp searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation()'s determineUnitTypeAndMinSpeedOfUnitGroup() reference
-	//u->numHorse = numHorse;			//2007 NB this may not be required; added for backwards compatability for movment.cpp searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation()'s determineUnitTypeAndMinSpeedOfUnitGroup() reference
+	//u->numPerson = numPerson;		//2007 NB this may not be required; added for backwards compatability for movment.cpp searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation{}'s determineUnitTypeAndMinSpeedOfUnitGroup{} reference
+	//u->numHorse = numHorse;			//2007 NB this may not be required; added for backwards compatability for movment.cpp searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation{}'s determineUnitTypeAndMinSpeedOfUnitGroup{} reference
 
 
 	if((numLargeWheel >= 2) || (numSmallWheel >= 4))

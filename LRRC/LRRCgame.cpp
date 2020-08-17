@@ -26,7 +26,7 @@
  * File Name: LRRCgame.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -52,13 +52,12 @@
 
 #ifdef USE_ANN
 	#include "ANNneuronClass.h"
-	#include "ANNFormation.h"
+	#include "ANNformation.h"
 	#include "LRRCgameAI.h"
 	#include "LRRCunitClass.h"
-	#include "ANNTraining.h"
-	#include "ANNXMLconversion.h"
-	#include "ANNsprite.h"
-	#include "ANNUpdateAlgorithm.h"
+	#include "ANNalgorithmBackpropagationTraining.h"
+	#include "ANNxmlConversion.h"
+	#include "ANNalgorithmBackpropagationUpdate.h"
 	#include "ANNdisplay.h"
 #endif
 
@@ -270,16 +269,13 @@ bool executeLRRCfunctionsWithAI()
 		initialRound = GAME_ROUND_DEFAULT;
 		initialPlayerTurn = GAME_PLAYER_TURN_DEFAULT;
 		initialPhase = GAME_PHASE_DEFAULT;
-		char preMovementPhaseSceneFileName[SCENE_FILE_NAME_MAX_LEN];
-		generateSceneFileName(gameNumber, initialRound, initialPlayerTurn, initialPhase, GAME_PHASE_EXECUTION_DISPLAY_START, preMovementPhaseSceneFileName);
+		string preMovementPhaseSceneFileName = "";
+		generateSceneFileName(gameNumber, initialRound, initialPlayerTurn, initialPhase, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileName);
 		string initialSceneFileInGame = SCENE_FILE_NAME_START + SCENE_FILE_NAME_EXTENSION;
-		char* initialSceneFileInGameCharArray = new char[(initialSceneFileInGame).size()+1];
-		const char* initialSceneFileInGameConstCharArray = (initialSceneFileInGame).c_str();
-		strcpy(initialSceneFileInGameCharArray, initialSceneFileInGameConstCharArray);
 		//OLD: copyFiles(preMovementPhaseSceneFileName, initialSceneFileInGameCharArray);
 		LDreference* initialReferenceInSceneFile = new LDreference();
-		LDreference* topLevelReferenceInSceneFile = new LDreference(initialSceneFileInGameCharArray, 1, true);	//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
-		if(!parseFile(initialSceneFileInGameCharArray, initialReferenceInSceneFile, topLevelReferenceInSceneFile, false))
+		LDreference* topLevelReferenceInSceneFile = new LDreference(initialSceneFileInGame, 1, true);	//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+		if(!parseFile(initialSceneFileInGame, initialReferenceInSceneFile, topLevelReferenceInSceneFile, false))
 		{//file does not exist
 			cout << "The file: " << preMovementPhaseSceneFileName << " does not exist in the directory" << endl;
 			result = false;
@@ -360,8 +356,8 @@ bool executeLRRCfunctionsWithAI()
 		/*OLD:::
 		if(gameNumber != 1)
 		{
-			char preMovementPhaseSceneFileNameForCurrentGame[SCENE_FILE_NAME_MAX_LEN];
-			generateSceneFileName(gameNumber, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, preMovementPhaseSceneFileNameForCurrentGame);
+			string preMovementPhaseSceneFileNameForCurrentGame = "";
+			generateSceneFileName(gameNumber, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileNameForCurrentGame);
 
 			copyFiles(preMovementPhaseSceneFileNameForCurrentGame, preMovementPhaseSceneFileName);
 
@@ -719,8 +715,8 @@ bool gamePlay(int initialRound, int initialPlayerTurn, int initialPhase, int num
 
 
 				//update UnitLists for each player
-				char preMovementPhaseSceneFileName[SCENE_FILE_NAME_MAX_LEN];
-				generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, preMovementPhaseSceneFileName);
+				string preMovementPhaseSceneFileName = "";
+				generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileName);
 				parseSceneFileAndUpdateUnitList(preMovementPhaseSceneFileName, initialPlayerInList->firstUnitInUnitList, currentRound);	//extract the unit list reference from an arbitrary player
 			}
 		#endif
@@ -789,8 +785,8 @@ bool gamePlay(int initialRound, int initialPlayerTurn, int initialPhase, int num
 		if(!allPlayersAI)
 		{
 			//update UnitLists for each player
-			char preMovementPhaseSceneFileName[SCENE_FILE_NAME_MAX_LEN];
-			generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, preMovementPhaseSceneFileName);
+			string preMovementPhaseSceneFileName = "";
+			generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileName);
 			parseSceneFileAndUpdateUnitList(preMovementPhaseSceneFileName, initialPlayerInList->firstUnitInUnitList, currentRound);	//extract the unit list reference from an arbitrary player
 		}
 	#endif
@@ -849,7 +845,7 @@ bool gamePlay(int initialRound, int initialPlayerTurn, int initialPhase, int num
 }
 
 #ifdef USE_ANN
-void feedNeuralNetworkWithGameUnitExperiences(ANNneuronContainer* firstInputNeuronInNetwork, ANNneuronContainer* firstOutputNeuronInNetwork, long numberOfInputNeurons, long numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn)
+void feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, long numberOfInputNeurons, long numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn)
 {
 	//cout << "h111" << endl;
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
@@ -861,7 +857,7 @@ void feedNeuralNetworkWithGameUnitExperiences(ANNneuronContainer* firstInputNeur
 		if(checkAverageKillRatioForUnitGroup(currentUnitInList) || (currentUnitInList->unitDetails->numPerson == 1))
 		{
 		#endif
-			feedNeuralNetworkWithASetOfExperiences(firstInputNeuronInNetwork, firstOutputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, currentUnitInList->firstExperience[nn]);
+			feedNeuralNetworkWithASetOfExperiencesBackpropagation(firstInputNeuronInNetwork, firstOutputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, currentUnitInList->firstExperience[nn]);
 
 			if(currentUnitInList->isUnitGroup)
 			{
@@ -926,21 +922,21 @@ bool executeMovement(int currentGame, int currentRound, int currentPlayerTurn, P
 
 	bool result = true;
 
-	char preMovementPhaseSceneFileName[SCENE_FILE_NAME_MAX_LEN];
-	char thisPhaseStartSceneFileName[SCENE_FILE_NAME_MAX_LEN];
+	string preMovementPhaseSceneFileName = "";
+	string thisPhaseStartSceneFileName = "";
 
-	char targetSpritesSceneFileName[SCENE_FILE_NAME_MAX_LEN];
+	string targetSpritesSceneFileName = "";
 
-	char nextSceneFileName[SCENE_FILE_NAME_MAX_LEN];
-	char rangeSpritesNextSceneFile[SCENE_FILE_NAME_MAX_LEN];
+	string nextSceneFileName = "";
+	string rangeSpritesNextSceneFile = "";
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, preMovementPhaseSceneFileName);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_END, thisPhaseStartSceneFileName);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileName);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_END, &thisPhaseStartSceneFileName);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_TARGETSPRITES, targetSpritesSceneFileName);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_TARGETSPRITES, &targetSpritesSceneFileName);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, nextSceneFileName);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, rangeSpritesNextSceneFile);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, &nextSceneFileName);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesNextSceneFile);
 
 
 
@@ -964,8 +960,8 @@ bool executeMovement(int currentGame, int currentRound, int currentPlayerTurn, P
 		*/
 
 		//NB it is assumed in the first round, first player turn, no scene file with movement range sprites exists and so one should be created...
-		char rangeSpritesThisSceneFile[SCENE_FILE_NAME_MAX_LEN];
-		generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, rangeSpritesThisSceneFile);
+		string rangeSpritesThisSceneFile = "";
+		generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesThisSceneFile);
 
 		bool addTextualSpriteInfo = true;
 		bool addRangeSpriteInfo = true;
@@ -1148,28 +1144,28 @@ bool executeLongDistanceCombat(int currentGame, int currentRound, int currentPla
 {
 	bool result = true;
 
-	char preMovementPhaseSceneFileNameMovement[SCENE_FILE_NAME_MAX_LEN];
-	char thisPhaseStartSceneFileNameMovement[SCENE_FILE_NAME_MAX_LEN];
+	string preMovementPhaseSceneFileNameMovement = "";
+	string thisPhaseStartSceneFileNameMovement = "";
 
-	char preCombatPhaseSceneFileName[SCENE_FILE_NAME_MAX_LEN];
-	char postCombatPhaseSceneFileName[SCENE_FILE_NAME_MAX_LEN];
+	string preCombatPhaseSceneFileName = "";
+	string postCombatPhaseSceneFileName = "";
 
-	char targetSpritesSceneFileName[SCENE_FILE_NAME_MAX_LEN];
+	string targetSpritesSceneFileName = "";
 
-	char nextSceneFileName[SCENE_FILE_NAME_MAX_LEN];
-	char rangeSpritesNextSceneFile[SCENE_FILE_NAME_MAX_LEN];
+	string nextSceneFileName = "";
+	string rangeSpritesNextSceneFile = "";
 
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, preMovementPhaseSceneFileNameMovement);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_END, thisPhaseStartSceneFileNameMovement);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileNameMovement);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_END, &thisPhaseStartSceneFileNameMovement);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, preCombatPhaseSceneFileName);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_END, postCombatPhaseSceneFileName);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, &preCombatPhaseSceneFileName);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_END, &postCombatPhaseSceneFileName);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_TARGETSPRITES, targetSpritesSceneFileName);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_TARGETSPRITES, &targetSpritesSceneFileName);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, nextSceneFileName);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, rangeSpritesNextSceneFile);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, &nextSceneFileName);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesNextSceneFile);
 
 	LDreference* initialReferenceInThisPhaseStartScene;
 	LDreference* initialReferenceInPreMovementPhaseScene;
@@ -1225,24 +1221,24 @@ bool executeCloseCombat(int currentGame, int currentRound, int currentPlayerTurn
 {
 	bool result = true;
 
-	char preMovementPhaseSceneFileNameMovement[SCENE_FILE_NAME_MAX_LEN];
-	char thisPhaseStartSceneFileNameMovement[SCENE_FILE_NAME_MAX_LEN];
+	string preMovementPhaseSceneFileNameMovement = "";
+	string thisPhaseStartSceneFileNameMovement = "";
 
-	char preCombatPhaseSceneFileName[SCENE_FILE_NAME_MAX_LEN];
-	char postCombatPhaseSceneFileName[SCENE_FILE_NAME_MAX_LEN];
+	string preCombatPhaseSceneFileName = "";
+	string postCombatPhaseSceneFileName = "";
 
-	char targetSpritesSceneFileName[SCENE_FILE_NAME_MAX_LEN];
+	string targetSpritesSceneFileName = "";
 
-	char nextSceneFileName[SCENE_FILE_NAME_MAX_LEN];
-	char rangeSpritesNextSceneFile[SCENE_FILE_NAME_MAX_LEN];
+	string nextSceneFileName = "";
+	string rangeSpritesNextSceneFile = "";
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, preMovementPhaseSceneFileNameMovement);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_END, thisPhaseStartSceneFileNameMovement);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileNameMovement);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_END, &thisPhaseStartSceneFileNameMovement);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, preCombatPhaseSceneFileName);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_END, postCombatPhaseSceneFileName);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, &preCombatPhaseSceneFileName);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_END, &postCombatPhaseSceneFileName);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_TARGETSPRITES, targetSpritesSceneFileName);
+	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_TARGETSPRITES, &targetSpritesSceneFileName);
 
 
 	LDreference* initialReferenceInThisPhaseStartScene;
@@ -1279,14 +1275,14 @@ bool executeCloseCombat(int currentGame, int currentRound, int currentPlayerTurn
 	int nextPhasePlayerTurn;
 	if(currentPlayerTurn == numberOfPlayers)
 	{
-		generateSceneFileName(currentGame, (currentRound+1), GAME_PLAYER_TURN_DEFAULT, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, nextSceneFileName);
-		generateSceneFileName(currentGame, (currentRound+1), GAME_PLAYER_TURN_DEFAULT, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, rangeSpritesNextSceneFile);
+		generateSceneFileName(currentGame, (currentRound+1), GAME_PLAYER_TURN_DEFAULT, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &nextSceneFileName);
+		generateSceneFileName(currentGame, (currentRound+1), GAME_PLAYER_TURN_DEFAULT, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesNextSceneFile);
 		nextPhasePlayerTurn = GAME_PLAYER_TURN_DEFAULT;
 	}
 	else
 	{
-		generateSceneFileName(currentGame, currentRound, (currentPlayerTurn+1), GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, nextSceneFileName);
-		generateSceneFileName(currentGame, currentRound, (currentPlayerTurn+1), GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, rangeSpritesNextSceneFile);
+		generateSceneFileName(currentGame, currentRound, (currentPlayerTurn+1), GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &nextSceneFileName);
+		generateSceneFileName(currentGame, currentRound, (currentPlayerTurn+1), GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesNextSceneFile);
 		nextPhasePlayerTurn = (currentPlayerTurn+1);
 	}
 
@@ -1310,7 +1306,7 @@ bool executeCloseCombat(int currentGame, int currentRound, int currentPlayerTurn
 }
 
 
-bool prepareNextPhaseSceneFiles(int nextPhase, int nextPlayerTurn, char* previousPhaseSceneFileName, char* nextSceneFileName, char* rangeSpritesNextSceneFileName, LDreference* firstReferenceInPreviousScene, bool allPlayersAI)
+bool prepareNextPhaseSceneFiles(int nextPhase, int nextPlayerTurn, string previousPhaseSceneFileName, string nextSceneFileName, string rangeSpritesNextSceneFileName, LDreference* firstReferenceInPreviousScene, bool allPlayersAI)
 {
 	bool result = true;
 
@@ -1344,7 +1340,7 @@ bool prepareNextPhaseSceneFiles(int nextPhase, int nextPlayerTurn, char* previou
 
 
 
-bool executeGenericCombat(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, char preCombatPhaseSceneFileName[], char postCombatPhaseSceneFileName[], char targetSpritesSceneFileName[], Player* initialPlayerInList, bool allPlayersAI)
+bool executeGenericCombat(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, string preCombatPhaseSceneFileName, string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, Player* initialPlayerInList, bool allPlayersAI)
 {
 	bool result = true;
 
@@ -1369,8 +1365,8 @@ bool executeGenericCombat(int currentRound, int currentPlayerTurn, int currentPh
 	bool UIstatus = true;
 	string answerAsString = "";
 	int answerAsInt;
-	char unitAttackerFileName[DAT_FILE_REF_SUBMODEL_NAME_LENGTH_MAX];
-	char unitDefenderFileName[DAT_FILE_REF_SUBMODEL_NAME_LENGTH_MAX];
+	string unitAttackerFileName = "";
+	string unitDefenderFileName = "";
 	int unitAttackerPlayerID;
 	int unitDefenderPlayerID;
 
@@ -1420,7 +1416,7 @@ bool executeGenericCombat(int currentRound, int currentPlayerTurn, int currentPh
 
 			if(UIstatus == true)
 			{
-				obtainUnitDetailsFromUserForCombat(unitAttackerFileName, unitDefenderFileName, &unitAttackerPlayerID, &unitDefenderPlayerID, initialReferenceInThisPhaseStartScene);
+				obtainUnitDetailsFromUserForCombat(&unitAttackerFileName, &unitDefenderFileName, &unitAttackerPlayerID, &unitDefenderPlayerID, initialReferenceInThisPhaseStartScene);
 
 
 				UnitListClass* unit;
@@ -1678,7 +1674,7 @@ bool moveUnitTowardsOpponent(LDreference* unitReference, LDreference* opponentRe
 //required for AI player
 	//cycle through each character the player owns on the board, and determine  and
 		//make sure to check that a unit selected is combat ready, if a unit is selected and performs combat make it no longer combat ready
-bool AIsearchUnitListForPhaseActionSelectionInitialisation(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, char preCombatPhaseSceneFileName[], char postCombatPhaseSceneFileName[], char targetSpritesSceneFileName[], LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* firstUnitInOpponentUnitGroup)
+bool AIsearchUnitListForPhaseActionSelectionInitialisation(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, string preCombatPhaseSceneFileName, string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* firstUnitInOpponentUnitGroup)
 {
 
 	//cout << "EXECUTING AIsearchUnitListForPhaseActionSelectionInitialisation{}:" << endl;
@@ -2132,19 +2128,9 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(int currentRound, int
 							else
 							{//combat phase
 
-								//cout << "here6b4d" << endl;
+								string unitAttackerFileName = referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->name;
+								string unitDefenderFileName =  referenceForOpposingPlayerCurrentUnit->name;
 
-								char* unitAttackerFileName = new char[referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->name.size()+1];
-								const char* constunitAttackerFileName = referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->name.c_str();
-								strcpy(unitAttackerFileName, constunitAttackerFileName);
-
-								char* unitDefenderFileName = new char[referenceForOpposingPlayerCurrentUnit->name.size()+1];
-								const char* constunitDefenderFileName = referenceForOpposingPlayerCurrentUnit->name.c_str();
-								strcpy(unitDefenderFileName, constunitDefenderFileName);
-
-
-								//char* unitAttackerFileName = referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->name.c_str();
-								//char* unitDefenderFileName = referenceForOpposingPlayerCurrentUnit->name.c_str();
 								int unitAttackerPlayerID = referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->colour;
 								int unitDefenderPlayerID = referenceForOpposingPlayerCurrentUnit->colour;
 
@@ -2197,8 +2183,6 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(int currentRound, int
 										}
 									}
 								}
-								delete unitAttackerFileName;
-								delete unitDefenderFileName;
 								//cout << "here6b4e" << endl;
 
 							}
@@ -2227,7 +2211,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(int currentRound, int
 
 
 
-//bool AIsearchUnitListAndCalculateWorthOfOpponents(int currentPlayerTurn, int currentPhase, char preMovementPhaseSceneFileNameMovement[], char thisPhaseStartSceneFileNameMovement[], char preCombatPhaseSceneFileName[], char postCombatPhaseSceneFileName[], char targetSpritesSceneFileName[], LDreference* initialReferenceInSceneFile, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* playerUnitThatIsFindingAnOpponent, LDreference* referenceToPlayerUnitThatIsFindingAnOpponent)
+//bool AIsearchUnitListAndCalculateWorthOfOpponents(int currentPlayerTurn, int currentPhase, string preMovementPhaseSceneFileNameMovement, string thisPhaseStartSceneFileNameMovement, string preCombatPhaseSceneFileName, string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, LDreference* initialReferenceInSceneFile, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* playerUnitThatIsFindingAnOpponent, LDreference* referenceToPlayerUnitThatIsFindingAnOpponent)
 bool AIsearchUnitListAndCalculateWorthOfOpponents(int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, Player* initialPlayerInList, UnitListClass* firstUnitInOpponentUnitGroup, UnitListClass* playerUnitThatIsFindingAnOpponent, LDreference* referenceToPlayerUnitThatIsFindingAnOpponent)
 {
 	bool result = true;
@@ -2552,7 +2536,7 @@ bool AIsearchUnitListAndCalculateWorthOfOpponents(int currentPlayerTurn, int cur
 		#endif
 			ANNexperience* experienceWithoutKnownOutput = new ANNexperience[GAME_NUMBER_OF_EXPERIENCE_NN];
 			generateExperienceFromGlobalDecision(currentPlayer->firstUnitInUnitList, initialReferenceInThisPhaseStartScene, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, &(experienceWithoutKnownOutput[nn]));
-			experienceBackPropagationPassError = calculateExperienceErrorForHypotheticalDecision(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn], currentPlayer->numberOfInputNeurons[nn], currentPlayer->numberOfOutputNeurons[nn], &(experienceWithoutKnownOutput[nn]));
+			experienceBackPropagationPassError = calculateExperienceErrorForHypotheticalDecisionBackpropagation(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn], currentPlayer->numberOfInputNeurons[nn], currentPlayer->numberOfOutputNeurons[nn], &(experienceWithoutKnownOutput[nn]));
 			currentUnit->selfLearningTempVarBackPropagationPassError[nn] = experienceBackPropagationPassError;
 			delete[] experienceWithoutKnownOutput;
 		#endif
@@ -2599,7 +2583,7 @@ bool AIsearchUnitListAndCalculateWorthOfOpponents(int currentPlayerTurn, int cur
 
 
 
-int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, char targetSpritesSceneFileName[], char* unitAttackerFileName, char* unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, bool checkPreviousSceneFile)
+int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(int currentRound, int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, string targetSpritesSceneFileName, string unitAttackerFileName, string unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, bool checkPreviousSceneFile)
 {
 	bool result = true;
 
@@ -2914,36 +2898,37 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(int currentRound, i
 
 
 
-bool generateSceneFileName(int currentGame, int currentRound, int currentPlayerTurn, int currentPhase, int phaseExecutionStage, char* sceneFileName)
+bool generateSceneFileName(int currentGame, int currentRound, int currentPlayerTurn, int currentPhase, int phaseExecutionStage, string* sceneFileName)
 {
 	bool result = true;
 
-	char currentRoundString[GAME_ROUND_STRING_MAX_LEN];
-	char currentPlayerTurnString[GAME_PLAYERS_STRING_MAX_LEN];
-	char currentGameString[GAME_ROUND_STRING_MAX_LEN];
+	string currentRoundString = "";
+	string currentPlayerTurnString = "";
+	string currentGameString = "";
 
 	currentRoundString = convertIntToString(currentRound);
 	currentPlayerTurnString = convertIntToString(currentPlayerTurn);
 	currentGameString = convertIntToString(currentGame);
 
-	strcpy(sceneFileName, SCENE_FILE_NAME_START.c_str());
-	strcat(sceneFileName, SCENE_FILE_NAME_GAME_HEADER.c_str());
-	strcat(sceneFileName, currentGameString);
-	strcat(sceneFileName, SCENE_FILE_NAME_ROUND_HEADER.c_str());
-	strcat(sceneFileName, currentRoundString);
-	strcat(sceneFileName, SCENE_FILE_NAME_PLAYER_HEADER.c_str());
-	strcat(sceneFileName, currentPlayerTurnString);
+	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
+	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
+	*sceneFileName = *sceneFileName + currentGameString;
+	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_ROUND_HEADER;
+	*sceneFileName = *sceneFileName + currentRoundString;
+	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_PLAYER_HEADER;
+	*sceneFileName = *sceneFileName + currentPlayerTurnString;
+
 	if(currentPhase == GAME_PHASE_MOVEMENT)
 	{
-		strcat(sceneFileName, SCENE_FILE_NAME_PHASE_MOVEMENT.c_str());
+		*sceneFileName = *sceneFileName + SCENE_FILE_NAME_PHASE_MOVEMENT;
 	}
 	else if(currentPhase == GAME_PHASE_LONGDISTANCECOMBAT)
 	{
-		strcat(sceneFileName, SCENE_FILE_NAME_PHASE_LONGDISTANCE.c_str());
+		*sceneFileName = *sceneFileName + SCENE_FILE_NAME_PHASE_LONGDISTANCE;
 	}
 	else if(currentPhase == GAME_PHASE_CLOSECOMBAT)
 	{
-		strcat(sceneFileName, SCENE_FILE_NAME_PHASE_CLOSECOMBAT.c_str());
+		*sceneFileName = *sceneFileName + SCENE_FILE_NAME_PHASE_CLOSECOMBAT;
 	}
 	else
 	{
@@ -2952,25 +2937,25 @@ bool generateSceneFileName(int currentGame, int currentRound, int currentPlayerT
 	}
 	if(phaseExecutionStage ==  GAME_PHASE_EXECUTION_DISPLAY_START)
 	{
-		strcat(sceneFileName,  SCENE_FILE_NAME_PHASE_START.c_str());
+		*sceneFileName = *sceneFileName + SCENE_FILE_NAME_PHASE_START;
 	}
 	else if(phaseExecutionStage == GAME_PHASE_EXECUTION_DISPLAY_END)
 	{
-		strcat(sceneFileName, SCENE_FILE_NAME_PHASE_END.c_str());
+		*sceneFileName = *sceneFileName + SCENE_FILE_NAME_PHASE_END;
 	}
 	else if(phaseExecutionStage == GAME_PHASE_EXECUTION_DISPLAY_TARGETSPRITES)
 	{
-		strcat(sceneFileName, SCENE_FILE_NAME_PHASE_TARGETSPRITES.c_str());
+		*sceneFileName = *sceneFileName + SCENE_FILE_NAME_PHASE_TARGETSPRITES;
 	}
 	else if(phaseExecutionStage == GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES)
 	{
-		strcat(sceneFileName, SCENE_FILE_NAME_PHASE_RANGESPRITES.c_str());
+		*sceneFileName = *sceneFileName + SCENE_FILE_NAME_PHASE_RANGESPRITES;
 	}
 	else
 	{
 		result = false;
 	}
-	strcat(sceneFileName, SCENE_FILE_NAME_EXTENSION.c_str());
+	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_EXTENSION;
 
 	return result;
 }
@@ -2978,11 +2963,9 @@ bool generateSceneFileName(int currentGame, int currentRound, int currentPlayerT
 
 void generateXMLNNSceneFileName(int currentGame, string* sceneFileName, int nnIndex)
 {
-	char currentGameString[100];
-	currentGameString = convertIntToString(currentGame);
+	string currentGameString = convertIntToString(currentGame);
 
-	char currentNeuralNetworkString[100];
-	currentNeuralNetworkString = convertIntToString(nnIndex);
+	string currentNeuralNetworkString = convertIntToString(nnIndex);
 
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
@@ -2995,11 +2978,9 @@ void generateXMLNNSceneFileName(int currentGame, string* sceneFileName, int nnIn
 
 void generateVectorGraphicsLDRNNSceneFileName(int currentGame, string* sceneFileName, int nnIndex)
 {
-	char currentGameString[100];
-	currentGameString = convertIntToString(currentGame);
+	string currentGameString = convertIntToString(currentGame);
 
-	char currentNeuralNetworkString[100];
-	currentNeuralNetworkString = convertIntToString(nnIndex);
+	string currentNeuralNetworkString = convertIntToString(nnIndex);
 
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
@@ -3011,11 +2992,9 @@ void generateVectorGraphicsLDRNNSceneFileName(int currentGame, string* sceneFile
 
 void generateVectorGraphicsLDRNNSceneFileNameWithSprites(int currentGame, string* sceneFileName, int nnIndex)
 {
-	char currentGameString[100];
-	currentGameString = convertIntToString(currentGame);
+	string currentGameString = convertIntToString(currentGame);
 
-	char currentNeuralNetworkString[100];
-	currentNeuralNetworkString = convertIntToString(nnIndex);
+	string currentNeuralNetworkString = convertIntToString(nnIndex);
 
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
@@ -3030,11 +3009,9 @@ void generateVectorGraphicsLDRNNSceneFileNameWithSprites(int currentGame, string
 
 void generateVectorGraphicsTALNNSceneFileName(int currentGame, string* sceneFileName, int nnIndex)
 {
-	char currentGameString[100];
-	currentGameString = convertIntToString(currentGame);
+	string currentGameString = convertIntToString(currentGame);
 
-	char currentNeuralNetworkString[100];
-	currentNeuralNetworkString = convertIntToString(nnIndex);
+	string currentNeuralNetworkString = convertIntToString(nnIndex);
 
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
@@ -3046,11 +3023,9 @@ void generateVectorGraphicsTALNNSceneFileName(int currentGame, string* sceneFile
 
 void generateRaytracedImagePPMNNSceneFileName(int currentGame, string* sceneFileName, int nnIndex)
 {
-	char currentGameString[100];
-	currentGameString = convertIntToString(currentGame);
+	string currentGameString = convertIntToString(currentGame);
 
-	char currentNeuralNetworkString[100];
-	currentNeuralNetworkString = convertIntToString(nnIndex);
+	string currentNeuralNetworkString = convertIntToString(nnIndex);
 
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
@@ -3066,11 +3041,9 @@ void generateRaytracedImagePPMNNSceneFileName(int currentGame, string* sceneFile
 
 void generateExperiencesNNSceneFileName(int currentGame, string* sceneFileName, int nnIndex)
 {
-	char currentGameString[100];
-	currentGameString = convertIntToString(currentGame);
+	string currentGameString = convertIntToString(currentGame);
 
-	char currentNeuralNetworkString[100];
-	currentNeuralNetworkString = convertIntToString(nnIndex);
+	string currentNeuralNetworkString = convertIntToString(nnIndex);
 
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
@@ -3113,7 +3086,7 @@ void copyReferencesAndSubmodelDetails(LDreference* referenceNew, LDreference* re
 
 
 #ifdef USE_ANN
-void trainAndOutputNeuralNetwork(ANNneuronContainer* firstInputNeuronInNetwork, ANNneuronContainer* firstOutputNeuronInNetwork, int numberOfInputNeurons, int numberOfOutputNeurons, ANNexperience* firstExperienceInList, bool addSprites, bool allowRaytrace, int nn, int currentGame)
+void trainAndOutputNeuralNetwork(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, int numberOfInputNeurons, int numberOfOutputNeurons, ANNexperience* firstExperienceInList, bool addSprites, bool allowRaytrace, int nn, int currentGame)
 {
 
 	string* XMLNNSceneFileName = new string();

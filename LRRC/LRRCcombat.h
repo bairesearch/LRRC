@@ -26,7 +26,7 @@
  * File Name: LRRCcombat.h
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -77,24 +77,24 @@ void fillInCombatExternVariables();
 
 //combat routines supported by rules checker software (see preconditions and postconditions of functions for their requirements)
 //* ******
-bool calculateUnitClassBasic(char* unitFileName);
-int performCloseCombatBasic(char* unit1FileName, char* unit2FileName, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack, bool unit1TakesTheInitative, bool unit2TakesTheInitative);
-int performLongDistanceCombatBasic(char* unit1FileName, char* unit2FileName, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack);
+bool calculateUnitClassBasic(string unitFileName);
+int performCloseCombatBasic(string unit1FileName, string unit2FileName, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack, bool unit1TakesTheInitative, bool unit2TakesTheInitative);
+int performLongDistanceCombatBasic(string unit1FileName, string unit2FileName, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack);
 
 //* ******
-int performLongDistanceCombatWithSceneFile(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, char* thisPhaseStartSceneFileName);
-	int performCloseCombatWithScene(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene);
-int performCloseCombatWithSceneFile(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, char* thisPhaseStartSceneFileName);
-	int performCloseCombatWithConsecutiveScenes(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene);
-int performCloseCombatWithConsecutiveSceneFiles(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, char* thisPhaseStartSceneFileName, char* preMovementPhaseSceneFileName);
-	int performLongDistanceCombatWithScene(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene);
-int performLongDistanceCombatWithConsecutiveSceneFiles(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, char* thisPhaseStartSceneFileName, char* preMovementPhaseSceneFileName);
-	int performLongDistanceCombatWithConsecutiveScenes(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene);
+int performLongDistanceCombatWithSceneFile(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, string thisPhaseStartSceneFileName);
+	int performCloseCombatWithScene(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene);
+int performCloseCombatWithSceneFile(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, string thisPhaseStartSceneFileName);
+	int performCloseCombatWithConsecutiveScenes(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene);
+int performCloseCombatWithConsecutiveSceneFiles(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, string thisPhaseStartSceneFileName, string preMovementPhaseSceneFileName);
+	int performLongDistanceCombatWithScene(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene);
+int performLongDistanceCombatWithConsecutiveSceneFiles(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, string thisPhaseStartSceneFileName, string preMovementPhaseSceneFileName);
+	int performLongDistanceCombatWithConsecutiveScenes(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene);
 
 //* ******
-bool calculateUnitClassNormal(char* unitFileName);
-int performCloseCombatNormal(char* unit1FileName, char* unit2FileName, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack);
-int performLongDistanceCombatNormal(char* unit1FileName, char* unit2FileName, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack);
+bool calculateUnitClassNormal(string unitFileName);
+int performCloseCombatNormal(string unit1FileName, string unit2FileName, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack);
+int performLongDistanceCombatNormal(string unit1FileName, string unit2FileName, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack);
 
 //combat unit properties post parser (reference list searching)
 bool searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(LDreference* referenceBeingSearchedFor, LDreference* initialReference, LDreference* parentReference, bool isFillingParentUnitWithAllCombatRelevantChildModelDetails);

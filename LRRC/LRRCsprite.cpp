@@ -26,7 +26,7 @@
  * File Name: LRRCsprite.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -122,7 +122,7 @@ void fillInLRRCSpriteExternVariables()
 /*top level sprite routines - required for independent LRRCsprite.cpp calculations*/
 
 	//NB this function does not add round's player's phase specific [movement/attack] sprites - these have to be added in LRRCmovement.cpp, and LRRCgame.cpp functions respectively
-bool LRRCaddUnitDetailsSpritesToSceneFile(char* sceneFileName, char* sceneFileNameWithSprites, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn)
+bool LRRCaddUnitDetailsSpritesToSceneFile(string sceneFileName, string sceneFileNameWithSprites, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn)
 {
 	bool result = true;
 
@@ -159,7 +159,7 @@ bool LRRCaddUnitDetailsSpritesToSceneFile(char* sceneFileName, char* sceneFileNa
 	return result;
 }
 
-bool LRRCaddUnitDetailsSpritesToScene(char* sceneFileName, char* sceneFileNameWithSprites, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn, LDreference* firstReferenceInScene)
+bool LRRCaddUnitDetailsSpritesToScene(string sceneFileName, string sceneFileNameWithSprites, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn, LDreference* firstReferenceInScene)
 {
 	bool result = true;
 
@@ -189,7 +189,7 @@ bool LRRCaddUnitDetailsSpritesToScene(char* sceneFileName, char* sceneFileNameWi
 
 
 //preconditions; assumes scene file has more than 1 person
-void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referenceInSceneFile, LDreference* spriteListInitialReference, vec* eyeCoords, int* numSpritesAdded, char* sceneFileName, LDreference* initialReferenceInSceneFile, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn)
+void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referenceInSceneFile, LDreference* spriteListInitialReference, vec* eyeCoords, int* numSpritesAdded, string sceneFileName, LDreference* initialReferenceInSceneFile, bool addTextualSpriteInfo, bool addRangeSpriteInfo, int currentPhase, int currentPlayerTurn)
 {
 	//cout << "here03" << endl;
 
@@ -310,7 +310,7 @@ void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referen
 
 /*medium level sprite routines - these can be used by LRRCsprite.cpp top level routines or by LRRCgame.cpp routines*/
 
-bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReference, LDreference* targetReference, LDreference* spriteListInitialReference, vec* eyeCoords, int* numSpritesAdded, char* sceneFileName, bool addTextualSpriteInfo, bool addRangeSpriteInfo, bool addTargetSpriteInfo, int currentPhase, int currentPlayerTurn)
+bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReference, LDreference* targetReference, LDreference* spriteListInitialReference, vec* eyeCoords, int* numSpritesAdded, string sceneFileName, bool addTextualSpriteInfo, bool addRangeSpriteInfo, bool addTargetSpriteInfo, int currentPhase, int currentPlayerTurn)
 {
 	bool result = true;
 
@@ -610,8 +610,6 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 	spriteColourArray[6] = DAT_FILE_COLOUR_MAGENTA;
 #endif
 
-	char tempString[DAT_FILE_DATA_VALUE_MAX_LENGTH];
-
 	//ii)  perform sprite calculations
 	int baseDefenceLevel = invertLevel(unitDetailsInSceneFile->armourDefenceValue);
 	int baseCloseCombatAttackLevel = invertLevel(unitDetailsInSceneFile->closeCombatAttackValue);
@@ -636,7 +634,6 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 	if(positionOfFullStop != CPP_STRING_FIND_RESULT_FAIL_VALUE)
 	{
 		*spriteTextString = (unitReferenceInSceneFile->name).substr(0, positionOfFullStop);
-		cout << "tempString without fullstop = " << tempString << endl;
 		fullstopFound = true;
 	}
 	//cout << "*spriteTextString=" <<* spriteTextString << endl;
@@ -645,8 +642,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 	/*Player ID Information*/
 	*spriteTextString = *spriteTextString + '\n';
 #ifdef SPRITE_TEXTUAL_INCLUDE_PLAYERID_INFO
-	//itoa(obtainReferencePlayerID(unitReferenceInSceneFile), tempString, 10);
-	tempString = convertIntToString(obtainReferencePlayerID(unitReferenceInSceneFile));
+	string tempString = convertIntToString(obtainReferencePlayerID(unitReferenceInSceneFile));
 
 	*spriteTextString = *spriteTextString + "ID = " + tempString;
 	//cout << "*spriteTextString=" <<* spriteTextString << endl;
@@ -667,7 +663,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 	#ifdef SPRITE_ALWAYS_ADD_TEXT
 		if(unitDetailsInSceneFile->defenceBonus > 0)
 		{
-			tempString = convertIntToString(unitDetailsInSceneFile->defenceBonus);
+			string tempString = convertIntToString(unitDetailsInSceneFile->defenceBonus);
 			*spriteTextString = *spriteTextString + " - " + tempString;
 		}
 	#endif
@@ -680,7 +676,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 		else
 		{
 	#ifndef SPRITE_ALWAYS_ADD_TEXT
-			tempString = convertIntToString((unitDetailsInSceneFile->defenceTotal)*2);
+			string tempString = convertIntToString((unitDetailsInSceneFile->defenceTotal)*2);
 			*spriteTextString = *spriteTextString + tempString;
 	#endif
 		}
@@ -706,12 +702,11 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 		{
 			//cout << "DEBUG 1i1" << endl;
 		#ifdef SPRITE_ALWAYS_ADD_TEXT
-			//itoa(baseLongDistanceAttackLevel, tempString, 10);
-			tempString = convertIntToString(baseLongDistanceAttackLevel);
+			string tempString = convertIntToString(baseLongDistanceAttackLevel);
 			*spriteTextString = *spriteTextString + tempString;
 			if(unitDetailsInSceneFile->longDistanceAttackBonus > 0)
 			{
-				tempString = convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
+				string tempString = convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
 				*spriteTextString = *spriteTextString + " - " + tempString;
 			}
 		#endif
@@ -725,7 +720,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 			else
 			{
 			#ifndef SPRITE_ALWAYS_ADD_TEXT
-				tempString = convertIntToString((unitDetailsInSceneFile->longDistanceAttackTotal)*2);
+				string tempString = convertIntToString((unitDetailsInSceneFile->longDistanceAttackTotal)*2);
 				*spriteTextString = *spriteTextString + tempString;
 			#endif
 			}
@@ -748,13 +743,11 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 		if(unitDetailsInSceneFile->closeCombatAttackTotal > 0)
 		{
 		#ifdef SPRITE_ALWAYS_ADD_TEXT
-			//itoa(baseCloseCombatAttackLevel, tempString, 10);
-			tempString = convertIntToString(baseCloseCombatAttackLevel);
+			string tempString = convertIntToString(baseCloseCombatAttackLevel);
 			*spriteTextString = *spriteTextString + tempString;
 			if(unitDetailsInSceneFile->closeCombatAttackBonus > 0)
 			{
-				//itoa(unitDetailsInSceneFile->closeCombatAttackBonus, tempString, 10);
-				tempString = convertIntToString(unitDetailsInSceneFile->closeCombatAttackBonus);
+				string tempString = convertIntToString(unitDetailsInSceneFile->closeCombatAttackBonus);
 				*spriteTextString = *spriteTextString + " + " + tempString;
 			}
 		#endif
@@ -766,7 +759,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 			else
 			{
 			#ifndef SPRITE_ALWAYS_ADD_TEXT
-				tempString = convertIntToString((unitDetailsInSceneFile->closeCombatAttackTotal)*2);
+				string tempString = convertIntToString((unitDetailsInSceneFile->closeCombatAttackTotal)*2);
 				*spriteTextString = *spriteTextString + tempString;
 			#endif
 			}
@@ -791,11 +784,11 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 			if((unitDetailsInSceneFile->closeCombatAttackValue) > (unitDetailsInSceneFile->longDistanceAttackValue))
 			{
 			#ifdef SPRITE_ALWAYS_ADD_TEXT
-				tempString = convertIntToString(baseCloseCombatAttackLevel);
+				string tempString = convertIntToString(baseCloseCombatAttackLevel);
 				*spriteTextString = *spriteTextString + tempString;
 				if(unitDetailsInSceneFile->closeCombatAttackBonus > 0)
 				{
-					tempString = convertIntToString(unitDetailsInSceneFile->closeCombatAttackBonus);
+					string tempString = convertIntToString(unitDetailsInSceneFile->closeCombatAttackBonus);
 					*spriteTextString = *spriteTextString + " + " + tempString;
 				}
 			#endif
@@ -808,7 +801,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 				else
 				{
 				#ifndef SPRITE_ALWAYS_ADD_TEXT
-					tempString = convertIntToString((unitDetailsInSceneFile->closeCombatAttackTotal)*2);
+					string tempString = convertIntToString((unitDetailsInSceneFile->closeCombatAttackTotal)*2);
 					*spriteTextString = *spriteTextString + tempString;
 				#endif
 				}
@@ -817,11 +810,11 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 			else
 			{
 			#ifdef SPRITE_ALWAYS_ADD_TEXT
-				tempString = convertIntToString(baseLongDistanceAttackLevel);
+				string tempString = convertIntToString(baseLongDistanceAttackLevel);
 				*spriteTextString = *spriteTextString + tempString;
 				if(unitDetailsInSceneFile->longDistanceAttackBonus > 0)
 				{
-					tempString = convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
+					string tempString = convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
 					*spriteTextString = *spriteTextString + " - " + tempString;
 				}
 			#endif
@@ -836,7 +829,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 				else
 				{
 				#ifndef SPRITE_ALWAYS_ADD_TEXT
-					tempString = convertIntToString((unitDetailsInSceneFile->longDistanceAttackTotal)*2);
+					string tempString = convertIntToString((unitDetailsInSceneFile->longDistanceAttackTotal)*2);
 					*spriteTextString = *spriteTextString + tempString;
 				#endif
 				}
@@ -863,12 +856,12 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 	if(unitDetailsInSceneFile->movementSpeed > 0)
 	{
 		//itoa(unitDetailsInSceneFile->movementSpeed, tempString, 10);
-		tempString = convertIntToString(unitDetailsInSceneFile->movementSpeed);
+		string tempString = convertIntToString(unitDetailsInSceneFile->movementSpeed);
 		*spriteTextString = *spriteTextString + tempString;
 
 		if(unitDetailsInSceneFile->longDistanceAttackBonus > 0)
 		{
-			tempString = convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
+			string tempString = convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
 			*spriteTextString = *spriteTextString + " + " + tempString;
 		}
 	}

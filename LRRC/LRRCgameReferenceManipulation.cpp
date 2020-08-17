@@ -26,7 +26,7 @@
  * File Name: LRRCgameReferenceManipulation.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -45,7 +45,7 @@
 
 /*secondary game routines*/
 
-LDreference* searchReferenceListRemoveReference(LDreference* initialReferenceInSceneFile, char* unitFileName, int unitColour, bool* unitIDFound, bool* result)
+LDreference* searchReferenceListRemoveReference(LDreference* initialReferenceInSceneFile, string unitFileName, int unitColour, bool* unitIDFound, bool* result)
 {
 	LDreference* modInitialReferenceInSceneFile = initialReferenceInSceneFile;
 
@@ -107,7 +107,7 @@ LDreference* searchReferenceListRemoveReference(LDreference* initialReferenceInS
 
 
 /*
-void searchReferenceListAssignHasPerformedCombat(int currentPhase, LDreference* initialReferenceInSceneFile, char* unitFileName, int unitColour, bool* unitIDFound, bool* result)
+void searchReferenceListAssignHasPerformedCombat(int currentPhase, LDreference* initialReferenceInSceneFile, string unitFileName, int unitColour, bool* unitIDFound, bool* result)
 {
 	LDreference* currentReference = initialReferenceInSceneFile;
 	while(currentReference->next != NULL)
@@ -250,7 +250,7 @@ bool obtainUserInputInt(int* userInputInt)
 
 
 
-bool obtainUnitDetailsFromUserWOSceneRef(int currentPhase, char* unit1FileName, char* unit2FileName, int* unit1ID, int* unit2ID, char* sceneFileName)
+bool obtainUnitDetailsFromUserWOSceneRef(int currentPhase, string* unit1FileName, string* unit2FileName, int* unit1ID, int* unit2ID, string sceneFileName)
 {
 	bool result = true;
 
@@ -266,13 +266,13 @@ bool obtainUnitDetailsFromUserWOSceneRef(int currentPhase, char* unit1FileName, 
 	obtainUnitDetailsFromUserForCombat(unit1FileName, unit2FileName, unit1ID, unit2ID, initialReferenceInSceneFile);
 
 #ifdef GAME_USE_COLOUR_AS_UNIQUE_UNIT_IDS
-	if(!determineUnitNamesWithColours(currentPhase, unit1FileName, unit2FileName,* unit1ID,* unit2ID, initialReferenceInSceneFile))
+	if(!determineUnitNamesWithColours(currentPhase, unit1FileName, unit2FileName, *unit1ID, *unit2ID, initialReferenceInSceneFile))
 	{
 		result = false;
 	}
 #else
 
-	if(!determineIfUnitsExists(currentPhase, unit1FileName, unit2FileName,* unit1ID,* unit2ID, initialReferenceInSceneFile))
+	if(!determineIfUnitsExists(currentPhase, *unit1FileName, *unit2FileName, *unit1ID, *unit2ID, initialReferenceInSceneFile))
 	{
 		result = false;
 	}
@@ -286,7 +286,7 @@ bool obtainUnitDetailsFromUserWOSceneRef(int currentPhase, char* unit1FileName, 
 
 
 
-bool obtainUnitDetailsFromUserForCombat(char* unit1FileName, char* unit2FileName, int* unit1ID, int* unit2ID, LDreference* initialReferenceInSceneFile)
+bool obtainUnitDetailsFromUserForCombat(string* unit1FileName, string* unit2FileName, int* unit1ID, int* unit2ID, LDreference* initialReferenceInSceneFile)
 {
 	bool result = true;
 
@@ -306,11 +306,11 @@ bool obtainUnitDetailsFromUserForCombat(char* unit1FileName, char* unit2FileName
 
 #ifndef GAME_USE_COLOUR_AS_UNIQUE_UNIT_IDS
 	cout << "Enter Unit 1 Name (Eg 'unit1.ldr'):";
-	cin >> unit1FileName;
+	cin >> *unit1FileName;
 
 	cout << "Enter Unit 2 Name (Eg 'unit2.ldr'):";
 	//cin.get(unit2FileName, 50);
-	cin >> unit2FileName;
+	cin >> *unit2FileName;
 
 #endif
 
@@ -318,7 +318,7 @@ bool obtainUnitDetailsFromUserForCombat(char* unit1FileName, char* unit2FileName
 }
 
 
-bool determineIfUnitsExists(int currentPhase, char* unitAttackerFileName, char* unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* initialReferenceInSceneFile)
+bool determineIfUnitsExists(int currentPhase, string unitAttackerFileName, string unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* initialReferenceInSceneFile)
 {
 	bool result = true;
 
@@ -343,7 +343,7 @@ bool determineIfUnitsExists(int currentPhase, char* unitAttackerFileName, char* 
 }
 
 
-bool determineUnitNamesWithColours(int currentPhase, char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, LDreference* initialReferenceInSceneFile)
+bool determineUnitNamesWithColours(int currentPhase, string* unit1FileName, string* unit2FileName, int unit1ID, int unit2ID, LDreference* initialReferenceInSceneFile)
 {
 	bool result = true;
 
@@ -368,7 +368,7 @@ bool determineUnitNamesWithColours(int currentPhase, char* unit1FileName, char* 
 }
 
 
-void parseRefListCheckUnitExists(int currentPhase, LDreference* initialReferenceInSceneFile, char* unitFileName, int unitColour, bool* unitIDFound, bool* result)
+void parseRefListCheckUnitExists(int currentPhase, LDreference* initialReferenceInSceneFile, string unitFileName, int unitColour, bool* unitIDFound, bool* result)
 {
 	LDreference* currentReference = initialReferenceInSceneFile;
 	while(currentReference->next != NULL)
@@ -397,7 +397,7 @@ void parseRefListCheckUnitExists(int currentPhase, LDreference* initialReference
 }
 
 
-void parseRefListDetRefNames(int currentPhase, LDreference* reference, char* referenceName, int referenceColour, bool* unitIDFound, bool* result)
+void parseRefListDetRefNames(int currentPhase, LDreference* reference, string* referenceName, int referenceColour, bool* unitIDFound, bool* result)
 {
 	LDreference* currentReference = reference;
 	while(currentReference->next != NULL)
@@ -414,7 +414,7 @@ void parseRefListDetRefNames(int currentPhase, LDreference* reference, char* ref
 				else
 				{
 					*unitIDFound = true;
-					strcpy(referenceName, (currentReference->name).c_str());
+					*referenceName = currentReference->name;
 				}
 			}
 

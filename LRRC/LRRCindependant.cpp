@@ -26,7 +26,7 @@
  * File Name: LRRCindependant.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -144,13 +144,13 @@ void executeLRRCfunctionsIndependantly()
 
 		int unit1ID;
 		int unit2ID;
-		char unit1FileName[50];
-		char unit2FileName[50];
-		char preMovementPhaseSceneFileName[50];
-		char thisPhaseStartSceneFileName[50];
-		char currentSceneFileName[50];
-		char previousSceneFileName[50];
-		char sceneFileWithSpritesName[50];
+		string unit1FileName = "";
+		string unit2FileName = "";
+		string preMovementPhaseSceneFileName = "";
+		string thisPhaseStartSceneFileName = "";
+		string currentSceneFileName = "";
+		string previousSceneFileName = "";
+		string sceneFileWithSpritesName = "";
 		bool unit1intendsToPerformAttack;
 		bool unit2intendsToPerformAttack;
 
@@ -158,7 +158,7 @@ void executeLRRCfunctionsIndependantly()
 		{
 			cout << "To Compare two consecutive scene files, and see if the newer scene represents a valid move, please enter both the old and the new scene file names\n\n";
 
-			obtainSceneFileNamesFromUser(thisPhaseStartSceneFileName, preMovementPhaseSceneFileName);
+			obtainSceneFileNamesFromUser(&thisPhaseStartSceneFileName, &preMovementPhaseSceneFileName);
 
 			Player* currentPlayer = new Player();
 			currentPlayer->name = "Player1";
@@ -231,8 +231,8 @@ void executeLRRCfunctionsIndependantly()
 		{
 			cout << "To Perform close combat, and see which unit wins, please enter both the unit file names, their intentions, and the current scene file name \n\n";
 
-			obtainSceneFileNameFromUser(currentSceneFileName);
-			if(obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_CLOSECOMBAT, unit1FileName, unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
+			obtainSceneFileNameFromUser(&currentSceneFileName);
+			if(obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_CLOSECOMBAT, &unit1FileName, &unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
 			{
 				obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
 
@@ -244,8 +244,8 @@ void executeLRRCfunctionsIndependantly()
 		{
 			cout << "To Perform long distance combat, and see which unit wins, please enter both the unit file names, each units intentions, and the current scene file name \n\n";
 
-			obtainSceneFileNameFromUser(currentSceneFileName);
-			if(obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_LONGDISTANCECOMBAT, unit1FileName, unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
+			obtainSceneFileNameFromUser(&currentSceneFileName);
+			if(obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_LONGDISTANCECOMBAT, &unit1FileName, &unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
 			{
 				obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
 
@@ -256,8 +256,8 @@ void executeLRRCfunctionsIndependantly()
 		{
 			cout << "To Perform close combat, and see which unit wins, please enter both the unit file names, their intentions, the previous scene file name, and the current scene file name \n\n";
 
-			obtainSceneFileNamesFromUser(currentSceneFileName, previousSceneFileName);
-			if(obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_CLOSECOMBAT, unit1FileName, unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
+			obtainSceneFileNamesFromUser(&currentSceneFileName, &previousSceneFileName);
+			if(obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_CLOSECOMBAT, &unit1FileName, &unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
 			{
 				obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
 
@@ -269,8 +269,8 @@ void executeLRRCfunctionsIndependantly()
 		{
 			cout << "To Perform long distance combat, and see which unit wins, please enter both the unit file names, each units intentions, the previous scene file name, and the current scene file name \n\n";
 
-			obtainSceneFileNamesFromUser(currentSceneFileName, previousSceneFileName);
-			if(obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_LONGDISTANCECOMBAT, unit1FileName, unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
+			obtainSceneFileNamesFromUser(&currentSceneFileName, &previousSceneFileName);
+			if(obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_LONGDISTANCECOMBAT, &unit1FileName, &unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
 			{
 				obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
 
@@ -281,7 +281,6 @@ void executeLRRCfunctionsIndependantly()
 		else if(answerAsInt == 10)
 		{
 			cout << "Enter unit File Name (Eg 'unit.ldr'):";
-			//cin.get(unitFileName, 50);
 			cin >> unit1FileName;
 
 			//final calculations depend on precise version of 'Lego Rules' (and corresponding DEFINITIONS above)
@@ -292,7 +291,6 @@ void executeLRRCfunctionsIndependantly()
 		else if(answerAsInt == 11)
 		{
 			cout << "Enter unit File Name (Eg 'unit.ldr'):";
-			//cin.get(unitFileName, 50);
 			cin >> unit1FileName;
 
 			//final calculations depend on precise version of 'Lego Rules' (and corresponding DEFINITIONS above)
@@ -369,28 +367,25 @@ bool obtainAttackIntentionsFromUser(bool* unit1intendsToPerformAttack, bool* uni
 	return result;
 }
 
-bool obtainSceneFileNamesFromUser(char* currentSceneFileName, char* previousSceneFileName)
+bool obtainSceneFileNamesFromUser(string* currentSceneFileName, string* previousSceneFileName)
 {
 	bool result = true;
 
 	cout << "Enter Current Scene File (Eg 'scene.ldr'):";
-	//cin.get(unit2FileName, 50);
-	cin >> currentSceneFileName;
+	cin >> *currentSceneFileName;
 
 	cout << "Enter Previous Scene File (Eg 'scene.ldr'):";
-	//cin.get(unit2FileName, 50);
-	cin >> previousSceneFileName;
+	cin >> *previousSceneFileName;
 
 	return result;
 }
 
-bool obtainSceneFileNameFromUser(char* currentSceneFileName)
+bool obtainSceneFileNameFromUser(string* currentSceneFileName)
 {
 	bool result = true;
 
 	cout << "Enter Current Scene File (Eg 'scene.ldr'):";
-	//cin.get(unit2FileName, 50);
-	cin >> currentSceneFileName;
+	cin >> *currentSceneFileName;
 
 	return result;
 }

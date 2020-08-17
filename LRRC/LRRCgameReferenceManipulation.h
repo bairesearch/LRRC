@@ -26,7 +26,7 @@
  * File Name: LRRCgameReferenceManipulation.h
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -42,20 +42,20 @@
 #include "LDreferenceClass.h"
 
 /*secondary game routines*/
-LDreference* searchReferenceListRemoveReference(LDreference* initialReferenceInSceneFile, char* unitFileName, int unitColour, bool* unitIDFound, bool* result);
+LDreference* searchReferenceListRemoveReference(LDreference* initialReferenceInSceneFile, string unitFileName, int unitColour, bool* unitIDFound, bool* result);
 LDreference* searchReferenceListFindReference(LDreference* initialReferenceInSceneFile, string unitFileName, int unitColour, bool* unitIDFound, bool* result);
 /*
 void searchReferenceListAssignHasPerformedCombat(int currentPhase, LDreference* initialReferenceInSceneFile, char* unitFileName, int unitColour, bool* unitIDFound, bool* result);
 */
 bool obtainUserInputInt(int* userInputInt);
 
-bool obtainUnitDetailsFromUserWOSceneRef(int currentPhase, char* unit1FileName, char* unit2FileName, int* unit1ID, int* unit2ID, char* sceneFileName);
-	bool obtainUnitDetailsFromUserForCombat(char* unit1FileName, char* unit2FileName, int* unit1ID, int* unit2ID, LDreference* initialReferenceInSceneFile);
+bool obtainUnitDetailsFromUserWOSceneRef(int currentPhase, string* unit1FileName, string* unit2FileName, int* unit1ID, int* unit2ID, string sceneFileName);
+	bool obtainUnitDetailsFromUserForCombat(string* unit1FileName, string* unit2FileName, int* unit1ID, int* unit2ID, LDreference* initialReferenceInSceneFile);
 
-		bool determineIfUnitsExists(int currentPhase, char* unitAttackerFileName, char* unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* initialReferenceInSceneFile);
-			void parseRefListCheckUnitExists(int currentPhase, LDreference* initialReferenceInSceneFile, char* unitFileName, int unitColour, bool* unitIDFound, bool* result);
-		bool determineUnitNamesWithColours(int currentPhase, char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, LDreference* initialReferenceInSceneFile);
-			void parseRefListDetRefNames(int currentPhase, LDreference* reference, char* referenceName, int referenceColour, bool* unitIDFound, bool* result);
+		bool determineIfUnitsExists(int currentPhase, string unitAttackerFileName, string unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* initialReferenceInSceneFile);
+			void parseRefListCheckUnitExists(int currentPhase, LDreference* initialReferenceInSceneFile, string unitFileName, int unitColour, bool* unitIDFound, bool* result);
+		bool determineUnitNamesWithColours(int currentPhase, string* unit1FileName, string* unit2FileName, int unit1ID, int unit2ID, LDreference* initialReferenceInSceneFile);
+			void parseRefListDetRefNames(int currentPhase, LDreference* reference, string* referenceName, int referenceColour, bool* unitIDFound, bool* result);
 
 void searchReferenceListPrintReferenceDetails(LDreference* initialReferenceInSceneFile);
 

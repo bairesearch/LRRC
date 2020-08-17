@@ -26,7 +26,7 @@
  * File Name: LRRCplayerClass.h
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -129,8 +129,8 @@ public:
 	ANNexperience* firstExperience[GAME_NUMBER_OF_EXPERIENCE_NN];
 	ANNexperience* currentExperience[GAME_NUMBER_OF_EXPERIENCE_NN];		//temp variable for experience linked list creation
 
-	ANNneuronContainer* firstInputNeuronInNetwork[GAME_NUMBER_OF_EXPERIENCE_NN];
-	ANNneuronContainer* firstOutputNeuronInNetwork[GAME_NUMBER_OF_EXPERIENCE_NN];
+	ANNneuron* firstInputNeuronInNetwork[GAME_NUMBER_OF_EXPERIENCE_NN];
+	ANNneuron* firstOutputNeuronInNetwork[GAME_NUMBER_OF_EXPERIENCE_NN];
 	long numberOfInputNeurons[GAME_NUMBER_OF_EXPERIENCE_NN];
 	long numberOfOutputNeurons[GAME_NUMBER_OF_EXPERIENCE_NN];
 #endif

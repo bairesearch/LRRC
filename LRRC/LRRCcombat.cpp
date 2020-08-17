@@ -26,7 +26,7 @@
  * File Name: LRRCcombat.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2016 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3i19c 15-December-2016
+ * Project Version: 3i19d 15-December-2016
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -160,7 +160,7 @@ void fillInCombatExternVariables()
 
 
 /*Basic: This method does not work with embedded units, and assumes the unit does not contain submodels relevant to its class*/
-bool calculateUnitClassBasic(char* unitFileName)
+bool calculateUnitClassBasic(string unitFileName)
 {
 	//reinitalise ModelDetails specific values if necessary
 	LDreference* initialReferenceInUnitFile = new LDreference();
@@ -188,7 +188,7 @@ bool calculateUnitClassBasic(char* unitFileName)
 }
 
 //new
-bool calculateUnitClassNormal(char* unitFileName)
+bool calculateUnitClassNormal(string unitFileName)
 {
 	//declare initial scene references
 	LDreference* initialReferenceInUnit1 = new LDreference();
@@ -380,7 +380,7 @@ bool calculateUnitClassNormal(char* unitFileName)
 	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
 	//	0/10 if error
 */
-int performCloseCombatBasic(char* unit1FileName, char* unit2FileName, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack, bool unit1TakesTheInitative, bool unit2TakesTheInitative)
+int performCloseCombatBasic(string unit1FileName, string unit2FileName, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack, bool unit1TakesTheInitative, bool unit2TakesTheInitative)
 {
 	//declare variables references
 	LDreference* initialReferenceInUnit1 = new LDreference();
@@ -429,7 +429,7 @@ int performCloseCombatBasic(char* unit1FileName, char* unit2FileName, bool unit1
 	//							6 if unit1 wins and only Unit 1 can strike, 7 if unit1 does not strike, and only Unit 1 can strike, 8 if  3 if unit2 wins, 4 if neither strike
 	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
 	//							0/10 if error in finding required files.
-int performCloseCombatNormal(char* unit1FileName, char* unit2FileName, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack)
+int performCloseCombatNormal(string unit1FileName, string unit2FileName, bool unit1performsCloseCombatAttack, bool unit2performsCloseCombatAttack)
 {
 	//declare variables references
 	LDreference* initialReferenceInUnit1 = new LDreference();
@@ -499,7 +499,7 @@ int performCloseCombatNormal(char* unit1FileName, char* unit2FileName, bool unit
 	//							6 if unit1 wins and only Unit 1 can strike, 7 if unit1 does not strike, and only Unit 1 can strike, 8 if  3 if unit2 wins, 4 if neither strike
 	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
 	//							0/10 if error in finding required files.
-int performCloseCombatWithSceneFile(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, char* thisPhaseStartSceneFileName)
+int performCloseCombatWithSceneFile(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, string thisPhaseStartSceneFileName)
 {
 
 	//declare initial scene references
@@ -522,7 +522,7 @@ int performCloseCombatWithSceneFile(char* unit1FileName, char* unit2FileName, in
 	return result;
 }
 
-int performCloseCombatWithScene(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene)
+int performCloseCombatWithScene(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene)
 {
 	//initialise unit1/unit2 references		[NB in the future an appropriate constructor should be created for the LDreference class that accepts a name, and automatically creates a subModelDetails ModelDetails*/
 	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
@@ -565,7 +565,7 @@ int performCloseCombatWithScene(char* unit1FileName, char* unit2FileName, int un
 	//							6 if unit1 wins and only Unit 1 can strike, 7 if unit1 does not strike, and only Unit 1 can strike, 8 if  3 if unit2 wins, 4 if neither strike
 	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
 	//							0/10 if error in finding required files.
-int performCloseCombatWithConsecutiveSceneFiles(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, char* thisPhaseStartSceneFileName, char* preMovementPhaseSceneFileName)
+int performCloseCombatWithConsecutiveSceneFiles(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, string thisPhaseStartSceneFileName, string preMovementPhaseSceneFileName)
 {
 
 	//declare initial scene references
@@ -602,7 +602,7 @@ int performCloseCombatWithConsecutiveSceneFiles(char* unit1FileName, char* unit2
 
 
 
-int performCloseCombatWithConsecutiveScenes(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
+int performCloseCombatWithConsecutiveScenes(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformCloseCombatAttack, bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
 {
 	//initialise unit1/unit2 references		[NB in the future an appropriate constructor should be created for the LDreference class that accepts a name, and automatically creates a subModelDetails ModelDetails*/
 
@@ -988,7 +988,7 @@ int performCloseCombat(ModelDetails* unit1, ModelDetails* unit2, bool unit1perfo
 	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
 	//	10 if error
 
-int performLongDistanceCombatBasic(char* unit1FileName, char* unit2FileName, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack)
+int performLongDistanceCombatBasic(string unit1FileName, string unit2FileName, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack)
 {
 
 	//declare variables references
@@ -1030,7 +1030,7 @@ int performLongDistanceCombatBasic(char* unit1FileName, char* unit2FileName, boo
 }
 
 
-int performLongDistanceCombatNormal(char* unit1FileName, char* unit2FileName, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack)
+int performLongDistanceCombatNormal(string unit1FileName, string unit2FileName, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack)
 {
 	//declare initial scene references
 	LDreference* initialReferenceInUnit1 = new LDreference();
@@ -1091,7 +1091,7 @@ int performLongDistanceCombatNormal(char* unit1FileName, char* unit2FileName, bo
 
 
 //preconditions: units are assumed not to have moved in their previous round (ie they both are allowed to perform long distance combat in their current turn)
-int performLongDistanceCombatWithSceneFile(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, char* thisPhaseStartSceneFileName)
+int performLongDistanceCombatWithSceneFile(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, string thisPhaseStartSceneFileName)
 {
 	//declare initial scene references
 	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
@@ -1115,7 +1115,7 @@ int performLongDistanceCombatWithSceneFile(char* unit1FileName, char* unit2FileN
 
 
 
-int performLongDistanceCombatWithScene(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene)
+int performLongDistanceCombatWithScene(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene)
 {
 	int result;
 
@@ -1150,7 +1150,7 @@ int performLongDistanceCombatWithScene(char* unit1FileName, char* unit2FileName,
 
 
 //postconditions: the validity of the movement of the units(') between scene files is not checked - this should be done in the round's movement checker routine
-int performLongDistanceCombatWithConsecutiveSceneFiles(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, char* thisPhaseStartSceneFileName, char* preMovementPhaseSceneFileName)
+int performLongDistanceCombatWithConsecutiveSceneFiles(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, string thisPhaseStartSceneFileName, string preMovementPhaseSceneFileName)
 {
 	//declare initial scene references
 	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
@@ -1182,7 +1182,7 @@ int performLongDistanceCombatWithConsecutiveSceneFiles(char* unit1FileName, char
 }
 
 
-int performLongDistanceCombatWithConsecutiveScenes(char* unit1FileName, char* unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
+int performLongDistanceCombatWithConsecutiveScenes(string unit1FileName, string unit2FileName, int unit1ID, int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
 {
 	//initialise unit1/unit2 references
 	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
