@@ -1,9 +1,29 @@
 /*******************************************************************************
+ * 
+ * This file is part of BAIPROJECT.
+ * 
+ * BAIPROJECT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License version 3
+ * only, as published by the Free Software Foundation.
+ * 
+ * BAIPROJECT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License version 3 for more details
+ * (a copy is included in the LICENSE file that accompanied this code).
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * version 3 along with BAIPROJECT.  If not, see <http://www.gnu.org/licenses/>
+ * for a copy of the AGPLv3 License.
+ * 
+ *******************************************************************************/
+ 
+/*******************************************************************************
  *
  * File Name: LRRCgame.h
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2010 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2012 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3a5g 01-Nov-2011
+ * Project Version: 3a11b 09-July-2012
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -18,7 +38,7 @@
 
 //#include "LRRCunitClass.h"
 #include "LRRCplayerClass.h"
-#include "SHAREDglobalDefs.h"
+#include "LRRCglobalDefs.h"
 #include "LDreferenceClass.h"
 
 
@@ -107,12 +127,12 @@ bool gamePlay(int initialRound, int initialPlayerTurn, int initialPhase, int num
 		bool executeMovement(int currentGame, int currentRound, int currentPlayerTurn, Player * initialPlayerInList, int numberOfPlayers, Reference * initialReferenceInThisPhaseStartSceneGlobal, bool allPlayersAI);
 		bool executeLongDistanceCombat(int currentGame, int currentRound, int currentPlayerTurn, Player * initialPlayerInList, int numberOfPlayers, Reference * initialReferenceInThisPhaseStartSceneGlobal, bool allPlayersAI);
 		bool executeCloseCombat(int currentGame, int currentRound, int currentPlayerTurn, Player * initialPlayerInList, int numberOfPlayers, Reference * initialReferenceInThisPhaseStartSceneGlobal, bool allPlayersAI);
-			bool executeGenericCombat(int currentRound, int currentPlayerTurn, int currentPhase, Reference * initialReferenceInPreMovementPhaseScene, Reference * initialReferenceInThisPhaseStartScene, char preCombatPhaseSceneFileName[], char postCombatPhaseSceneFileName[], char phaseSpritesSceneFile[], Player * initialPlayerInList, bool allPlayersAI);
+			bool executeGenericCombat(int currentRound, int currentPlayerTurn, int currentPhase, Reference * initialReferenceInPreMovementPhaseScene, Reference * initialReferenceInThisPhaseStartScene, char preCombatPhaseSceneFileName[], char postCombatPhaseSceneFileName[], char targetSpritesSceneFileName[], Player * initialPlayerInList, bool allPlayersAI);
 			#ifdef USE_ANN
 				bool AIsearchUnitListForPhaseActionSelectionInitialisation(int currentRound, int currentPlayerTurn, int currentPhase, Reference * initialReferenceInThisPhaseStartScene, char preCombatPhaseSceneFileName[], char postCombatPhaseSceneFileName[], char targetSpritesSceneFileName[], Reference * targetSpriteListInitialReference, int * numTargetSpritesAdded, Player * initialPlayerInList, UnitListClass * firstUnitInUnitGroup, UnitListClass * firstUnitInOpponentUnitGroup);
 					bool updateAbsolutePositionOfAllSubModels(Reference * firstReferenceWithinSubModel, Reference * parentReference);
 					bool moveUnitTowardsOpponent(Reference * unitReference, Reference * opponentReference);
-					bool AIsearchUnitListAndCalculateWorthOfOpponents(int currentPlayerTurn, int currentPhaseAIOnly, Reference * initialReferenceInSceneFile, Player * initialPlayerInList, UnitListClass * firstUnitInOpponentUnitGroup, UnitListClass * playerUnitThatIsFindingAnOpponent, Reference * referenceToPlayerUnitThatIsFindingAnOpponent);
+					bool AIsearchUnitListAndCalculateWorthOfOpponents(int currentPlayerTurn, int currentPhase, Reference * initialReferenceInThisPhaseStartScene, Player * initialPlayerInList, UnitListClass * firstUnitInOpponentUnitGroup, UnitListClass * playerUnitThatIsFindingAnOpponent, Reference * referenceToPlayerUnitThatIsFindingAnOpponent);
 			#endif
 					int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(int currentRound, int currentPlayerTurn, int currentPhase, Reference * initialReferenceInPreMovementPhaseScene, Reference * initialReferenceInThisPhaseStartScene, char targetSpritesSceneFileName[], char * unitAttackerFileName, char * unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, Reference * targetSpriteListInitialReference, int * numTargetSpritesAdded, Player * initialPlayerInList, bool checkPreviousSceneFile);
 
