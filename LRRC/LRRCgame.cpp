@@ -1,29 +1,32 @@
 /*******************************************************************************
- * 
+ *
  * This file is part of BAIPROJECT.
- * 
+ *
  * BAIPROJECT is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
- * only, as published by the Free Software Foundation.
- * 
+ * only, as published by the Free Software Foundation. The use of
+ * intermediary programs or interfaces including file i/o is considered
+ * remote network interaction. This does not imply such arrangements
+ * do not constitute derivative works.
+ *
  * BAIPROJECT is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License version 3 for more details
  * (a copy is included in the LICENSE file that accompanied this code).
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * version 3 along with BAIPROJECT.  If not, see <http://www.gnu.org/licenses/>
  * for a copy of the AGPLv3 License.
- * 
+ *
  *******************************************************************************/
- 
+
 /*******************************************************************************
  *
  * File Name: LRRCgame.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2012 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3a11b 09-July-2012
+ * Project Version: 3e3a 01-September-2014
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -40,10 +43,12 @@
 #include "LRRCmovement.h"
 #include "LRRCcombat.h"
 #include "LRRCsprite.h"
+#include "LRRCgameReferenceManipulation.h"
+#include "LRRCrules.h"
+#include "LRRCparser.h"
 #include "LDparser.h"
 #include "LDreferenceManipulation.h"
-#include "LRRCgameReferenceManipulation.h"
-#include "XMLrulesClass.h"
+
 
 #ifdef USE_ANN
 	#include "ANNneuronClass.h"
@@ -164,7 +169,7 @@ bool executeLRRCfunctionsWithAI()
 	int initialPhase;
 	int numberPlayers;
 
-	if(!parseLRRCRulesXMLFile())
+	if(!parseLRRCrulesXMLfile())
 	{
 		result = false;
 	}
@@ -296,7 +301,7 @@ bool executeLRRCfunctionsWithAI()
 		//NEW: collapse reference list into new file after parsing reference list;
 		if(allPlayersAI)
 		{
-			write2DReferenceListCollapsedTo1DToFile(preMovementPhaseSceneFileName, initialReferenceInSceneFile);
+			write2DreferenceListCollapsedTo1DtoFile(preMovementPhaseSceneFileName, initialReferenceInSceneFile);
 		}
 		else
 		{//1D Reference list required - no unit groups
@@ -422,7 +427,7 @@ bool executeLRRCfunctionsWithAI()
 #endif
 
 
-bool executeLLRCfunctionsInOrder()
+bool executeLRRCfunctionsInOrder()
 {
 	bool result;
 
@@ -436,7 +441,7 @@ bool executeLLRCfunctionsInOrder()
 	int initialPhase;
 	int numberPlayers;
 
-	if(!parseLRRCRulesXMLFile())
+	if(!parseLRRCrulesXMLfile())
 	{
 		UIstatus = false;
 	}
@@ -1037,7 +1042,7 @@ bool executeMovement(int currentGame, int currentRound, int currentPlayerTurn, P
 		if(allPlayersAI)
 		{
 			//write reference list to file.
-			if(!write2DReferenceListCollapsedTo1DToFile(thisPhaseStartSceneFileName, initialReferenceInPreMovementPhaseScene))
+			if(!write2DreferenceListCollapsedTo1DtoFile(thisPhaseStartSceneFileName, initialReferenceInPreMovementPhaseScene))
 			{
 				result = false;
 			}
@@ -1485,7 +1490,7 @@ bool executeGenericCombat(int currentRound, int currentPlayerTurn, int currentPh
 	//write reference list to file.
 	if(allPlayersAI)
 	{
-		if(!write2DReferenceListCollapsedTo1DToFile(postCombatPhaseSceneFileName, initialReferenceInThisPhaseStartScene))
+		if(!write2DreferenceListCollapsedTo1DtoFile(postCombatPhaseSceneFileName, initialReferenceInThisPhaseStartScene))
 		{
 			result = false;
 		}
@@ -1506,36 +1511,6 @@ bool executeGenericCombat(int currentRound, int currentPlayerTurn, int currentPh
 	}
 
 	//cout << "h4" << endl;
-
-
-	/*old; inbuilt*/
-	/*
-	copyFiles(nextSceneFileName, previousPhaseSceneFile);
-
-	//add range sprites to range sprites next scene file
-	bool addTextualSpriteInfo = true;
-	bool addRangeSpriteInfo = true;
-
-	int rangeSpriteListByteArraySize = 0;
-	char rangeSpriteListByteArray[DAT_FILE_REF_MAX_SIZE*DAT_FILE_MAX_NUM_OF_REFERENCES];
-	int numRangeSpritesAdded = 0;
-	vec eyeCoords;
-	eyeCoords.x = 0.0;
-	eyeCoords.y = 0.0;
-	eyeCoords.z = 0.0;
-	Reference * rangeSpriteListInitialReference = new Reference();
-
-	LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(initialReferenceInSceneFile, rangeSpriteListInitialReference, &eyeCoords, &numRangeSpritesAdded, rangeSpritesNextSceneFile, initialReferenceInSceneFile, addTextualSpriteInfo, addRangeSpriteInfo, nextPhase, currentPlayerTurn);
-
-	//cout << "DEBUG: qqstart" << endl;
-	convertReferencesToByteArray(rangeSpriteListInitialReference, rangeSpriteListByteArray, &rangeSpriteListByteArraySize);
-	//cout << "DEBUG: qqend" << endl;
-
-	if(!addSpriteReferenceListToSceneFile(nextSceneFileName, rangeSpritesNextSceneFile, rangeSpriteListByteArray, rangeSpriteListByteArraySize, numRangeSpritesAdded))
-	{
-		result = false;
-	}
-	*/
 
 	delete targetSpriteListInitialReference;
 
@@ -3114,6 +3089,37 @@ void generateExperiencesNNSceneFileName(int currentGame, string * sceneFileName,
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_NEURALNET_HEADER;
 	*sceneFileName = *sceneFileName + currentNeuralNetworkString;
 	*sceneFileName = *sceneFileName + EXPERIENCES_NN_SCENE_FILE_NAME_EXTENSION;
+}
+
+
+void copyReferencesAndSubmodelDetails(Reference * referenceNew, Reference * referenceToCopy, int type)
+{
+	referenceNew->type = referenceToCopy->type;
+	referenceNew->colour = referenceToCopy->colour;
+
+	if(type == REFERENCE_TYPE_SUBMODEL)
+	{
+		copyVectors(&(referenceNew->relativePosition),  &(referenceToCopy->relativePosition));
+		copyMatricies(&(referenceNew->deformationMatrix),  &(referenceToCopy->deformationMatrix));
+		referenceNew->name = referenceToCopy->name;
+		copyAllUnitDetails(referenceNew->subModelDetails, referenceToCopy->subModelDetails);
+	}
+	else
+	{
+		if((type == REFERENCE_TYPE_LINE) || (type == REFERENCE_TYPE_TRI) || (type == REFERENCE_TYPE_QUAD) || (type == REFERENCE_TYPE_OPTIONALLINE))
+		{
+			copyVectors(&(referenceNew->vertex1relativePosition),  &(referenceToCopy->vertex1relativePosition));
+			copyVectors(&(referenceNew->vertex2relativePosition),  &(referenceToCopy->vertex2relativePosition));
+		}
+		if((type == REFERENCE_TYPE_TRI) || (type == REFERENCE_TYPE_QUAD) || (type == REFERENCE_TYPE_OPTIONALLINE))
+		{
+			copyVectors(&(referenceNew->vertex3relativePosition),  &(referenceToCopy->vertex3relativePosition));
+		}
+		if((type == REFERENCE_TYPE_QUAD) || (type == REFERENCE_TYPE_OPTIONALLINE))
+		{
+			copyVectors(&(referenceNew->vertex4relativePosition),  &(referenceToCopy->vertex4relativePosition));
+		}
+	}
 }
 
 

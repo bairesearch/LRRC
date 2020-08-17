@@ -1,29 +1,32 @@
 /*******************************************************************************
- * 
+ *
  * This file is part of BAIPROJECT.
- * 
+ *
  * BAIPROJECT is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
- * only, as published by the Free Software Foundation.
- * 
+ * only, as published by the Free Software Foundation. The use of
+ * intermediary programs or interfaces including file i/o is considered
+ * remote network interaction. This does not imply such arrangements
+ * do not constitute derivative works.
+ *
  * BAIPROJECT is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License version 3 for more details
  * (a copy is included in the LICENSE file that accompanied this code).
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * version 3 along with BAIPROJECT.  If not, see <http://www.gnu.org/licenses/>
  * for a copy of the AGPLv3 License.
- * 
+ *
  *******************************************************************************/
- 
+
 /*******************************************************************************
  *
  * File Name: LRRCsprite.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2012 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3a11b 09-July-2012
+ * Project Version: 3e3a 01-September-2014
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -35,19 +38,14 @@
 
 
 #include "LRRCglobalDefs.h"
-
-
 #include "LRRCsprite.h"
+#include "LRRCcombat.h"
+#include "LRRCrules.h"
 #include "LDsprite.h"
 #include "LDparser.h"
-#include "math.h"
-#include "LRRCcombat.h"
 #include "LDreferenceManipulation.h"
 #include "SHAREDvector.h"
-
-
-#include "XMLrulesClass.h"
-
+#include "math.h"
 
 
 
@@ -119,7 +117,7 @@ void fillInLRRCSpriteExternVariables()
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
 	}
 
-	fillInLDSpriteExternVariables();
+	fillInLDspriteExternVariables();
 }
 /*top level sprite routines - required for independent LRRCsprite.cpp calculations*/
 
@@ -348,7 +346,7 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(Reference * unitReferenc
 	numSpritesAddedLocal = &numSpritesAddedLocalUnused;
 #else
 	numSpritesAddedLocal = numSpritesAdded;
-	spriteSubmodelCurrentReference = search1DRefListFindLastReference(spriteListInitialReference);
+	spriteSubmodelCurrentReference = search1DrefListFindLastReference(spriteListInitialReference);
 #endif
 
 	//cout << "spriteSubmodelCurrentReference->deformationMatrix->a.x = " << (&((&(spriteSubmodelCurrentReference->deformationMatrix))->a))->x << endl;
@@ -358,13 +356,12 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(Reference * unitReferenc
 	{
 		//cout << "here11" << endl;
 		//create textual sprite info:
-		string * spriteTextString = new string();
-		//char * spriteTextString = new char[100000];
+		string spriteTextString = "";
 
 		int spriteNumberOfLines;
 		spriteNumberOfLines = SPRITE_TEXTUAL_NUM_OF_LINES;
-		int * spriteColourArray = new int[spriteNumberOfLines];
-		LRRCgenerateTextualSpriteInfoString(unitReference, spriteTextString, spriteColourArray);
+		int spriteColourArray[spriteNumberOfLines];
+		LRRCgenerateTextualSpriteInfoString(unitReference, &spriteTextString, spriteColourArray);
 
 		#ifdef DEBUG_ADD_INDIVIDUAL_SPRITES
 		bool addIndividualSprites = true;
@@ -372,9 +369,6 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(Reference * unitReferenc
 		bool addIndividualSprites = false;
 		#endif
 		spriteSubmodelCurrentReference = LDaddTextualSpriteInfoStringToReferenceList(unitReference, spriteTextString, spriteColourArray, spriteSubmodelCurrentReference, spriteNumberOfLines, numSpritesAddedLocal, addIndividualSprites);
-
-		delete spriteTextString;
-		delete spriteColourArray;
 	}
 
 	//cout << "here1b" << endl;
@@ -527,7 +521,7 @@ Reference * LRRCaddRangeSpriteInfoToReferenceList(Reference * spriteSubmodelInit
 		//cout << "vv1a" << endl;
 		//cout << "spriteSubmodelCurrentReference->deformationMatrix->a.x = " << (&((&(spriteSubmodelCurrentReference->deformationMatrix))->a))->x << endl;
 
-		copyMatrix2IntoMatrix1(&(spriteSubmodelCurrentReference->deformationMatrix), &(currentDeformationMatrix));
+		copyMatrixTwoIntoMatrixOne(&(spriteSubmodelCurrentReference->deformationMatrix), &(currentDeformationMatrix));
 		//cout << "vv1b" << endl;
 		spriteSubmodelCurrentReference->type = REFERENCE_TYPE_SUBMODEL;
 		spriteSubmodelCurrentReference->colour = SPRITE_SUBMODEL_RANGE_MOVEMENT_COLOUR_OPAQ;
@@ -550,7 +544,7 @@ Reference * LRRCaddRangeSpriteInfoToReferenceList(Reference * spriteSubmodelInit
 		//cout << "vv2" << endl;
 		createIdentityMatrix(&currentDeformationMatrix);
 		scaleMatrix(&currentDeformationMatrix, ((unitDetails->longDistanceAttackBaseRange)*SPRITE_SUBMODEL_RANGE_SCALE_FACTOR*LDRAW_UNITS_PER_CM));
-		copyMatrix2IntoMatrix1(&(spriteSubmodelCurrentReference->deformationMatrix), &(currentDeformationMatrix));
+		copyMatrixTwoIntoMatrixOne(&(spriteSubmodelCurrentReference->deformationMatrix), &(currentDeformationMatrix));
 		spriteSubmodelCurrentReference->type = REFERENCE_TYPE_SUBMODEL;
 		spriteSubmodelCurrentReference->colour = SPRITE_SUBMODEL_RANGE_LONGDISTANCE_COMBAT_COLOUR_OPAQ;
 		spriteSubmodelCurrentReference->name = SPRITE_SUBMODEL_RANGE_FILE_NAME;
@@ -569,7 +563,7 @@ Reference * LRRCaddRangeSpriteInfoToReferenceList(Reference * spriteSubmodelInit
 		//cout << "vv3" << endl;
 		createIdentityMatrix(&currentDeformationMatrix);
 		scaleMatrix(&currentDeformationMatrix, (CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY*(SPRITE_SUBMODEL_RANGE_SCALE_FACTOR*LDRAW_UNITS_PER_CM)));
-		copyMatrix2IntoMatrix1(&(spriteSubmodelCurrentReference->deformationMatrix), &(currentDeformationMatrix));
+		copyMatrixTwoIntoMatrixOne(&(spriteSubmodelCurrentReference->deformationMatrix), &(currentDeformationMatrix));
 		spriteSubmodelCurrentReference->type = REFERENCE_TYPE_SUBMODEL;
 		spriteSubmodelCurrentReference->colour = SPRITE_SUBMODEL_RANGE_CLOSE_COMBAT_COLOUR_OPAQ;
 		spriteSubmodelCurrentReference->name = SPRITE_SUBMODEL_RANGE_FILE_NAME;
@@ -600,6 +594,8 @@ Reference * LRRCaddRangeSpriteInfoToReferenceList(Reference * spriteSubmodelInit
 
 void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, string * spriteTextString, int spriteColourArray[])
 {
+	*spriteTextString = "";
+	
 	ModelDetails * unitDetailsInSceneFile = unitReferenceInSceneFile->subModelDetails;
 
 	/*Start Sprite Text Creation*/
@@ -611,10 +607,6 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 	spriteColourArray[4] = DAT_FILE_COLOUR_RED;
 	spriteColourArray[5] = DAT_FILE_COLOUR_MAGENTA;
 	spriteColourArray[6] = DAT_FILE_COLOUR_MAGENTA;
-	//spriteColourArray[4] = DAT_FILE_COLOUR_CYAN;
-	//spriteColourArray[5] = DAT_FILE_COLOUR_MAGENTA;
-	//spriteColourArray[6] = DAT_FILE_COLOUR_BLACK;
-	//spriteColourArray[5] = DAT_FILE_COLOUR_DARKGREY;
 #else
 	spriteColourArray[0] = DAT_FILE_COLOUR_WHITE;
 	spriteColourArray[1] = DAT_FILE_COLOUR_WHITE;
@@ -625,11 +617,9 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 	spriteColourArray[6] = DAT_FILE_COLOUR_MAGENTA;
 #endif
 
-	char * tempString = new char[DAT_FILE_DATA_VALUE_MAX_LENGTH*CPLUSPLUSERRORCORRECTION1];		//for some reason tempString must be very large or else the heap will get corrupted
-	//char * tempString = new char[DAT_FILE_DATA_VALUE_MAX_LENGTH];
+	char tempString[DAT_FILE_DATA_VALUE_MAX_LENGTH];
 
 	//ii)  perform sprite calculations
-	//cout << "DEBUG 1g" << endl;
 	int baseDefenceLevel = invertLevel(unitDetailsInSceneFile->armourDefenceValue);
 	int baseCloseCombatAttackLevel = invertLevel(unitDetailsInSceneFile->closeCombatAttackValue);
 	int baseLongDistanceAttackLevel = invertLevel(unitDetailsInSceneFile->longDistanceAttackValue);
@@ -647,32 +637,21 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 	/*Unit Name Information*/
 
 #ifdef SPRITE_TEXTUAL_INCLUDE_NAME_INFO
-	int iTemp = 0;
-	char cTemp =  unitReferenceInSceneFile->name[iTemp];
 	bool fullstopFound = false;
-	while((cTemp != '\0') && (!fullstopFound))
+	*spriteTextString = unitReferenceInSceneFile->name;
+	int positionOfFullStop = (unitReferenceInSceneFile->name).find(CHAR_FULLSTOP);
+	if(positionOfFullStop != CPP_STRING_FIND_RESULT_FAIL_VALUE)
 	{
-		cTemp = unitReferenceInSceneFile->name[iTemp];
-		if(cTemp == '.')
-		{
-			fullstopFound = true;
-			tempString[iTemp] = '\0';
-		}
-		else
-		{
-			tempString[iTemp] = cTemp;
-		}
-		iTemp++;
+		*spriteTextString = (unitReferenceInSceneFile->name).substr(0, positionOfFullStop);
+		cout << "tempString without fullstop = " << tempString << endl;
+		fullstopFound = true;
 	}
-	*spriteTextString = *spriteTextString + tempString;
 	//cout << "*spriteTextString=" << *spriteTextString << endl;
 #endif
 
 	/*Player ID Information*/
-*spriteTextString = *spriteTextString + '\n';
+	*spriteTextString = *spriteTextString + '\n';
 #ifdef SPRITE_TEXTUAL_INCLUDE_PLAYERID_INFO
-	tempString[0] = '\0';
-
 	//itoa(obtainReferencePlayerID(unitReferenceInSceneFile), tempString, 10);
 	sprintf(tempString, "%d", obtainReferencePlayerID(unitReferenceInSceneFile));
 
@@ -682,7 +661,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 
 
 	/*Defence Related Sprite Information*/
-*spriteTextString = *spriteTextString + '\n';
+	*spriteTextString = *spriteTextString + '\n';
 #ifdef SPRITE_TEXTUAL_INCLUDE_DESCRIPTION_TEXT
 	#ifdef SPRITE_TEXTUAL_INCLUDE_ALL_COMBAT_INFO
 		*spriteTextString = *spriteTextString + "     D = ";
@@ -693,13 +672,8 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 	if(unitDetailsInSceneFile->defenceTotal > 0)
 	{
 	#ifdef SPRITE_ALWAYS_ADD_TEXT
-		tempString[0] = '\0';
-		//itoa(baseDefenceLevel, tempString, 10);
-		*spriteTextString = *spriteTextString + tempString;
 		if(unitDetailsInSceneFile->defenceBonus > 0)
 		{
-			tempString[0] = '\0';
-			//itoa(unitDetailsInSceneFile->defenceBonus, tempString, 10);
 			sprintf(tempString, "%d", unitDetailsInSceneFile->defenceBonus);
 			*spriteTextString = *spriteTextString + " - " + tempString;
 		}
@@ -707,15 +681,12 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 	#ifdef SPRITES_DISPLAY_DICE
 		if((unitDetailsInSceneFile->defenceTotal >= MIN_DICE_ATTACK_DEFENCE_VALUE_SUPPORTED) && (unitDetailsInSceneFile->defenceTotal <= MAX_DICE_ATTACK_DEFENCE_VALUE_SUPPORTED))
 		{
-			tempString[0] = (unitDetailsInSceneFile->defenceTotal + SPRITE_CHARACTER_DICE_OFFSET);
-			tempString[1] = '\0';
-			*spriteTextString = *spriteTextString + tempString;
+			char charTemp = (unitDetailsInSceneFile->defenceTotal + SPRITE_CHARACTER_DICE_OFFSET);
+			*spriteTextString = *spriteTextString + charTemp;
 		}
 		else
 		{
 	#ifndef SPRITE_ALWAYS_ADD_TEXT
-			tempString[0] = '\0';
-			//itoa(((unitDetailsInSceneFile->defenceTotal)*2), tempString, 10);
 			sprintf(tempString, "%d", (unitDetailsInSceneFile->defenceTotal)*2);
 			*spriteTextString = *spriteTextString + tempString;
 	#endif
@@ -724,9 +695,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 	}
 	else
 	{
-		tempString[0] = '-';
-		tempString[1] = '\0';
-		*spriteTextString = *spriteTextString + tempString;
+		*spriteTextString = *spriteTextString + CHAR_DASH;
 	}
 	//cout << "*spriteTextString=" << *spriteTextString << endl;
 
@@ -735,7 +704,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 #ifdef SPRITE_TEXTUAL_INCLUDE_ALL_COMBAT_INFO
 
 		/*Long Distance Attack Related Sprite Information*/
-	*spriteTextString = *spriteTextString + '\n';
+		*spriteTextString = *spriteTextString + '\n';
 	#ifdef SPRITE_TEXTUAL_INCLUDE_DESCRIPTION_TEXT
 		*spriteTextString = *spriteTextString + "ALD = ";
 	#endif
@@ -744,14 +713,11 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 		{
 			//cout << "DEBUG 1i1" << endl;
 		#ifdef SPRITE_ALWAYS_ADD_TEXT
-			tempString[0] = '\0';
 			//itoa(baseLongDistanceAttackLevel, tempString, 10);
 			sprintf(tempString, "%d", baseLongDistanceAttackLevel);
 			*spriteTextString = *spriteTextString + tempString;
 			if(unitDetailsInSceneFile->longDistanceAttackBonus > 0)
 			{
-				tempString[0] = '\0';
-				//itoa(unitDetailsInSceneFile->longDistanceAttackBonus, tempString, 10);
 				sprintf(tempString, "%d", unitDetailsInSceneFile->longDistanceAttackBonus);
 				*spriteTextString = *spriteTextString + " - " + tempString;
 			}
@@ -760,18 +726,14 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 			if((unitDetailsInSceneFile->longDistanceAttackTotal >= MIN_DICE_ATTACK_DEFENCE_VALUE_SUPPORTED) && (unitDetailsInSceneFile->longDistanceAttackTotal <= MAX_DICE_ATTACK_DEFENCE_VALUE_SUPPORTED))
 			{
 				//cout << "DEBUG 1i2" << endl;
-				tempString[0] = (unitDetailsInSceneFile->longDistanceAttackTotal + SPRITE_CHARACTER_DICE_OFFSET);
-				tempString[1] = '\0';
 				//cout << "DEBUG 1i3" << endl;
-				*spriteTextString = *spriteTextString + tempString;
+				*spriteTextString = *spriteTextString + (unitDetailsInSceneFile->longDistanceAttackTotal + SPRITE_CHARACTER_DICE_OFFSET);
 			}
 			else
 			{
 			#ifndef SPRITE_ALWAYS_ADD_TEXT
-					tempString[0] = '\0';
-					//itoa(((unitDetailsInSceneFile->longDistanceAttackTotal)*2), tempString, 10);
-					sprintf(tempString, "%d", (unitDetailsInSceneFile->longDistanceAttackTotal)*2);
-					*spriteTextString = *spriteTextString + tempString;
+				sprintf(tempString, "%d", (unitDetailsInSceneFile->longDistanceAttackTotal)*2);
+				*spriteTextString = *spriteTextString + tempString;
 			#endif
 			}
 		#endif
@@ -779,29 +741,25 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 		else
 		{
 			//cout << "DEBUG 1i6" << endl;
-			tempString[0] = '-';
-			tempString[1] = '\0';
-			*spriteTextString = *spriteTextString + tempString;
+			*spriteTextString = *spriteTextString + CHAR_DASH;
 		}
 		//cout << "*spriteTextString=" << *spriteTextString << endl;
 
 		//cout << "DEBUG 1j" << endl;
 
 		/*Close Combat Attack Related Sprite Information*/
-	*spriteTextString = *spriteTextString + '\n';
+		*spriteTextString = *spriteTextString + '\n';
 	#ifdef SPRITE_TEXTUAL_INCLUDE_DESCRIPTION_TEXT
 		*spriteTextString = *spriteTextString + "ACC = ";
 	#endif
 		if(unitDetailsInSceneFile->closeCombatAttackTotal > 0)
 		{
 		#ifdef SPRITE_ALWAYS_ADD_TEXT
-			tempString[0] = '\0';
 			//itoa(baseCloseCombatAttackLevel, tempString, 10);
 			sprintf(tempString, "%d", baseCloseCombatAttackLevel);
 			*spriteTextString = *spriteTextString + tempString;
 			if(unitDetailsInSceneFile->closeCombatAttackBonus > 0)
 			{
-				tempString[0] = '\0';
 				//itoa(unitDetailsInSceneFile->closeCombatAttackBonus, tempString, 10);
 				sprintf(tempString, "%d", unitDetailsInSceneFile->closeCombatAttackBonus);
 				*spriteTextString = *spriteTextString + " + " + tempString;
@@ -810,38 +768,27 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 		#ifdef SPRITES_DISPLAY_DICE
 			if((unitDetailsInSceneFile->closeCombatAttackTotal >= MIN_DICE_ATTACK_DEFENCE_VALUE_SUPPORTED) && (unitDetailsInSceneFile->closeCombatAttackTotal <= MAX_DICE_ATTACK_DEFENCE_VALUE_SUPPORTED))
 			{
-				tempString[0] = (unitDetailsInSceneFile->closeCombatAttackTotal + SPRITE_CHARACTER_DICE_OFFSET);
-				tempString[1] = '\0';
-				*spriteTextString = *spriteTextString + tempString;
+				*spriteTextString = *spriteTextString + (unitDetailsInSceneFile->closeCombatAttackTotal + SPRITE_CHARACTER_DICE_OFFSET);
 			}
 			else
 			{
-		#ifndef SPRITE_ALWAYS_ADD_TEXT
-			tempString[0] = '\0';
-			//itoa(((unitDetailsInSceneFile->closeCombatAttackTotal)*2), tempString, 10);
-			sprintf(tempString, "%d", (unitDetailsInSceneFile->closeCombatAttackTotal)*2);
-			*spriteTextString = *spriteTextString + tempString;
-		#endif
+			#ifndef SPRITE_ALWAYS_ADD_TEXT
+				sprintf(tempString, "%d", (unitDetailsInSceneFile->closeCombatAttackTotal)*2);
+				*spriteTextString = *spriteTextString + tempString;
+			#endif
 			}
 		#endif
 		}
 		else
 		{
-			tempString[0] = '-';
-			tempString[1] = '\0';
-			*spriteTextString = *spriteTextString + tempString;
+			*spriteTextString = *spriteTextString + CHAR_DASH;
 		}
 		//cout << "*spriteTextString=" << *spriteTextString << endl;
 
 #else
 
-		/*Generic Attack Related Sprite Information*/
-	//tempString[0] = '\n';
-	//tempString[1] = '\0';
-	//*spriteTextString = *spriteTextString + tempString;
+	/*Generic Attack Related Sprite Information*/
 	*spriteTextString = *spriteTextString + '\n';
-	//*spriteTextString = *spriteTextString + '\n';		//this triggers error bad
-	//*spriteTextString = *spriteTextString + '\n';		//this triggers error very bad
 
 	#ifdef SPRITE_TEXTUAL_INCLUDE_DESCRIPTION_TEXT
 		*spriteTextString = *spriteTextString + "A = ";
@@ -851,14 +798,10 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 			if((unitDetailsInSceneFile->closeCombatAttackValue) > (unitDetailsInSceneFile->longDistanceAttackValue))
 			{
 			#ifdef SPRITE_ALWAYS_ADD_TEXT
-				tempString[0] = '\0';
-				//itoa(baseCloseCombatAttackLevel, tempString, 10);
 				sprintf(tempString, "%d", baseCloseCombatAttackLevel);
 				*spriteTextString = *spriteTextString + tempString;
 				if(unitDetailsInSceneFile->closeCombatAttackBonus > 0)
 				{
-					tempString[0] = '\0';
-					//itoa(unitDetailsInSceneFile->closeCombatAttackBonus, tempString, 10);
 					sprintf(tempString, "%d", unitDetailsInSceneFile->closeCombatAttackBonus);
 					*spriteTextString = *spriteTextString + " + " + tempString;
 				}
@@ -866,15 +809,12 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 			#ifdef SPRITES_DISPLAY_DICE
 				if((unitDetailsInSceneFile->closeCombatAttackTotal >= MIN_DICE_ATTACK_DEFENCE_VALUE_SUPPORTED) && (unitDetailsInSceneFile->closeCombatAttackTotal <= MAX_DICE_ATTACK_DEFENCE_VALUE_SUPPORTED))
 				{
-					tempString[0] = (unitDetailsInSceneFile->closeCombatAttackTotal + SPRITE_CHARACTER_DICE_OFFSET);
-					tempString[1] = '\0';
-					*spriteTextString = *spriteTextString + tempString;
+					char charTemp = (unitDetailsInSceneFile->closeCombatAttackTotal + SPRITE_CHARACTER_DICE_OFFSET);
+					*spriteTextString = *spriteTextString + charTemp;
 				}
 				else
 				{
 				#ifndef SPRITE_ALWAYS_ADD_TEXT
-					tempString[0] = '\0';
-					//itoa(((unitDetailsInSceneFile->closeCombatAttackTotal)*2), tempString, 10);
 					sprintf(tempString, "%d", (unitDetailsInSceneFile->closeCombatAttackTotal)*2);
 					*spriteTextString = *spriteTextString + tempString;
 				#endif
@@ -884,14 +824,10 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 			else
 			{
 			#ifdef SPRITE_ALWAYS_ADD_TEXT
-				tempString[0] = '\0';
-				//itoa(baseLongDistanceAttackLevel, tempString, 10);
 				sprintf(tempString, "%d", baseLongDistanceAttackLevel);
 				*spriteTextString = *spriteTextString + tempString;
 				if(unitDetailsInSceneFile->longDistanceAttackBonus > 0)
 				{
-					tempString[0] = '\0';
-					//itoa(unitDetailsInSceneFile->longDistanceAttackBonus, tempString, 10);
 					sprintf(tempString, "%d", unitDetailsInSceneFile->longDistanceAttackBonus);
 					*spriteTextString = *spriteTextString + " - " + tempString;
 				}
@@ -900,16 +836,13 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 				if((unitDetailsInSceneFile->longDistanceAttackTotal >= MIN_DICE_ATTACK_DEFENCE_VALUE_SUPPORTED) && (unitDetailsInSceneFile->longDistanceAttackTotal <= MAX_DICE_ATTACK_DEFENCE_VALUE_SUPPORTED))
 				{
 					//cout << "DEBUG 1i2" << endl;
-					tempString[0] = (unitDetailsInSceneFile->longDistanceAttackTotal + SPRITE_CHARACTER_DICE_OFFSET);
-					tempString[1] = '\0';
 					//cout << "DEBUG 1i3" << endl;
-					*spriteTextString = *spriteTextString + tempString;
+					char charTemp = (unitDetailsInSceneFile->longDistanceAttackTotal + SPRITE_CHARACTER_DICE_OFFSET);
+					*spriteTextString = *spriteTextString + charTemp;
 				}
 				else
 				{
 				#ifndef SPRITE_ALWAYS_ADD_TEXT
-					tempString[0] = '\0';
-					//itoa(((unitDetailsInSceneFile->longDistanceAttackTotal)*2), tempString, 10);
 					sprintf(tempString, "%d", (unitDetailsInSceneFile->longDistanceAttackTotal)*2);
 					*spriteTextString = *spriteTextString + tempString;
 				#endif
@@ -919,9 +852,7 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 		}
 		else
 		{
-			tempString[0] = '-';
-			tempString[1] = '\0';
-			*spriteTextString = *spriteTextString + tempString;
+			*spriteTextString = *spriteTextString + CHAR_DASH;
 		}
 		//cout << "*spriteTextString=" << *spriteTextString << endl;
 
@@ -931,39 +862,30 @@ void LRRCgenerateTextualSpriteInfoString(Reference * unitReferenceInSceneFile, s
 
 #ifdef SPRITE_TEXTUAL_INCLUDE_MOVEMENT
 	/*Movement Related Sprite Information*/
-	*spriteTextString = *spriteTextString + '\n';
+	*spriteTextString = *spriteTextString + CHAR_NEWLINE;
 	//*spriteTextString = *spriteTextString + '\n';
 #ifdef SPRITE_TEXTUAL_INCLUDE_DESCRIPTION_TEXT
 	*spriteTextString = *spriteTextString + "     M = ";
 #endif
 	if(unitDetailsInSceneFile->movementSpeed > 0)
 	{
-		tempString[0] = '\0';
 		//itoa(unitDetailsInSceneFile->movementSpeed, tempString, 10);
 		sprintf(tempString, "%d", unitDetailsInSceneFile->movementSpeed);
 		*spriteTextString = *spriteTextString + tempString;
 
 		if(unitDetailsInSceneFile->longDistanceAttackBonus > 0)
 		{
-			tempString[0] = '\0';
-			//itoa(unitDetailsInSceneFile->longDistanceAttackBonus, tempString, 10);
 			sprintf(tempString, "%d", unitDetailsInSceneFile->longDistanceAttackBonus);
 			*spriteTextString = *spriteTextString + " + " + tempString;
 		}
 	}
 	else
 	{
-		tempString[0] = '-';
-		tempString[1] = '\0';
-		*spriteTextString = *spriteTextString + tempString;
+		*spriteTextString = *spriteTextString + CHAR_DASH;
 	}
 #endif
 
 	//cout << "DEBUG 1l" << endl;
-
-	delete tempString;
-
-
 
 	//cout << "DEBUG: *spriteTextString = \n" << *spriteTextString << "\n\n" << endl;
 	/*End Start Sprite Text Creation*/

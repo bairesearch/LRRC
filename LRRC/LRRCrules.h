@@ -1,29 +1,26 @@
 /*******************************************************************************
- *
+ * 
  * This file is part of BAIPROJECT.
- *
+ * 
  * BAIPROJECT is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
- * only, as published by the Free Software Foundation. The use of
- * intermediary programs or interfaces including file i/o is considered
- * remote network interaction. This does not imply such arrangements
- * do not constitute derivative works.
- *
+ * only, as published by the Free Software Foundation.
+ * 
  * BAIPROJECT is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License version 3 for more details
  * (a copy is included in the LICENSE file that accompanied this code).
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License
  * version 3 along with BAIPROJECT.  If not, see <http://www.gnu.org/licenses/>
  * for a copy of the AGPLv3 License.
- *
+ * 
  *******************************************************************************/
 
 /*******************************************************************************
  *
- * File Name: LRRCmain.cpp
+ * File Name: LRRCrules.h
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2014 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
  * Project Version: 3e3a 01-September-2014
@@ -36,9 +33,8 @@
  *******************************************************************************/
 
 
-#include "LRRCmain.h"
-#include "LRRCindependant.h"
-#include "LRRCgame.h"
+#ifndef HEADER_LRRC_RULES
+#define HEADER_LRRC_RULES
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,71 +46,36 @@
 #include <math.h>
 using namespace std;
 
-int main()
-{
-	bool UIstatus = true;
+#include "SHAREDglobalDefs.h"
+#include "XMLparserClass.h"
+#include "XMLrulesClass.h"
 
-	char answerAsString[100];
-	long answerAsInt;
-
-	srand( (unsigned)time(NULL) );	//seeds randomness
-
-//#define TESTXMLPARSER
-#ifdef TESTXMLPARSER
-	executeLRRCfunctionsIndependantly();
-#else
-	while(UIstatus == true)
-	{
-		cout << "\n ---\n";
-		cout << "Welecome To LRRC (Version 4dXy or higher)\n";
-		cout << " ---\n";
-		cout << "Do you wish to \n";
-		cout << " ---\n";
-		cout << "1. Execute LRRC functions independantly (Advanced game mode) - no GUI\n";
-		cout << "2. Execute LRRC functions in order (Normal game mode) - no GUI\n";
-		cout << "3. Execute LRRC functions with AI (Advanced untested game mode) - no GUI\n";
-		cout << " ---\n";
-		cout << "0. Exit\n";
-		cout << " ---\n";
-		cout <<	"Enter Answer (0,1,2,3... etc):\n\n>> ";
+//there really should be child classes of RulesClass called LRRCrulesUnitTypeDetails, unitCombatDetailsAttack, and unitCombatDetailsDefence that inherit rulesObject and include unique parameters
 
 
-		cin >> answerAsString;
-		answerAsInt = long(atof(answerAsString));
+bool parseLRRCrulesXMLfile();
+	bool parseLRRCrulesTag(XMLparserTag * currentTag);
+		bool parseTagUnitCombatDetails(XMLparserTag * currentTag);
+			bool parseTagArmour(XMLparserTag * currentTag);
+				bool parseTagHead(XMLparserTag * currentTag);
+				bool parseTagTorso(XMLparserTag * currentTag);
+				bool parseTagShield(XMLparserTag * currentTag);
+			bool parseTagWeapons(XMLparserTag * currentTag);
+				bool parseTagCloseCombat(XMLparserTag * currentTag);
+				bool parseTagLongDistanceCombat(XMLparserTag * currentTag);
 
-		if(answerAsInt == 1)
-		{
-			executeLRRCfunctionsIndependantly();
-			UIstatus = false;
-		}
-		else if(answerAsInt == 2)
-		{
-			executeLRRCfunctionsInOrder();
-			UIstatus = false;
-		}
-		else if(answerAsInt == 3)
-		{
-			#ifdef USE_ANN
-			executeLRRCfunctionsWithAI();
-			#else
-			cout << "error: no ANN - no AI players allowed - must compile with ANN" << endl;
-			#endif
-			UIstatus = false;
-		}
-		else if(answerAsInt == 0)
-		{
-			UIstatus = false;
-		}
-		else
-		{
-			cout << "\nInvalid answerAsInt, please try another command\n" << endl;
-		}
-	}
+
+extern RulesClass * LRRCrulesUnitTypeDetails;
+extern RulesClass * LRRCrulesUnitCombatDetailsDefenceHead;
+extern RulesClass * LRRCrulesUnitCombatDetailsDefenceTorso;
+extern RulesClass * LRRCrulesUnitCombatDetailsDefenceShield;
+extern RulesClass * LRRCrulesUnitCombatDetailsAttackCloseCombat;
+extern RulesClass * LRRCrulesUnitCombatDetailsAttackLongDistance;
+extern RulesClass * LRRCrulesBuildingDetails;
+extern RulesClass * LRRCrulesTerrainDetails;
+extern RulesClass * LRRCrulesUnitTypeCatagories;
+extern RulesClass * LRRCrulesMiscellaneous;
+extern RulesClass * LRRCrulesSprite;
+
+
 #endif
-}
-
-
-
-
-
-
