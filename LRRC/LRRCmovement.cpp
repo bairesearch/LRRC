@@ -26,7 +26,7 @@
  * File Name: LRRCmovement.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -37,12 +37,7 @@
 
 
 #include "LRRCmovement.h"
-#include "LRRCcombat.h"
-#include "LRRCparser.h"
-#include "LDparser.h"
-#include "LDreferenceManipulation.h"
 
-#include "LRRCrules.h"
 
 static int maxNumBuildingRitualPointsAllowedDuringRound;
 static int maxNumCombatRitualPointsAllowedDuringRound;
@@ -78,7 +73,7 @@ ModelDetails* buildingSection;
 
 
 
-bool compareSceneFilesMovementPhase(string preMovementPhaseSceneFileName, string thisPhaseStartSceneFileName, Player* currentPlayer, string targetSpritesSceneFileName, const bool addSprites)
+bool LRRCmovementClass::compareSceneFilesMovementPhase(string preMovementPhaseSceneFileName, string thisPhaseStartSceneFileName, Player* currentPlayer, string targetSpritesSceneFileName, const bool addSprites)
 {
 	bool result = true;
 
@@ -90,13 +85,13 @@ bool compareSceneFilesMovementPhase(string preMovementPhaseSceneFileName, string
 	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);
 	LDreference* topLevelReferenceInPreMovementPhaseScene = new LDreference(true);
 
-	if(!parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
+	if(!LDparser.parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
 	{//file does not exist
 		cout << "The file: thisPhaseStartSceneFileName=" << thisPhaseStartSceneFileName << " does not exist in the directory" << endl;
 		result = false;
 	}
 
-	if(!parseFile(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
+	if(!LDparser.parseFile(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
 	{//file does not exist
 		cout << "The file: preMovementPhaseSceneFileName=" << preMovementPhaseSceneFileName << " does not exist in the directory" << endl;
 		result = false;
@@ -104,7 +99,7 @@ bool compareSceneFilesMovementPhase(string preMovementPhaseSceneFileName, string
 
 	if(result)
 	{
-		result = compareScenesMovementPhase(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, initialReferenceInThisPhaseStartScene, currentPlayer, targetSpritesSceneFileName, addSprites);
+		result = this->compareScenesMovementPhase(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, initialReferenceInThisPhaseStartScene, currentPlayer, targetSpritesSceneFileName, addSprites);
 	}
 
 	delete initialReferenceInThisPhaseStartScene;
@@ -121,7 +116,7 @@ bool compareSceneFilesMovementPhase(string preMovementPhaseSceneFileName, string
 
 
 
-bool compareScenesMovementPhase(const string preMovementPhaseSceneFileName, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, Player* currentPlayer, string targetSpritesSceneFileName, const bool addSprites)
+bool LRRCmovementClass::compareScenesMovementPhase(const string preMovementPhaseSceneFileName, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, Player* currentPlayer, string targetSpritesSceneFileName, const bool addSprites)
 {
 	bool result = true;
 
@@ -142,9 +137,9 @@ bool compareScenesMovementPhase(const string preMovementPhaseSceneFileName, LDre
 	#endif
 	bool isAChildOfAMovingReference = false;		//this, the value of this highest level instance of isAChildOfAMovingReference in the compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList recursive algorithm is not used.
 	int parentUnitSpeed = 0;						//this, the value of this highest level instance of parentUnitSpeed in the compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList recursive algorithm is not used.
-	if(searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(initialReferenceInThisPhaseStartScene, initialReferenceInPreMovementPhaseScene, parentUnitSpeed, isAChildOfAMovingReference, currentPlayer, targetSpritesSceneFileName, targetSpriteListInitialReference, &numTargetSpritesAdded))
+	if(this->searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(initialReferenceInThisPhaseStartScene, initialReferenceInPreMovementPhaseScene, parentUnitSpeed, isAChildOfAMovingReference, currentPlayer, targetSpritesSceneFileName, targetSpriteListInitialReference, &numTargetSpritesAdded))
 	{
-		if(!performFinalRoundPointsCalculations(currentPlayer))
+		if(!this->performFinalRoundPointsCalculations(currentPlayer))
 		{
 			result = false;
 		}
@@ -157,7 +152,7 @@ bool compareScenesMovementPhase(const string preMovementPhaseSceneFileName, LDre
 
 	if(addSprites)
 	{
-		if(!addSpriteReferenceListToSceneFile(preMovementPhaseSceneFileName, targetSpritesSceneFileName, targetSpriteListInitialReference, numTargetSpritesAdded))
+		if(!LDreferenceManipulation.addSpriteReferenceListToSceneFile(preMovementPhaseSceneFileName, targetSpritesSceneFileName, targetSpriteListInitialReference, numTargetSpritesAdded))
 		{
 			result = false;
 		}
@@ -171,7 +166,7 @@ bool compareScenesMovementPhase(const string preMovementPhaseSceneFileName, LDre
 
 
 
-bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDreference* referenceInThisPhaseStartSceneFile, LDreference* initialReferenceInPreMovementPhaseScene, const int parentUnitSpeed, const bool isAChildOfAMovingReference, const Player* currentPlayer, string targetSpritesSceneFileName, LDreference* spriteListInitialReference, int* numTargetSpritesAdded)
+bool LRRCmovementClass::searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDreference* referenceInThisPhaseStartSceneFile, LDreference* initialReferenceInPreMovementPhaseScene, const int parentUnitSpeed, const bool isAChildOfAMovingReference, const Player* currentPlayer, string targetSpritesSceneFileName, LDreference* spriteListInitialReference, int* numTargetSpritesAdded)
 {
 	bool playerMoveStatus = true;
 	LDreference* currentReference = referenceInThisPhaseStartSceneFile;
@@ -195,11 +190,11 @@ bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDre
 				LDreference* topLevelReferenceInUnit1 = new LDreference(currentReference->name, currentReference->colour, true);
 				//copyReferences(topLevelReferenceInUnit1, currentReference, REFERENCE_TYPE_SUBMODEL);	//this is required to use topLevelReferenceInUnit1 in sprite addition
 
-				copyAllUnitDetails(topLevelReferenceInUnit1->subModelDetails, currentReference->subModelDetails);
+				LRRCmodelClass.copyAllUnitDetails(topLevelReferenceInUnit1->subModelDetails, currentReference->subModelDetails);
 
-				searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit1, currentReference->firstReferenceWithinSubModel, topLevelReferenceInUnit1, true);
+				LRRCcombat.searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit1, currentReference->firstReferenceWithinSubModel, topLevelReferenceInUnit1, true);
 
-				determineUnitTypeAndMinSpeedOfUnitGroup(topLevelReferenceInUnit1->subModelDetails);
+				LRRCmodelClass.determineUnitTypeAndMinSpeedOfUnitGroup(topLevelReferenceInUnit1->subModelDetails);
 
 				currentReferenceUnitSpeed = topLevelReferenceInUnit1->subModelDetails->movementSpeed;
 				#ifdef DEBUG_MOVEMENT_CPP
@@ -230,7 +225,7 @@ bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDre
 		resultOfComparison[1] = false;
 		resultOfComparison[2] = false;
 		resultOfComparison[3] = false;
-		referenceInPreviousSceneRefList = compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(currentReference, initialReferenceInPreMovementPhaseScene, resultOfComparison, currentReferenceUnitSpeed, &unitIDFound, &searchResult);
+		referenceInPreviousSceneRefList = this->compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(currentReference, initialReferenceInPreMovementPhaseScene, resultOfComparison, currentReferenceUnitSpeed, &unitIDFound, &searchResult);
 
 		if(unitIDFound == true)
 		{
@@ -249,7 +244,7 @@ bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDre
 				cout << "d:currentReference->firstReferenceWithinSubModel->name = " << currentReference->firstReferenceWithinSubModel->name << endl;
 				playerMoveStatus = false;
 			}
-			else if(!dealWithResultsOfComparison(currentReference, resultOfComparison, currentPlayer, spriteListInitialReference, referenceInPreviousSceneRefList, numTargetSpritesAdded, targetSpritesSceneFileName, unitIDFound, isAChildOfAMovingReference))
+			else if(!this->dealWithResultsOfComparison(currentReference, resultOfComparison, currentPlayer, spriteListInitialReference, referenceInPreviousSceneRefList, numTargetSpritesAdded, targetSpritesSceneFileName, unitIDFound, isAChildOfAMovingReference))
 			{
 				playerMoveStatus = false;
 				//currentReferenceMoveAccepted = false;
@@ -267,7 +262,7 @@ bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDre
 
 		if((currentReference->isSubModelReference))
 		{
-			if(!searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(currentReference->firstReferenceWithinSubModel, initialReferenceInPreMovementPhaseScene, currentReferenceUnitSpeed, currentReferenceIsAMovingReference|isAChildOfAMovingReference, currentPlayer, targetSpritesSceneFileName, spriteListInitialReference, numTargetSpritesAdded))
+			if(!this->searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(currentReference->firstReferenceWithinSubModel, initialReferenceInPreMovementPhaseScene, currentReferenceUnitSpeed, currentReferenceIsAMovingReference|isAChildOfAMovingReference, currentPlayer, targetSpritesSceneFileName, spriteListInitialReference, numTargetSpritesAdded))
 			{
 				playerMoveStatus = false;
 			}
@@ -280,14 +275,14 @@ bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDre
 	return playerMoveStatus;
 }
 
-LDreference* compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(const LDreference* referenceInThisPhaseStartSceneFileBeingLocated, LDreference* referenceInPreMovementPhaseSceneFile, bool resultOfComparison[], const int parentUnitSpeed, bool* unitIDFound, bool* result)
+LDreference* LRRCmovementClass::compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(const LDreference* referenceInThisPhaseStartSceneFileBeingLocated, LDreference* referenceInPreMovementPhaseSceneFile, bool resultOfComparison[], const int parentUnitSpeed, bool* unitIDFound, bool* result)
 {
 	LDreference* currentReference = referenceInPreMovementPhaseSceneFile;
 	LDreference* referenceInPreviousSceneFile;
 
 	while(currentReference->next != NULL)
 	{
-		if(compareSubmodelNamesAndIfSameCheckIfValidMove(referenceInThisPhaseStartSceneFileBeingLocated, currentReference, resultOfComparison, parentUnitSpeed))
+		if(this->compareSubmodelNamesAndIfSameCheckIfValidMove(referenceInThisPhaseStartSceneFileBeingLocated, currentReference, resultOfComparison, parentUnitSpeed))
 		{//unitIDFoundInThisComparison
 
 			if(*unitIDFound == true)
@@ -308,7 +303,7 @@ LDreference* compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneRefere
 		{
 			bool unitIDFoundInChild = false;
 			LDreference* referenceOfUnitIDFoundInChild;
-			referenceOfUnitIDFoundInChild = compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(referenceInThisPhaseStartSceneFileBeingLocated, currentReference->firstReferenceWithinSubModel, resultOfComparison, parentUnitSpeed, &unitIDFoundInChild, result);
+			referenceOfUnitIDFoundInChild = this->compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(referenceInThisPhaseStartSceneFileBeingLocated, currentReference->firstReferenceWithinSubModel, resultOfComparison, parentUnitSpeed, &unitIDFoundInChild, result);
 			if(unitIDFoundInChild == true)
 			{
 				if(*unitIDFound == true)
@@ -331,7 +326,7 @@ LDreference* compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneRefere
 }
 
 
-bool compareSubmodelNamesAndIfSameCheckIfValidMove(const LDreference* referenceInThisPhaseStartSceneSearchedFor, const LDreference* referenceInPreMovementPhaseSceneFoundDuringSearch, bool resultOfComparison[], const int parentUnitSpeed)
+bool LRRCmovementClass::compareSubmodelNamesAndIfSameCheckIfValidMove(const LDreference* referenceInThisPhaseStartSceneSearchedFor, const LDreference* referenceInPreMovementPhaseSceneFoundDuringSearch, bool resultOfComparison[], const int parentUnitSpeed)
 {
 	//cout << "DEBUG: here4" << endl;
 
@@ -504,7 +499,7 @@ bool compareSubmodelNamesAndIfSameCheckIfValidMove(const LDreference* referenceI
 
 
 
-bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile, const bool resultOfComparison[], const Player* currentPlayer, LDreference* spriteListInitialReference, LDreference* referenceInPreMovementPhaseSceneFile, int* numTargetSpritesAdded, string targetSpritesSceneFileName, const bool unitIDFound, const bool isChildOfMovingReference)
+bool LRRCmovementClass::dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile, const bool resultOfComparison[], const Player* currentPlayer, LDreference* spriteListInitialReference, LDreference* referenceInPreMovementPhaseSceneFile, int* numTargetSpritesAdded, string targetSpritesSceneFileName, const bool unitIDFound, const bool isChildOfMovingReference)
 {
 
 	/*	"aPartWithSameName" = a part with same name and colour as part being compared
@@ -532,7 +527,7 @@ bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile
 				{
 					//if(unitIDFound == true)			//this is implied via isSubModelReference == true and the fact the unit ID has been found
 					//{
-						if(obtainReferencePlayerID(referenceInThisPhaseStartSceneFile) == (currentPlayer->id))
+						if(LDreferenceClass.obtainReferencePlayerID(referenceInThisPhaseStartSceneFile) == (currentPlayer->id))
 						{
 
 							cout << referenceInThisPhaseStartSceneFile->name << " was found to have moved between scenes and has had its move accepted" << endl;
@@ -559,7 +554,7 @@ bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile
 							*/
 							if(isChildOfMovingReference == false)
 							{
-								if(!LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(referenceInPreMovementPhaseSceneFile, referenceInThisPhaseStartSceneFile, spriteListInitialReference, &eyeCoords, numTargetSpritesAdded, targetSpritesSceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, addTargetSpriteInfo, currentPlayer->currentPhase, currentPlayer->id))
+								if(!LRRCsprite.LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(referenceInPreMovementPhaseSceneFile, referenceInThisPhaseStartSceneFile, spriteListInitialReference, &eyeCoords, numTargetSpritesAdded, targetSpritesSceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, addTargetSpriteInfo, currentPlayer->currentPhase, currentPlayer->id))
 								{
 									result = false;
 								}
@@ -588,7 +583,7 @@ bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile
 		{
 			//if(partIfMovedHasMovedWithinItsMaximumDistanceAllowed)		//this is implied
 			//{
-				if(obtainReferencePlayerID(referenceInThisPhaseStartSceneFile) == (currentPlayer->id))
+				if(LDreferenceClass.obtainReferencePlayerID(referenceInThisPhaseStartSceneFile) == (currentPlayer->id))
 				{
 					if(referenceInThisPhaseStartSceneFile->isSubModelReference)
 					{
@@ -683,7 +678,7 @@ bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile
 					char* charStarString = new char[referenceInThisPhaseStartSceneFile->name.size()+1];
 					strcpy(charStarString, constantCharStarString);
 
-					updateUnitDetailsWithBuildingDetails(charStarString, buildingSection);
+					LRRCparser.updateUnitDetailsWithBuildingDetails(charStarString, buildingSection);
 
 					delete charStarString;
 					//delete charStarString;
@@ -713,7 +708,7 @@ bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile
 
 //Building Options
 
-bool performFinalRoundPointsCalculations(Player* currentPlayer)
+bool LRRCmovementClass::performFinalRoundPointsCalculations(Player* currentPlayer)
 {
 	bool result = true;
 

@@ -23,7 +23,7 @@
  * File Name: LRRCrules.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -82,12 +82,12 @@ XMLrulesClass* LRRCrulesSprite;
 
 static string nullString;
 
-bool parseLRRCrulesXMLfile()
+bool LRRCrulesClass::parseLRRCrulesXMLfile()
 {
 	bool result = true;
 
  	XMLparserTag* firstTagInXMLFile = new XMLparserTag();	//the firstTagInXMLFile object must be initialised here (in XMLrulesClass.cpp scope). if it is initialised in XMLParserClass.cpp else it will be come corrupted,
- 	if(!readXMLfile(LRRC_RULES_XML_FILE_NAME, firstTagInXMLFile))
+ 	if(!XMLparserClass.readXMLfile(LRRC_RULES_XML_FILE_NAME, firstTagInXMLFile))
  	{
 		result = false;
 	}
@@ -99,7 +99,7 @@ bool parseLRRCrulesXMLfile()
 		result = false;
 	}
 	*/
-
+	
 	XMLparserTag* currentTag = firstTagInXMLFile;
 
 	LRRCrulesUnitTypeDetails = new XMLrulesClass();
@@ -117,7 +117,7 @@ bool parseLRRCrulesXMLfile()
 
 
 
-	if(!parseLRRCrulesTag(currentTag))
+	if(!this->parseLRRCrulesTag(currentTag))
 	{
 		result = false;
 	}
@@ -290,45 +290,45 @@ bool parseLRRCrulesXMLfile()
 	return result;
 }
 
-bool parseLRRCrulesTag(XMLparserTag* currentTag)
+bool LRRCrulesClass::parseLRRCrulesTag(XMLparserTag* currentTag)
 {
 	bool result = true;
 
 	XMLparserTag* currentTagUpdated = currentTag;
-	currentTagUpdated = parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_rules, &result);
+	currentTagUpdated = XMLparserClass.parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_rules, &result);
 	if(result)
 	{
-		if(!addRulesClassObjectsBasedOnSectionTag(currentTagUpdated, RULES_XML_TAG_unitTypeDetails, LRRCrulesUnitTypeDetails, RULES_XML_TAG_part, 3, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, nullString, nullString, nullString, nullString, nullString))
+		if(!XMLrulesClassObject.addRulesClassObjectsBasedOnSectionTag(currentTagUpdated, RULES_XML_TAG_unitTypeDetails, LRRCrulesUnitTypeDetails, RULES_XML_TAG_part, 3, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, nullString, nullString, nullString, nullString, nullString))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!parseTagUnitCombatDetails(currentTagUpdated))
+		if(!this->parseTagUnitCombatDetails(currentTagUpdated))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!addRulesClassObjectsBasedOnSectionTag(currentTagUpdated, RULES_XML_TAG_buildingDetails, LRRCrulesBuildingDetails, RULES_XML_TAG_part, 4, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, RULES_XML_ATTRIBUTE_buildingMod, nullString, nullString, nullString, nullString))
+		if(!XMLrulesClassObject.addRulesClassObjectsBasedOnSectionTag(currentTagUpdated, RULES_XML_TAG_buildingDetails, LRRCrulesBuildingDetails, RULES_XML_TAG_part, 4, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, RULES_XML_ATTRIBUTE_buildingMod, nullString, nullString, nullString, nullString))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!addRulesClassObjectsBasedOnSectionTag(currentTagUpdated, RULES_XML_TAG_terrainDefenceDetails, LRRCrulesTerrainDetails, RULES_XML_TAG_part, 3, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, nullString, nullString, nullString, nullString, nullString))
+		if(!XMLrulesClassObject.addRulesClassObjectsBasedOnSectionTag(currentTagUpdated, RULES_XML_TAG_terrainDefenceDetails, LRRCrulesTerrainDetails, RULES_XML_TAG_part, 3, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, nullString, nullString, nullString, nullString, nullString))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!addRulesClassObjectsBasedOnSectionTag(currentTagUpdated, RULES_XML_TAG_unitTypeCatagories, LRRCrulesUnitTypeCatagories, RULES_XML_TAG_unitType, 5, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_stringValue, RULES_XML_ATTRIBUTE_enum, RULES_XML_ATTRIBUTE_maxTravel, RULES_XML_ATTRIBUTE_defenceMod, nullString, nullString, nullString))
+		if(!XMLrulesClassObject.addRulesClassObjectsBasedOnSectionTag(currentTagUpdated, RULES_XML_TAG_unitTypeCatagories, LRRCrulesUnitTypeCatagories, RULES_XML_TAG_unitType, 5, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_stringValue, RULES_XML_ATTRIBUTE_enum, RULES_XML_ATTRIBUTE_maxTravel, RULES_XML_ATTRIBUTE_defenceMod, nullString, nullString, nullString))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!addRulesClassObjectsBasedOnSectionTag(currentTagUpdated, RULES_XML_TAG_miscellaneous, LRRCrulesMiscellaneous, RULES_XML_TAG_miscellaneousItem, 3, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_stringValue, RULES_XML_ATTRIBUTE_fractionalValue, nullString, nullString, nullString, nullString, nullString))
+		if(!XMLrulesClassObject.addRulesClassObjectsBasedOnSectionTag(currentTagUpdated, RULES_XML_TAG_miscellaneous, LRRCrulesMiscellaneous, RULES_XML_TAG_miscellaneousItem, 3, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_stringValue, RULES_XML_ATTRIBUTE_fractionalValue, nullString, nullString, nullString, nullString, nullString))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!addRulesClassObjectsBasedOnSectionTag(currentTagUpdated, RULES_XML_TAG_sprite, LRRCrulesSprite, RULES_XML_TAG_miscellaneousItem, 3, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_stringValue, RULES_XML_ATTRIBUTE_fractionalValue, nullString, nullString, nullString, nullString, nullString))
+		if(!XMLrulesClassObject.addRulesClassObjectsBasedOnSectionTag(currentTagUpdated, RULES_XML_TAG_sprite, LRRCrulesSprite, RULES_XML_TAG_miscellaneousItem, 3, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_stringValue, RULES_XML_ATTRIBUTE_fractionalValue, nullString, nullString, nullString, nullString, nullString))
 		{
 			result = false;
 		}
@@ -337,20 +337,20 @@ bool parseLRRCrulesTag(XMLparserTag* currentTag)
 	return result;
 }
 
-bool parseTagUnitCombatDetails(XMLparserTag* currentTag)
+bool LRRCrulesClass::parseTagUnitCombatDetails(XMLparserTag* currentTag)
 {
 	bool result = true;
 
 	XMLparserTag* currentTagUpdated = currentTag;
-	currentTagUpdated = parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_unitCombatDetails, &result);
+	currentTagUpdated = XMLparserClass.parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_unitCombatDetails, &result);
 	if(result)
 	{
-		if(!parseTagArmour(currentTagUpdated))
+		if(!this->parseTagArmour(currentTagUpdated))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!parseTagWeapons(currentTagUpdated))
+		if(!this->parseTagWeapons(currentTagUpdated))
 		{
 			result = false;
 		}
@@ -359,25 +359,25 @@ bool parseTagUnitCombatDetails(XMLparserTag* currentTag)
 	return result;
 }
 
-bool parseTagArmour(XMLparserTag* currentTag)
+bool LRRCrulesClass::parseTagArmour(XMLparserTag* currentTag)
 {
 	bool result = true;
 
 	XMLparserTag* currentTagUpdated = currentTag;
-	currentTagUpdated = parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_armour, &result);
+	currentTagUpdated = XMLparserClass.parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_armour, &result);
 	if(result)
 	{
-		if(!parseTagHead(currentTagUpdated))
+		if(!this->parseTagHead(currentTagUpdated))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!parseTagTorso(currentTagUpdated))
+		if(!this->parseTagTorso(currentTagUpdated))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!parseTagShield(currentTagUpdated))
+		if(!this->parseTagShield(currentTagUpdated))
 		{
 			result = false;
 		}
@@ -386,47 +386,47 @@ bool parseTagArmour(XMLparserTag* currentTag)
 	return result;
 }
 
-bool parseTagHead(XMLparserTag* currentTag)
+bool LRRCrulesClass::parseTagHead(XMLparserTag* currentTag)
 {
 	bool result = true;
 
-	addRulesClassObjectsBasedOnSectionTag(currentTag, RULES_XML_TAG_head, LRRCrulesUnitCombatDetailsDefenceHead, RULES_XML_TAG_part, 4, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, RULES_XML_ATTRIBUTE_defenceMod, nullString, nullString, nullString, nullString);
+	XMLrulesClassObject.addRulesClassObjectsBasedOnSectionTag(currentTag, RULES_XML_TAG_head, LRRCrulesUnitCombatDetailsDefenceHead, RULES_XML_TAG_part, 4, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, RULES_XML_ATTRIBUTE_defenceMod, nullString, nullString, nullString, nullString);
 
 	return result;
 }
 
-bool parseTagTorso(XMLparserTag* currentTag)
+bool LRRCrulesClass::parseTagTorso(XMLparserTag* currentTag)
 {
 	bool result = true;
 
-	addRulesClassObjectsBasedOnSectionTag(currentTag, RULES_XML_TAG_torso, LRRCrulesUnitCombatDetailsDefenceTorso, RULES_XML_TAG_part, 4, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, RULES_XML_ATTRIBUTE_defenceMod, nullString, nullString, nullString, nullString);
+	XMLrulesClassObject.addRulesClassObjectsBasedOnSectionTag(currentTag, RULES_XML_TAG_torso, LRRCrulesUnitCombatDetailsDefenceTorso, RULES_XML_TAG_part, 4, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, RULES_XML_ATTRIBUTE_defenceMod, nullString, nullString, nullString, nullString);
 
 	return result;
 }
 
-bool parseTagShield(XMLparserTag* currentTag)
+bool LRRCrulesClass::parseTagShield(XMLparserTag* currentTag)
 {
 	bool result = true;
 
-	addRulesClassObjectsBasedOnSectionTag(currentTag, RULES_XML_TAG_shield, LRRCrulesUnitCombatDetailsDefenceShield, RULES_XML_TAG_part, 4, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, RULES_XML_ATTRIBUTE_defenceMod, nullString, nullString, nullString, nullString);
+	XMLrulesClassObject.addRulesClassObjectsBasedOnSectionTag(currentTag, RULES_XML_TAG_shield, LRRCrulesUnitCombatDetailsDefenceShield, RULES_XML_TAG_part, 4, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, RULES_XML_ATTRIBUTE_defenceMod, nullString, nullString, nullString, nullString);
 
 	return result;
 }
 
-bool parseTagWeapons(XMLparserTag* currentTag)
+bool LRRCrulesClass::parseTagWeapons(XMLparserTag* currentTag)
 {
 	bool result = true;
 
 	XMLparserTag* currentTagUpdated = currentTag;
-	currentTagUpdated = parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_weapons, &result);
+	currentTagUpdated = XMLparserClass.parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_weapons, &result);
 	if(result)
 	{
-		if(!parseTagCloseCombat(currentTagUpdated))
+		if(!this->parseTagCloseCombat(currentTagUpdated))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!parseTagLongDistanceCombat(currentTagUpdated))
+		if(!this->parseTagLongDistanceCombat(currentTagUpdated))
 		{
 			result = false;
 		}
@@ -435,20 +435,20 @@ bool parseTagWeapons(XMLparserTag* currentTag)
 	return result;
 }
 
-bool parseTagCloseCombat(XMLparserTag* currentTag)
+bool LRRCrulesClass::parseTagCloseCombat(XMLparserTag* currentTag)
 {
 	bool result = true;
 
-	addRulesClassObjectsBasedOnSectionTag(currentTag, RULES_XML_TAG_closeCombat, LRRCrulesUnitCombatDetailsAttackCloseCombat, RULES_XML_TAG_part, 6, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, RULES_XML_ATTRIBUTE_closeCombatAttackMod, RULES_XML_ATTRIBUTE_mountedAttackBonus, RULES_XML_ATTRIBUTE_attackBonusAgainstMounted, nullString, nullString);
+	XMLrulesClassObject.addRulesClassObjectsBasedOnSectionTag(currentTag, RULES_XML_TAG_closeCombat, LRRCrulesUnitCombatDetailsAttackCloseCombat, RULES_XML_TAG_part, 6, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, RULES_XML_ATTRIBUTE_closeCombatAttackMod, RULES_XML_ATTRIBUTE_mountedAttackBonus, RULES_XML_ATTRIBUTE_attackBonusAgainstMounted, nullString, nullString);
 
 	return result;
 }
 
-bool parseTagLongDistanceCombat(XMLparserTag* currentTag)
+bool LRRCrulesClass::parseTagLongDistanceCombat(XMLparserTag* currentTag)
 {
 	bool result = true;
 
-	addRulesClassObjectsBasedOnSectionTag(currentTag, RULES_XML_TAG_longDistance, LRRCrulesUnitCombatDetailsAttackLongDistance, RULES_XML_TAG_part, 5, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, RULES_XML_ATTRIBUTE_longDistanceAttackMod, RULES_XML_ATTRIBUTE_longDistanceRange, nullString, nullString, nullString);
+	XMLrulesClassObject.addRulesClassObjectsBasedOnSectionTag(currentTag, RULES_XML_TAG_longDistance, LRRCrulesUnitCombatDetailsAttackLongDistance, RULES_XML_TAG_part, 5, RULES_XML_ATTRIBUTE_name, RULES_XML_ATTRIBUTE_partID, RULES_XML_ATTRIBUTE_partIDLen, RULES_XML_ATTRIBUTE_longDistanceAttackMod, RULES_XML_ATTRIBUTE_longDistanceRange, nullString, nullString, nullString);
 
 	return result;
 }

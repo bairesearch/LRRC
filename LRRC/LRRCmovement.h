@@ -26,7 +26,7 @@
  * File Name: LRRCmovement.h
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -42,13 +42,28 @@
 #include "LDreferenceClass.h"
 #include "LRRCplayerClass.h"
 #include "LRRCsprite.h"
+#include "LRRCcombat.h"
+#include "LRRCparser.h"
+#include "LDparser.h"
+#include "LDreferenceManipulation.h"
+#include "LRRCrules.h"
 
-bool compareSceneFilesMovementPhase(string preMovementPhaseSceneFileName, string thisPhaseStartSceneFileName, Player* currentPlayer, string targetSpritesSceneFileName, const bool addSprites);
-	bool compareScenesMovementPhase(const string preMovementPhaseSceneFileName, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, Player* currentPlayer, string targetSpritesSceneFileName, const bool addSprites);
-		bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDreference* referenceInThisPhaseStartSceneFile, LDreference* initialReferenceInPreMovementPhaseScene, const int parentUnitSpeed, const bool isAChildOfAMovingReference, const Player* currentPlayer, string targetSpritesSceneFileName, LDreference* spriteListInitialReference, int* numTargetSpritesAdded);
-			LDreference* compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(const LDreference* referenceInThisPhaseStartSceneFileBeingLocated, LDreference* referenceInPreMovementPhaseSceneFile, bool resultOfComparison[], const int parentUnitSpeed, bool* unitIDFound, bool* result);
-				bool compareSubmodelNamesAndIfSameCheckIfValidMove(const LDreference* referenceInThisPhaseStartSceneSearchedFor, const LDreference* referenceInPreMovementPhaseSceneFoundDuringSearch, bool resultOfComparison[], const int parentUnitSpeed);
-			bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile, const bool resultOfComparison[], const Player* currentPlayer, LDreference* spriteListInitialReference, LDreference* referenceInPreMovementPhaseSceneFile, int* numTargetSpritesAdded, string targetSpritesSceneFileName, const bool unitIDFound, const bool isChildOfMovingReference);
-		bool performFinalRoundPointsCalculations(Player* currentPlayer);
+class LRRCmovementClass
+{
+	private: LDparserClass LDparser;
+	private: LDreferenceManipulationClass LDreferenceManipulation;
+	private: LRRCmodelClassClass LRRCmodelClass;
+	private: LRRCcombatClass LRRCcombat;
+	private: LDreferenceClassClass LDreferenceClass;
+	private: LRRCspriteClass LRRCsprite;
+	private: LRRCparserClass LRRCparser;
+	public: bool compareSceneFilesMovementPhase(string preMovementPhaseSceneFileName, string thisPhaseStartSceneFileName, Player* currentPlayer, string targetSpritesSceneFileName, const bool addSprites);
+		public: bool compareScenesMovementPhase(const string preMovementPhaseSceneFileName, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, Player* currentPlayer, string targetSpritesSceneFileName, const bool addSprites);
+			private: bool searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDreference* referenceInThisPhaseStartSceneFile, LDreference* initialReferenceInPreMovementPhaseScene, const int parentUnitSpeed, const bool isAChildOfAMovingReference, const Player* currentPlayer, string targetSpritesSceneFileName, LDreference* spriteListInitialReference, int* numTargetSpritesAdded);
+				private: LDreference* compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(const LDreference* referenceInThisPhaseStartSceneFileBeingLocated, LDreference* referenceInPreMovementPhaseSceneFile, bool resultOfComparison[], const int parentUnitSpeed, bool* unitIDFound, bool* result);
+					private: bool compareSubmodelNamesAndIfSameCheckIfValidMove(const LDreference* referenceInThisPhaseStartSceneSearchedFor, const LDreference* referenceInPreMovementPhaseSceneFoundDuringSearch, bool resultOfComparison[], const int parentUnitSpeed);
+				private: bool dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile, const bool resultOfComparison[], const Player* currentPlayer, LDreference* spriteListInitialReference, LDreference* referenceInPreMovementPhaseSceneFile, int* numTargetSpritesAdded, string targetSpritesSceneFileName, const bool unitIDFound, const bool isChildOfMovingReference);
+			private: bool performFinalRoundPointsCalculations(Player* currentPlayer);
+};
 
 #endif

@@ -23,7 +23,7 @@
  * File Name: LRRCparser.h
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -37,6 +37,7 @@
 #define HEADER_LRRC_PARSER
 
 #include "LRRCmodelClass.h"
+#include "LRRCrules.h"
 
 #ifdef USE_LRRC
 
@@ -299,13 +300,16 @@
 #define HAND_DAGGER_MOD_NAME "HAND_DAGGER_MOD"
 extern int HAND_DAGGER_MOD;
 
-void fillInParserExternVariables();
+class LRRCparserClass
+{
+	public: void fillInParserExternVariables();
 
-void updateUnitDetails(string subPartFileName, ModelDetails* u);
-	void updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails* u);
-	void updateUnitDetailsWithBuildingDetails(string subPartFileName, ModelDetails* u);
-	void updateUnitDetailsWithTypeDetails(string subPartFileName, ModelDetails* u);
-	void updateUnitDetailsWithTerrainDefenceDetails(string subPartFileName, ModelDetails* u);
+	public: void updateUnitDetails(string subPartFileName, ModelDetails* u);
+		private: void updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails* u);
+		public: void updateUnitDetailsWithBuildingDetails(string subPartFileName, ModelDetails* u);
+		private: void updateUnitDetailsWithTypeDetails(string subPartFileName, ModelDetails* u);
+		private: void updateUnitDetailsWithTerrainDefenceDetails(string subPartFileName, ModelDetails* u);
+};
 #endif
 
 

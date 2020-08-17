@@ -26,7 +26,7 @@
  * File Name: LRRCmodelClass.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -37,13 +37,11 @@
 
 #include "LRRCmodelClass.h"
 
-#include "LRRCrules.h"
-#include "SHAREDvars.h"
 
 double DICE_MODIFIER;
 double LDRAW_UNITS_PER_CM;
 
-void fillInModelClassExternVariables()
+void LRRCmodelClassClass::fillInModelClassExternVariables()
 {
 	XMLrulesClass* currentReferenceRulesClass = LRRCrulesMiscellaneous;
 
@@ -318,7 +316,7 @@ to calculate groupIndex (of unit group) correctly, all units within group must b
 to calculate movementSpeed (min of unit group) correctly there is currenlty no known preconditions.
 to calculate unitType (min of unit group) correctly there is currenlty no known preconditions
 */
-void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails* u)
+void LRRCmodelClassClass::determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails* u)
 {
 	/*
 	2x large wheels && >=2x wheel axels && 1x horses && (numHorseHitch || numHorseHitchWithHinge) && > 1x person && < 2x persons = 15 (small/large cart),
@@ -431,7 +429,7 @@ void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails* u)
 			}
 			else
 			{
-				u->groupIndex = maxInt(numHorseHitch, numHorseHitchHingeRotatable);	/*OLD: groupIndex = numHorseHitch + numHorseHitchWithHinge  -> this is not currently very accurate, a better check would be groupIndex = hasPivotPoint*/
+				u->groupIndex = SHAREDvars.maxInt(numHorseHitch, numHorseHitchHingeRotatable);	/*OLD: groupIndex = numHorseHitch + numHorseHitchWithHinge  -> this is not currently very accurate, a better check would be groupIndex = hasPivotPoint*/
 				if(numHorse >= 2*u->groupIndex)
 				{
 					u->unitType = UNIT_TYPE_CART_LARGE;
@@ -521,11 +519,11 @@ void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails* u)
 	u->numPerson = numPerson;
 	u->numHorse = numHorse;
 
-	calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(u);
+	this->calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(u);
 }
 
 
-bool calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(ModelDetails* u)
+bool LRRCmodelClassClass::calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(ModelDetails* u)
 {
 	bool result = false;
 	XMLrulesClass* currentReferenceRulesClass = LRRCrulesUnitTypeCatagories;
@@ -534,7 +532,7 @@ bool calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(ModelDetails* 
 		if(int(currentReferenceRulesClass->fractionalValue) == u->unitType)
 		{
 			u->movementSpeed  = currentReferenceRulesClass->attribute4;
-			u->defenceTotal = maxInt(u->defenceTotal, currentReferenceRulesClass->attribute5);
+			u->defenceTotal = SHAREDvars.maxInt(u->defenceTotal, currentReferenceRulesClass->attribute5);
 			result = true;
 		}
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
@@ -546,7 +544,7 @@ bool calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(ModelDetails* 
 
 
 
-void copyRecordLists(RecordClass* recordToFill, RecordClass* recordToCopy)
+void LRRCmodelClassClass::copyRecordLists(RecordClass* recordToFill, RecordClass* recordToCopy)
 {
 	RecordClass* currentReferenceRecordToFill = recordToFill;
 	RecordClass* currentReferenceRecordToCopy = recordToCopy;
@@ -561,7 +559,7 @@ void copyRecordLists(RecordClass* recordToFill, RecordClass* recordToCopy)
 }
 
 
-void addRecordLists(RecordClass* recordToFill, RecordClass* recordToAdd)
+void LRRCmodelClassClass::addRecordLists(RecordClass* recordToFill, RecordClass* recordToAdd)
 {
 	RecordClass* currentReferenceRecordToFill = recordToFill;
 	RecordClass* currentReferenceRecordToAdd = recordToAdd;
@@ -578,25 +576,25 @@ void addRecordLists(RecordClass* recordToFill, RecordClass* recordToAdd)
 
 
 
-void copyAllUnitDetails(ModelDetails* u, ModelDetails* unitToCopy)
+void LRRCmodelClassClass::copyAllUnitDetails(ModelDetails* u, ModelDetails* unitToCopy)
 {
 
 	u->unitType = unitToCopy->unitType;
 	u->movementSpeed = unitToCopy->movementSpeed;
 
-	copyRecordLists(u->recordOfUnitTypeDetails, unitToCopy->recordOfUnitTypeDetails);
+	this->copyRecordLists(u->recordOfUnitTypeDetails, unitToCopy->recordOfUnitTypeDetails);
 
 	u->numPerson = unitToCopy->numPerson;			//these are derivable
 	u->numHorse = unitToCopy->numHorse;			//these are derivable
 
 	u->numShields = unitToCopy->numShields;			//these are derivable
 
-	copyRecordLists(u->recordOfUnitCombatDetailsAttackCloseCombat, unitToCopy->recordOfUnitCombatDetailsAttackCloseCombat);
-	copyRecordLists(u->recordOfUnitCombatDetailsAttackLongDistance, unitToCopy->recordOfUnitCombatDetailsAttackLongDistance);
+	this->copyRecordLists(u->recordOfUnitCombatDetailsAttackCloseCombat, unitToCopy->recordOfUnitCombatDetailsAttackCloseCombat);
+	this->copyRecordLists(u->recordOfUnitCombatDetailsAttackLongDistance, unitToCopy->recordOfUnitCombatDetailsAttackLongDistance);
 
-	copyRecordLists(u->recordOfUnitCombatDetailsDefenceShield, unitToCopy->recordOfUnitCombatDetailsDefenceShield);
-	copyRecordLists(u->recordOfUnitCombatDetailsDefenceTorso, unitToCopy->recordOfUnitCombatDetailsDefenceTorso);
-	copyRecordLists(u->recordOfUnitCombatDetailsDefenceHead, unitToCopy->recordOfUnitCombatDetailsDefenceHead);
+	this->copyRecordLists(u->recordOfUnitCombatDetailsDefenceShield, unitToCopy->recordOfUnitCombatDetailsDefenceShield);
+	this->copyRecordLists(u->recordOfUnitCombatDetailsDefenceTorso, unitToCopy->recordOfUnitCombatDetailsDefenceTorso);
+	this->copyRecordLists(u->recordOfUnitCombatDetailsDefenceHead, unitToCopy->recordOfUnitCombatDetailsDefenceHead);
 
 	u->breastDefenceValue = unitToCopy->breastDefenceValue;	//these are derivable
 	u->helmetDefenceValue = unitToCopy->helmetDefenceValue;	//these are derivable
@@ -623,7 +621,7 @@ void copyAllUnitDetails(ModelDetails* u, ModelDetails* unitToCopy)
 
 			//ADDED IN 2007 - this may not be required
 	//u->numBuildingOther = unitToCopy->numBuildingOther;
-	//copyRecordLists(u->recordOfBuildingDetails, unitToCopy->recordOfBuildingDetails);
+	//this->copyRecordLists(u->recordOfBuildingDetails, unitToCopy->recordOfBuildingDetails);
 
 	//money details
 	u->numGem = unitToCopy->numGem;
@@ -637,7 +635,7 @@ void copyAllUnitDetails(ModelDetails* u, ModelDetails* unitToCopy)
 
 
 //This is an example of a generic function that does not need to be defined within unitClass.cpp
-void copyEnvironmentRelevantChildUnitDetailsIntoParentObject(ModelDetails* unitChild, ModelDetails* unitParent)
+void LRRCmodelClassClass::copyEnvironmentRelevantChildUnitDetailsIntoParentObject(ModelDetails* unitChild, ModelDetails* unitParent)
 {
 	//terrain/structure details
 	unitParent->numBattlement = unitParent->numBattlement + unitChild->numBattlement; //BEFORE 2007: + unitChild->numBuildingBricks;	//used to potentially hide behind
@@ -646,9 +644,9 @@ void copyEnvironmentRelevantChildUnitDetailsIntoParentObject(ModelDetails* unitC
 
 
 //This is an example of a generic function that does not need to be defined within unitClass.cpp
-void addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails* unitChild, ModelDetails* unitParent)
+void LRRCmodelClassClass::addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails* unitChild, ModelDetails* unitParent)
 {
-	addRecordLists(unitParent->recordOfUnitTypeDetails, unitChild->recordOfUnitTypeDetails);
+	this->addRecordLists(unitParent->recordOfUnitTypeDetails, unitChild->recordOfUnitTypeDetails);
 
 	unitParent->numPerson = unitParent->numPerson + unitChild->numPerson;
 	unitParent->numHorse = unitParent->numHorse + unitChild->numHorse;
@@ -673,8 +671,8 @@ void addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails* unitChil
 
 	unitParent->numShields = unitParent->numShields + unitChild->numShields;
 
-	addRecordLists(unitParent->recordOfUnitCombatDetailsAttackCloseCombat, unitChild->recordOfUnitCombatDetailsAttackCloseCombat);
-	addRecordLists(unitParent->recordOfUnitCombatDetailsAttackLongDistance, unitChild->recordOfUnitCombatDetailsAttackLongDistance);
+	this->addRecordLists(unitParent->recordOfUnitCombatDetailsAttackCloseCombat, unitChild->recordOfUnitCombatDetailsAttackCloseCombat);
+	this->addRecordLists(unitParent->recordOfUnitCombatDetailsAttackLongDistance, unitChild->recordOfUnitCombatDetailsAttackLongDistance);
 
 		/*
 		unitParent->numHandAxe = unitParent->numHandAxe + unitChild->numHandAxe;
@@ -690,9 +688,9 @@ void addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails* unitChil
 		unitParent->numLargeSword = unitParent->numLargeSword + unitChild->numLargeSword;
 		*/
 
-	addRecordLists(unitParent->recordOfUnitCombatDetailsDefenceShield, unitChild->recordOfUnitCombatDetailsDefenceShield);
-	addRecordLists(unitParent->recordOfUnitCombatDetailsDefenceTorso, unitChild->recordOfUnitCombatDetailsDefenceTorso);
-	addRecordLists(unitParent->recordOfUnitCombatDetailsDefenceHead, unitChild->recordOfUnitCombatDetailsDefenceHead);
+	this->addRecordLists(unitParent->recordOfUnitCombatDetailsDefenceShield, unitChild->recordOfUnitCombatDetailsDefenceShield);
+	this->addRecordLists(unitParent->recordOfUnitCombatDetailsDefenceTorso, unitChild->recordOfUnitCombatDetailsDefenceTorso);
+	this->addRecordLists(unitParent->recordOfUnitCombatDetailsDefenceHead, unitChild->recordOfUnitCombatDetailsDefenceHead);
 
 	/*
 	unitParent->breastDefenceValue = maxInt(unitParent->breastDefenceValue, unitChild->breastDefenceValue);		//Check this: is this required?
@@ -762,7 +760,7 @@ int maxInt(int a, int b)
 }
 */
 
-int invertLevel(const int level)
+int LRRCmodelClassClass::invertLevel(const int level)
 {
 	return (7-level);
 }

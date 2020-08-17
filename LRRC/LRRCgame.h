@@ -26,7 +26,7 @@
  * File Name: LRRCgame.h
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -43,6 +43,21 @@
 #include "LRRCplayerClass.h"
 #include "LRRCglobalDefs.h"
 #include "LDreferenceClass.h"
+#include "LRRCmovement.h"
+#include "LRRCcombat.h"
+#include "LRRCsprite.h"
+#include "LRRCgameReferenceManipulation.h"
+#include "LRRCrules.h"
+#include "LRRCparser.h"
+#include "LDparser.h"
+#include "LDreferenceManipulation.h"
+	#include "ANNneuronClass.h"
+	#include "ANNformation.h"
+	#include "LRRCgameAI.h"
+	#include "ANNalgorithmBackpropagationTraining.h"
+	#include "ANNxmlConversion.h"
+	#include "ANNalgorithmBackpropagationUpdate.h"
+	#include "ANNdisplay.h"
 
 
 #define XML_NN_SCENE_FILE_NAME_EXTENSION ".xml"
@@ -115,52 +130,73 @@
 
 
 
-void fillInGameExternVariables();
+class LRRCgameClass
+{
+	private: LRRCplayerClassClass LRRCplayerClass;
+	private: LRRCmodelClassClass LRRCmodelClass;
+	private: LRRCrulesClass LRRCrules;
+	private: LRRCspriteClass LRRCsprite;
+	private: LRRCcombatClass LRRCcombat;
+	private: LDparserClass LDparser;
+	private: LRRCparserClass LRRCparser;
+	private: LDreferenceManipulationClass LDreferenceManipulation;
+	private: LRRCgameReferenceManipulationClass LRRCgameReferenceManipulation;
+	#ifdef USE_ANN
+	private: LRRCgameAIClass LRRCgameAI;
+	#endif
+	private: SHAREDvarsClass SHAREDvars;
+	private: LRRCunitClassClass LRRCunitClass;
+	private: LRRCmovementClass LRRCmovement;
+	private: SHAREDvectorClass SHAREDvector;
+	private: ANNalgorithmBackpropagationTrainingClass ANNalgorithmBackpropagationTraining;
+	private: ANNdisplayClass ANNdisplay;
+	public: void fillInGameExternVariables();
 
 //Initiation
 #ifdef USE_ANN
-bool executeLRRCfunctionsWithAI();
+	public: bool executeLRRCfunctionsWithAI();
 #endif
-bool executeLRRCfunctionsInOrder();
+	public: bool executeLRRCfunctionsInOrder();
 
-bool gameObtainNumberPlayers(int* numberOfPlayers);
-bool gameObtainRoundPlayerTurnAndPhase(int* initialRound, int* initialPlayerTurn, int* initialPhase);
-bool gamePlay(const int initialRound, int initialPlayerTurn, int initialPhase, const int numberOfPlayers, Player* initialPlayerInList, const int currentGame, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI);
-	bool executePhase(const int currentGame, const int currentRound, const int currentPlayerTurn, const int currentPhase, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI);
-		bool executeMovement(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI);
-		bool executeLongDistanceCombat(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI);
-		bool executeCloseCombat(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI);
-			bool executeGenericCombat(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, const string preCombatPhaseSceneFileName, const string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, Player* initialPlayerInList, const bool allPlayersAI);
+	private: bool gameObtainNumberPlayers(int* numberOfPlayers);
+	private: bool gameObtainRoundPlayerTurnAndPhase(int* initialRound, int* initialPlayerTurn, int* initialPhase);
+	private: bool gamePlay(const int initialRound, int initialPlayerTurn, int initialPhase, const int numberOfPlayers, Player* initialPlayerInList, const int currentGame, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI);
+		private: bool executePhase(const int currentGame, const int currentRound, const int currentPlayerTurn, const int currentPhase, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI);
+			private: bool executeMovement(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI);
+			private: bool executeLongDistanceCombat(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI);
+			private: bool executeCloseCombat(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI);
+				private: bool executeGenericCombat(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, const string preCombatPhaseSceneFileName, const string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, Player* initialPlayerInList, const bool allPlayersAI);
 			#ifdef USE_ANN
-				bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, const string preCombatPhaseSceneFileName, const string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* firstUnitInOpponentUnitGroup);
-					bool updateAbsolutePositionOfAllSubModels(LDreference* firstReferenceWithinSubModel, LDreference* parentReference);
-					bool moveUnitTowardsOpponent(LDreference* unitReference, LDreference* opponentReference);
-					bool AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, const int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, Player* initialPlayerInList, UnitListClass* firstUnitInOpponentUnitGroup, const UnitListClass* playerUnitThatIsFindingAnOpponent, LDreference* referenceToPlayerUnitThatIsFindingAnOpponent);
+					private: bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, const string preCombatPhaseSceneFileName, const string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* firstUnitInOpponentUnitGroup);
+						private: bool updateAbsolutePositionOfAllSubModels(LDreference* firstReferenceWithinSubModel, LDreference* parentReference);
+						private: bool moveUnitTowardsOpponent(LDreference* unitReference, LDreference* opponentReference);
+						private: bool AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, const int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, Player* initialPlayerInList, UnitListClass* firstUnitInOpponentUnitGroup, const UnitListClass* playerUnitThatIsFindingAnOpponent, LDreference* referenceToPlayerUnitThatIsFindingAnOpponent);
 			#endif
-					int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, string targetSpritesSceneFileName, string unitAttackerFileName, string unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, const bool checkPreviousSceneFile);
+						private: int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, string targetSpritesSceneFileName, string unitAttackerFileName, string unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, const bool checkPreviousSceneFile);
 
-			bool prepareNextPhaseSceneFiles(const int nextPhase, const int nextPlayerTurn, string previousPhaseSceneFileName, const string nextSceneFileName, string rangeSpritesNextSceneFileName, LDreference* firstReferenceInPreviousScene, const bool allPlayersAI);
+				private: bool prepareNextPhaseSceneFiles(const int nextPhase, const int nextPlayerTurn, string previousPhaseSceneFileName, const string nextSceneFileName, string rangeSpritesNextSceneFileName, LDreference* firstReferenceInPreviousScene, const bool allPlayersAI);
 		//bool AIsearchSceneFileListAndPerformMovements(int currentPlayerTurn, int currentPhase, string preMovementPhaseSceneFileNameMovement, string thisPhaseStartSceneFileNameMovement, string preCombatPhaseSceneFileName, string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, LDreference* initialReferenceInSceneFile, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList);
-bool generateSceneFileName(const int currentGame, const int currentRound, const int currentPlayerTurn, const int currentPhase, const int phaseExecutionStage, string* sceneFileName);
-bool generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList, UnitListClass* firstUnitInUnitList);
-bool generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList);
+	private: bool generateSceneFileName(const int currentGame, const int currentRound, const int currentPlayerTurn, const int currentPhase, const int phaseExecutionStage, string* sceneFileName);
+	private: bool generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList, UnitListClass* firstUnitInUnitList);
+	private: bool generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList);
 
-void generateXMLNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex);
-void generateVectorGraphicsLDRNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex);
-void generateVectorGraphicsLDRNNSceneFileNameWithSprites(const int currentGame, string* sceneFileName, const int nnIndex);
-void generateExperiencesNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex);
-void generateVectorGraphicsTALNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex);
-void generateRaytracedImagePPMNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex);
+	private: void generateXMLNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex);
+	private: void generateVectorGraphicsLDRNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex);
+	private: void generateVectorGraphicsLDRNNSceneFileNameWithSprites(const int currentGame, string* sceneFileName, const int nnIndex);
+	private: void generateExperiencesNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex);
+	private: void generateVectorGraphicsTALNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex);
+	private: void generateRaytracedImagePPMNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex);
 
-void copyReferencesAndSubmodelDetails(LDreference* referenceNew, LDreference* referenceToCopy, const int type);
+	private: void copyReferencesAndSubmodelDetails(LDreference* referenceNew, LDreference* referenceToCopy, const int type);
 
 #ifdef USE_ANN
-void feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const long numberOfInputNeurons, const long numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn);
-void trainAndOutputNeuralNetwork(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const int numberOfInputNeurons, int numberOfOutputNeurons, ANNexperience* firstExperienceInList, bool addSprites, const bool allowRaytrace, const int nn, const int currentGame);
+	private: void feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const long numberOfInputNeurons, const long numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn);
+	private: void trainAndOutputNeuralNetwork(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const int numberOfInputNeurons, int numberOfOutputNeurons, ANNexperience* firstExperienceInList, bool addSprites, const bool allowRaytrace, const int nn, const int currentGame);
 #endif
 
-void updatePlayerStatus(Player* initialPlayerInList);
-	bool searchUnitListAndCheckThatSomePlayerUnitsAreAlive(const int playerTeam, const UnitListClass* firstUnitInUnitGroup);
+	private: void updatePlayerStatus(Player* initialPlayerInList);
+		private: bool searchUnitListAndCheckThatSomePlayerUnitsAreAlive(const int playerTeam, const UnitListClass* firstUnitInUnitGroup);
+};
 
 
 #endif

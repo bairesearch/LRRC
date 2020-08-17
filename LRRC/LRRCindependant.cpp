@@ -26,7 +26,7 @@
  * File Name: LRRCindependant.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -72,18 +72,7 @@
 */
 
 #include "LRRCindependant.h"
-#include "LRRCmovement.h"
-#include "LRRCcombat.h"
-#include "LRRCsprite.h"
-#include "LDreferenceManipulation.h"
-#include "LRRCgameReferenceManipulation.h"
-#include "LRRCplayerClass.h"
-#include "LRRCgame.h"
-#include "LRRCrules.h"
-#include "LRRCparser.h"
-#include "LRRCsprite.h"	//required for extern variable initialisation only
 
-#include "LDparser.h"	//is this required?
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -95,23 +84,23 @@
 #include <math.h>
 using namespace std;
 
-void executeLRRCfunctionsIndependantly()
+void LRRCindependantClass::executeLRRCfunctionsIndependantly()
 {
 	bool UIstatus = true;
 
 	string answerAsString = "";
 	long answerAsInt;
 
-	if(!parseLRRCrulesXMLfile())
+	if(!LRRCrules.parseLRRCrulesXMLfile())
 	{
 		UIstatus = false;
 	}
-	fillInCombatExternVariables();
-	fillInGameExternVariables();
-	fillInModelClassExternVariables();
-	fillInParserExternVariables();
-	fillInPlayerClassExternVariables();
-	fillInLRRCSpriteExternVariables();
+	LRRCcombat.fillInCombatExternVariables();
+	LRRCgame.fillInGameExternVariables();
+	LRRCmodelClass.fillInModelClassExternVariables();
+	LRRCparser.fillInParserExternVariables();
+	LRRCplayerClass.fillInPlayerClassExternVariables();
+	LRRCsprite.fillInLRRCSpriteExternVariables();
 
 	while(UIstatus == true)
 	{
@@ -140,7 +129,7 @@ void executeLRRCfunctionsIndependantly()
 
 
 		cin >> answerAsString;
-		long answerAsInt = convertStringToLong(answerAsString);
+		long answerAsInt = SHAREDvars.convertStringToLong(answerAsString);
 
 		int unit1ID;
 		int unit2ID;
@@ -158,14 +147,14 @@ void executeLRRCfunctionsIndependantly()
 		{
 			cout << "To Compare two consecutive scene files, and see if the newer scene represents a valid move, please enter both the old and the new scene file names\n\n";
 
-			obtainSceneFileNamesFromUser(&thisPhaseStartSceneFileName, &preMovementPhaseSceneFileName);
+			this->obtainSceneFileNamesFromUser(&thisPhaseStartSceneFileName, &preMovementPhaseSceneFileName);
 
 			Player* currentPlayer = new Player();
 			currentPlayer->name = "Player1";
 			currentPlayer->id = 1;
 			currentPlayer->credits = PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT;
 
-			compareSceneFilesMovementPhase(preMovementPhaseSceneFileName, thisPhaseStartSceneFileName, currentPlayer, thisPhaseStartSceneFileName, false);
+			LRRCmovement.compareSceneFilesMovementPhase(preMovementPhaseSceneFileName, thisPhaseStartSceneFileName, currentPlayer, thisPhaseStartSceneFileName, false);
 		}
 		else if(answerAsInt == 2)
 		{
@@ -177,9 +166,9 @@ void executeLRRCfunctionsIndependantly()
 			cout << "Enter Unit 2 Name (Eg 'unit2.ldr'):";
 			cin >> unit2FileName;
 
-			obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
+			this->obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
 
-			performCloseCombatBasic(unit1FileName, unit2FileName, unit1intendsToPerformAttack, unit2intendsToPerformAttack, true, true);
+			LRRCcombat.performCloseCombatBasic(unit1FileName, unit2FileName, unit1intendsToPerformAttack, unit2intendsToPerformAttack, true, true);
 
 		}
 		else if(answerAsInt == 3)
@@ -192,9 +181,9 @@ void executeLRRCfunctionsIndependantly()
 			cout << "Enter Unit 2 Name (Eg 'unit2.ldr'):";
 			cin >> unit2FileName;
 
-			obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
+			this->obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
 
-			performLongDistanceCombatBasic(unit1FileName, unit2FileName, unit1intendsToPerformAttack, unit2intendsToPerformAttack);
+			LRRCcombat.performLongDistanceCombatBasic(unit1FileName, unit2FileName, unit1intendsToPerformAttack, unit2intendsToPerformAttack);
 
 		}
 		else if(answerAsInt == 4)
@@ -207,9 +196,9 @@ void executeLRRCfunctionsIndependantly()
 			cout << "Enter Unit 2 Name (Eg 'unit2.ldr'):";
 			cin >> unit2FileName;
 
-			obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
+			this->obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
 
-			performCloseCombatNormal(unit1FileName, unit2FileName, unit1intendsToPerformAttack, unit2intendsToPerformAttack);
+			LRRCcombat.performCloseCombatNormal(unit1FileName, unit2FileName, unit1intendsToPerformAttack, unit2intendsToPerformAttack);
 
 		}
 		else if(answerAsInt == 5)
@@ -222,21 +211,21 @@ void executeLRRCfunctionsIndependantly()
 			cout << "Enter Unit 2 Name (Eg 'unit2.ldr'):";
 			cin >> unit2FileName;
 
-			obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
+			this->obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
 
-			performLongDistanceCombatNormal(unit1FileName, unit2FileName, unit1intendsToPerformAttack, unit2intendsToPerformAttack);
+			LRRCcombat.performLongDistanceCombatNormal(unit1FileName, unit2FileName, unit1intendsToPerformAttack, unit2intendsToPerformAttack);
 
 		}
 		else if(answerAsInt == 6)
 		{
 			cout << "To Perform close combat, and see which unit wins, please enter both the unit file names, their intentions, and the current scene file name \n\n";
 
-			obtainSceneFileNameFromUser(&currentSceneFileName);
-			if(obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_CLOSECOMBAT, &unit1FileName, &unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
+			this->obtainSceneFileNameFromUser(&currentSceneFileName);
+			if(LRRCgameReferenceManipulation.obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_CLOSECOMBAT, &unit1FileName, &unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
 			{
-				obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
+				this->obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
 
-				performCloseCombatWithSceneFile(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformAttack, unit2intendsToPerformAttack, currentSceneFileName);
+				LRRCcombat.performCloseCombatWithSceneFile(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformAttack, unit2intendsToPerformAttack, currentSceneFileName);
 			}
 
 		}
@@ -244,24 +233,24 @@ void executeLRRCfunctionsIndependantly()
 		{
 			cout << "To Perform long distance combat, and see which unit wins, please enter both the unit file names, each units intentions, and the current scene file name \n\n";
 
-			obtainSceneFileNameFromUser(&currentSceneFileName);
-			if(obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_LONGDISTANCECOMBAT, &unit1FileName, &unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
+			this->obtainSceneFileNameFromUser(&currentSceneFileName);
+			if(LRRCgameReferenceManipulation.obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_LONGDISTANCECOMBAT, &unit1FileName, &unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
 			{
-				obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
+				this->obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
 
-				performLongDistanceCombatWithSceneFile(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformAttack, unit2intendsToPerformAttack, currentSceneFileName);
+				LRRCcombat.performLongDistanceCombatWithSceneFile(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformAttack, unit2intendsToPerformAttack, currentSceneFileName);
 			}
 		}
 		else if(answerAsInt == 8)
 		{
 			cout << "To Perform close combat, and see which unit wins, please enter both the unit file names, their intentions, the previous scene file name, and the current scene file name \n\n";
 
-			obtainSceneFileNamesFromUser(&currentSceneFileName, &previousSceneFileName);
-			if(obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_CLOSECOMBAT, &unit1FileName, &unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
+			this->obtainSceneFileNamesFromUser(&currentSceneFileName, &previousSceneFileName);
+			if(LRRCgameReferenceManipulation.obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_CLOSECOMBAT, &unit1FileName, &unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
 			{
-				obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
+				this->obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
 
-				performCloseCombatWithConsecutiveSceneFiles(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformAttack, unit2intendsToPerformAttack, currentSceneFileName, previousSceneFileName);
+				LRRCcombat.performCloseCombatWithConsecutiveSceneFiles(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformAttack, unit2intendsToPerformAttack, currentSceneFileName, previousSceneFileName);
 
 			}
 		}
@@ -269,12 +258,12 @@ void executeLRRCfunctionsIndependantly()
 		{
 			cout << "To Perform long distance combat, and see which unit wins, please enter both the unit file names, each units intentions, the previous scene file name, and the current scene file name \n\n";
 
-			obtainSceneFileNamesFromUser(&currentSceneFileName, &previousSceneFileName);
-			if(obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_LONGDISTANCECOMBAT, &unit1FileName, &unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
+			this->obtainSceneFileNamesFromUser(&currentSceneFileName, &previousSceneFileName);
+			if(LRRCgameReferenceManipulation.obtainUnitDetailsFromUserWOSceneRef(GAME_PHASE_LONGDISTANCECOMBAT, &unit1FileName, &unit2FileName, &unit1ID, &unit2ID, currentSceneFileName))
 			{
-				obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
+				this->obtainAttackIntentionsFromUser(&unit1intendsToPerformAttack, &unit2intendsToPerformAttack);
 
-				performLongDistanceCombatWithConsecutiveSceneFiles(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformAttack, unit2intendsToPerformAttack, currentSceneFileName, previousSceneFileName);
+				LRRCcombat.performLongDistanceCombatWithConsecutiveSceneFiles(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformAttack, unit2intendsToPerformAttack, currentSceneFileName, previousSceneFileName);
 
 			}
 		}
@@ -286,7 +275,7 @@ void executeLRRCfunctionsIndependantly()
 			//final calculations depend on precise version of 'Lego Rules' (and corresponding DEFINITIONS above)
 			//version 12 (2005k)
 
-			calculateUnitClassBasic(unit1FileName);
+			LRRCcombat.calculateUnitClassBasic(unit1FileName);
 		}
 		else if(answerAsInt == 11)
 		{
@@ -296,7 +285,7 @@ void executeLRRCfunctionsIndependantly()
 			//final calculations depend on precise version of 'Lego Rules' (and corresponding DEFINITIONS above)
 			//version 12 (2005k)
 
-			calculateUnitClassNormal(unit1FileName);
+			LRRCcombat.calculateUnitClassNormal(unit1FileName);
 		}
 		else if(answerAsInt == 12)
 		{
@@ -310,7 +299,7 @@ void executeLRRCfunctionsIndependantly()
 			bool addRangeSpriteInfo = true;
 			int currentPhase = GAME_PHASE_GENERIC;
 			int currentPlayerTurn = GAME_PLAYER_TURN_DEFAULT;
-			LRRCaddUnitDetailsSpritesToSceneFile(preMovementPhaseSceneFileName, sceneFileWithSpritesName, addTextualSpriteInfo, addRangeSpriteInfo, currentPhase, currentPlayerTurn);
+			LRRCsprite.LRRCaddUnitDetailsSpritesToSceneFile(preMovementPhaseSceneFileName, sceneFileWithSpritesName, addTextualSpriteInfo, addRangeSpriteInfo, currentPhase, currentPlayerTurn);
 		}
 		else if(answerAsInt == 0)
 		{
@@ -323,7 +312,7 @@ void executeLRRCfunctionsIndependantly()
 	}
 }
 
-bool obtainAttackIntentionsFromUser(bool* unit1intendsToPerformAttack, bool* unit2intendsToPerformAttack)
+bool LRRCindependantClass::obtainAttackIntentionsFromUser(bool* unit1intendsToPerformAttack, bool* unit2intendsToPerformAttack)
 {
 	bool result = true;
 
@@ -367,7 +356,7 @@ bool obtainAttackIntentionsFromUser(bool* unit1intendsToPerformAttack, bool* uni
 	return result;
 }
 
-bool obtainSceneFileNamesFromUser(string* currentSceneFileName, string* previousSceneFileName)
+bool LRRCindependantClass::obtainSceneFileNamesFromUser(string* currentSceneFileName, string* previousSceneFileName)
 {
 	bool result = true;
 
@@ -380,7 +369,7 @@ bool obtainSceneFileNamesFromUser(string* currentSceneFileName, string* previous
 	return result;
 }
 
-bool obtainSceneFileNameFromUser(string* currentSceneFileName)
+bool LRRCindependantClass::obtainSceneFileNameFromUser(string* currentSceneFileName)
 {
 	bool result = true;
 

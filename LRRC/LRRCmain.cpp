@@ -26,7 +26,7 @@
  * File Name: LRRCmain.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -37,8 +37,6 @@
 
 
 #include "LRRCmain.h"
-#include "LRRCindependant.h"
-#include "LRRCgame.h"
 
 int main()
 {
@@ -51,12 +49,12 @@ int main()
 
 //#define TESTXMLPARSER
 #ifdef TESTXMLPARSER
-	executeLRRCfunctionsIndependantly();
+	LRRCindependantClass().executeLRRCfunctionsIndependantly();
 #else
 	while(UIstatus == true)
 	{
 		cout << "\n ---\n";
-		cout << "Welecome To LRRC (Version 4dXy or higher)\n";
+		cout << "Welcome To LRRC\n";
 		cout << " ---\n";
 		cout << "Do you wish to \n";
 		cout << " ---\n";
@@ -70,22 +68,22 @@ int main()
 
 
 		cin >> answerAsString;
-		answerAsInt = convertStringToLong(answerAsString);
+		answerAsInt = SHAREDvarsClass().convertStringToLong(answerAsString);
 
 		if(answerAsInt == 1)
 		{
-			executeLRRCfunctionsIndependantly();
+			LRRCindependantClass().executeLRRCfunctionsIndependantly();
 			UIstatus = false;
 		}
 		else if(answerAsInt == 2)
 		{
-			executeLRRCfunctionsInOrder();
+			LRRCgameClass().executeLRRCfunctionsInOrder();
 			UIstatus = false;
 		}
 		else if(answerAsInt == 3)
 		{
 			#ifdef USE_ANN
-			executeLRRCfunctionsWithAI();
+			LRRCgameClass().executeLRRCfunctionsWithAI();
 			#else
 			cout << "error: no ANN - no AI players allowed - must compile with ANN" << endl;
 			#endif

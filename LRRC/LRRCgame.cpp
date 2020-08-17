@@ -26,7 +26,7 @@
  * File Name: LRRCgame.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -38,27 +38,10 @@
  *******************************************************************************/
 
 
-#include "LRRCglobalDefs.h"
 
 #include "LRRCgame.h"
-#include "LRRCmovement.h"
-#include "LRRCcombat.h"
-#include "LRRCsprite.h"
-#include "LRRCgameReferenceManipulation.h"
-#include "LRRCrules.h"
-#include "LRRCparser.h"
-#include "LDparser.h"
-#include "LDreferenceManipulation.h"
 
 #ifdef USE_ANN
-	#include "ANNneuronClass.h"
-	#include "ANNformation.h"
-	#include "LRRCgameAI.h"
-	#include "LRRCunitClass.h"
-	#include "ANNalgorithmBackpropagationTraining.h"
-	#include "ANNxmlConversion.h"
-	#include "ANNalgorithmBackpropagationUpdate.h"
-	#include "ANNdisplay.h"
 #endif
 
 
@@ -81,7 +64,7 @@ static string SCENE_FILE_NAME_PHASE_LONGDISTANCE;
 static string SCENE_FILE_NAME_PHASE_CLOSECOMBAT;
 static string SCENE_FILE_NAME_EXTENSION;
 
-void fillInGameExternVariables()
+void LRRCgameClass::fillInGameExternVariables()
 {
 	XMLrulesClass* currentReferenceRulesClass = LRRCrulesMiscellaneous;
 
@@ -148,7 +131,7 @@ void fillInGameExternVariables()
 
 
 
-bool executeLRRCfunctionsWithAI()
+bool LRRCgameClass::executeLRRCfunctionsWithAI()
 {
 	bool result = true;
 
@@ -157,30 +140,30 @@ bool executeLRRCfunctionsWithAI()
 	int initialPhase;
 	int numberPlayers;
 
-	if(!parseLRRCrulesXMLfile())
+	if(!LRRCrules.parseLRRCrulesXMLfile())
 	{
 		result = false;
 	}
 
-	fillInCombatExternVariables();
-	fillInGameExternVariables();
-	fillInModelClassExternVariables();
-	fillInParserExternVariables();
-	fillInPlayerClassExternVariables();
-	fillInLRRCSpriteExternVariables();
+	LRRCcombat.fillInCombatExternVariables();
+	this->fillInGameExternVariables();
+	LRRCmodelClass.fillInModelClassExternVariables();
+	LRRCparser.fillInParserExternVariables();
+	LRRCplayerClass.fillInPlayerClassExternVariables();
+	LRRCsprite.fillInLRRCSpriteExternVariables();
 
 	#ifdef DEBUG_IN_TEXTPAD
 		numberPlayers = 2;
 		cout << "numberPlayers automatically chosen; DEBUG_IN_TEXTPAD" << endl;
 		cout << "numberPlayers = " << numberPlayers << endl;
 	#else
-		gameObtainNumberPlayers(&numberPlayers);
+		this->gameObtainNumberPlayers(&numberPlayers);
 	#endif
 
 	Player* initialPlayerInList = new Player();
 	bool allPlayersAI;
 
-	allPlayersAI = generatePlayerList(numberPlayers, initialPlayerInList);
+	allPlayersAI = this->generatePlayerList(numberPlayers, initialPlayerInList);
 
 
 
@@ -195,22 +178,22 @@ bool executeLRRCfunctionsWithAI()
 
 #ifndef USE_SEPARATE_AI_PER_PLAYER
 		//create neural network 1 (for unit/group targetting/combat decisions)
-		initialiseNeuralNetwork(GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, initialPlayerInList, GAME_PHASE_CLOSECOMBAT);
+		LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, initialPlayerInList, GAME_PHASE_CLOSECOMBAT);
 	#ifdef ANN_SEPARATE_CC_FROM_LD_NETWORK
-		initialiseNeuralNetwork(GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, initialPlayerInList, GAME_PHASE_LONGDISTANCECOMBAT);
+		LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, initialPlayerInList, GAME_PHASE_LONGDISTANCECOMBAT);
 	#endif
 
 		//create neural network 2 (for unit/group targetting/combat decisions)
-		initialiseNeuralNetwork(GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, initialPlayerInList, GAME_PHASE_CLOSECOMBAT);
+		LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, initialPlayerInList, GAME_PHASE_CLOSECOMBAT);
 	#ifdef ANN_SEPARATE_CC_FROM_LD_NETWORK
-		initialiseNeuralNetwork(GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, initialPlayerInList, GAME_PHASE_LONGDISTANCECOMBAT);
+		LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, initialPlayerInList, GAME_PHASE_LONGDISTANCECOMBAT);
 	#endif
 
 	#ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
 		//create neural network 3 (for global targetting/combat decisions)
-		initialiseNeuralNetwork(GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN, initialPlayerInList, GAME_PHASE_CLOSECOMBAT);
+		LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN, initialPlayerInList, GAME_PHASE_CLOSECOMBAT);
 	#ifdef ANN_SEPARATE_CC_FROM_LD_NETWORK
-		initialiseNeuralNetwork(GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN, initialPlayerInList, GAME_PHASE_LONGDISTANCECOMBAT);
+		LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN, initialPlayerInList, GAME_PHASE_LONGDISTANCECOMBAT);
 	#endif
 	#endif
 
@@ -223,23 +206,23 @@ bool executeLRRCfunctionsWithAI()
 	{
 	#ifdef USE_SEPARATE_AI_PER_PLAYER
 			//create neural network 1 (for unit/group targetting/combat decisions)
-			initialiseNeuralNetwork(GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);
+			LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);
 		#ifdef ANN_SEPARATE_CC_FROM_LD_NETWORK
-			initialiseNeuralNetwork(GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, currentPlayer, GAME_PHASE_LONGDISTANCECOMBAT);
+			LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, currentPlayer, GAME_PHASE_LONGDISTANCECOMBAT);
 		#endif
 
 			//create neural network 2 (for unit/group targetting/combat decisions)
-			initialiseNeuralNetwork(GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);
+			LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);
 		#ifdef ANN_SEPARATE_CC_FROM_LD_NETWORK
-			initialiseNeuralNetwork(GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, currentPlayer, GAME_PHASE_LONGDISTANCECOMBAT);
+			LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, currentPlayer, GAME_PHASE_LONGDISTANCECOMBAT);
 		#endif
 
 
 		#ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
 			//create neural network 3 (for global targetting/combat decisions)
-			initialiseNeuralNetwork(GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);
+			LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN, currentPlayer, GAME_PHASE_CLOSECOMBAT);
 		#ifdef ANN_SEPARATE_CC_FROM_LD_NETWORK
-			initialiseNeuralNetwork(GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN, currentPlayer, GAME_PHASE_LONGDISTANCECOMBAT);
+			LRRCgameAI.initialiseNeuralNetwork(GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN, currentPlayer, GAME_PHASE_LONGDISTANCECOMBAT);
 		#endif
 		#endif
 
@@ -270,12 +253,12 @@ bool executeLRRCfunctionsWithAI()
 		initialPlayerTurn = GAME_PLAYER_TURN_DEFAULT;
 		initialPhase = GAME_PHASE_DEFAULT;
 		string preMovementPhaseSceneFileName = "";
-		generateSceneFileName(gameNumber, initialRound, initialPlayerTurn, initialPhase, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileName);
+		this->generateSceneFileName(gameNumber, initialRound, initialPlayerTurn, initialPhase, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileName);
 		string initialSceneFileInGame = SCENE_FILE_NAME_START + SCENE_FILE_NAME_EXTENSION;
 		//OLD: copyFiles(preMovementPhaseSceneFileName, initialSceneFileInGameCharArray);
 		LDreference* initialReferenceInSceneFile = new LDreference();
 		LDreference* topLevelReferenceInSceneFile = new LDreference(initialSceneFileInGame, 1, true);	//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
-		if(!parseFile(initialSceneFileInGame, initialReferenceInSceneFile, topLevelReferenceInSceneFile, false))
+		if(!LDparser.parseFile(initialSceneFileInGame, initialReferenceInSceneFile, topLevelReferenceInSceneFile, false))
 		{//file does not exist
 			cout << "The file: " << preMovementPhaseSceneFileName << " does not exist in the directory" << endl;
 			result = false;
@@ -286,23 +269,23 @@ bool executeLRRCfunctionsWithAI()
 		//NEW: collapse reference list into new file after parsing reference list;
 		if(allPlayersAI)
 		{
-			write2DreferenceListCollapsedTo1DtoFile(preMovementPhaseSceneFileName, initialReferenceInSceneFile);
+			LDreferenceManipulation.write2DreferenceListCollapsedTo1DtoFile(preMovementPhaseSceneFileName, initialReferenceInSceneFile);
 		}
 		else
 		{//1D LDreference list required - no unit groups
-			writeReferencesToFile(preMovementPhaseSceneFileName, initialReferenceInSceneFile);
+			LDreferenceManipulation.writeReferencesToFile(preMovementPhaseSceneFileName, initialReferenceInSceneFile);
 		}
 
 
 		//cout << "h7" << endl;
 
 		//DEBUG:
-		searchReferenceListPrintReferenceDetails(initialReferenceInSceneFile);
+		LRRCgameReferenceManipulation.searchReferenceListPrintReferenceDetails(initialReferenceInSceneFile);
 
 		//cout << "h8" << endl;
 
 		UnitListClass* firstUnitInUnitList = new UnitListClass();
-		fillUnitList(initialReferenceInSceneFile, firstUnitInUnitList, currentRound);
+		LRRCgameAI.fillUnitList(initialReferenceInSceneFile, firstUnitInUnitList, currentRound);
 
 				//debug:
 
@@ -357,14 +340,14 @@ bool executeLRRCfunctionsWithAI()
 		if(gameNumber != 1)
 		{
 			string preMovementPhaseSceneFileNameForCurrentGame = "";
-			generateSceneFileName(gameNumber, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileNameForCurrentGame);
+			this->generateSceneFileName(gameNumber, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileNameForCurrentGame);
 
 			copyFiles(preMovementPhaseSceneFileNameForCurrentGame, preMovementPhaseSceneFileName);
 
 			//reparse scene file
 			initialReferenceInSceneFile = new LDreference();
 			topLevelReferenceInSceneFile = new LDreference(preMovementPhaseSceneFileName, 1, true);	//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
-			if(!parseFile(preMovementPhaseSceneFileNameForCurrentGame, initialReferenceInSceneFile, topLevelReferenceInSceneFile, false))
+			if(!LDparser.parseFile(preMovementPhaseSceneFileNameForCurrentGame, initialReferenceInSceneFile, topLevelReferenceInSceneFile, false))
 			{//file does not exist
 				cout << "The file: " << preMovementPhaseSceneFileNameForCurrentGame << " does not exist in the directory" << endl;
 				result = false;
@@ -372,7 +355,7 @@ bool executeLRRCfunctionsWithAI()
 
 			//refill unit lists every game
 			firstUnitInUnitList = new UnitListClass();
-			fillUnitList(initialReferenceInSceneFile, firstUnitInUnitList, currentRound);
+			LRRCgameAI.fillUnitList(initialReferenceInSceneFile, firstUnitInUnitList, currentRound);
 			Player* currentPlayer = initialPlayerInList;
 			while(currentPlayer->next != NULL)
 			{
@@ -384,7 +367,7 @@ bool executeLRRCfunctionsWithAI()
 		*/
 
 
-		if(!gamePlay(initialRound, initialPlayerTurn, initialPhase, numberPlayers, initialPlayerInList, gameNumber, initialReferenceInSceneFile, allPlayersAI))
+		if(!this->gamePlay(initialRound, initialPlayerTurn, initialPhase, numberPlayers, initialPlayerInList, gameNumber, initialReferenceInSceneFile, allPlayersAI))
 		{
 			result = false;
 		}
@@ -412,7 +395,7 @@ bool executeLRRCfunctionsWithAI()
 #endif
 
 
-bool executeLRRCfunctionsInOrder()
+bool LRRCgameClass::executeLRRCfunctionsInOrder()
 {
 	bool result;
 
@@ -426,16 +409,16 @@ bool executeLRRCfunctionsInOrder()
 	int initialPhase;
 	int numberPlayers;
 
-	if(!parseLRRCrulesXMLfile())
+	if(!LRRCrules.parseLRRCrulesXMLfile())
 	{
 		UIstatus = false;
 	}
-	fillInCombatExternVariables();
-	fillInGameExternVariables();
-	fillInModelClassExternVariables();
-	fillInParserExternVariables();
-	fillInPlayerClassExternVariables();
-	fillInLRRCSpriteExternVariables();
+	LRRCcombat.fillInCombatExternVariables();
+	this->fillInGameExternVariables();
+	LRRCmodelClass.fillInModelClassExternVariables();
+	LRRCparser.fillInParserExternVariables();
+	LRRCplayerClass.fillInPlayerClassExternVariables();
+	LRRCsprite.fillInLRRCSpriteExternVariables();
 
 
 	while(UIstatus == true)
@@ -453,19 +436,19 @@ bool executeLRRCfunctionsInOrder()
 
 
 		cin >> answerAsString;
-		answerAsInt = convertStringToInt(answerAsString);
+		answerAsInt = SHAREDvars.convertStringToInt(answerAsString);
 
 		if(answerAsInt == 1)
 		{
 			initialGame = GAME_NUM_DEFAULT;
-			gameObtainRoundPlayerTurnAndPhase(&initialRound, &initialPlayerTurn, &initialPhase);
-			gameObtainNumberPlayers(&numberPlayers);
+			this->gameObtainRoundPlayerTurnAndPhase(&initialRound, &initialPlayerTurn, &initialPhase);
+			this->gameObtainNumberPlayers(&numberPlayers);
 
 			Player* initialPlayerInList = new Player();
 			UnitListClass* firstUnitInUnitList = new UnitListClass();
-			generatePlayerList(numberPlayers, initialPlayerInList, firstUnitInUnitList);
+			this->generatePlayerList(numberPlayers, initialPlayerInList, firstUnitInUnitList);
 
-			if(!gamePlay(initialRound, initialPlayerTurn, initialPhase, numberPlayers, initialPlayerInList, initialGame, NULL, false))
+			if(!this->gamePlay(initialRound, initialPlayerTurn, initialPhase, numberPlayers, initialPlayerInList, initialGame, NULL, false))
 			{
 				result = false;
 			}
@@ -477,13 +460,13 @@ bool executeLRRCfunctionsInOrder()
 			initialRound = GAME_ROUND_DEFAULT;
 			initialPlayerTurn = GAME_PLAYER_TURN_DEFAULT;
 			initialPhase = GAME_PHASE_DEFAULT;
-			gameObtainNumberPlayers(&numberPlayers);
+			this->gameObtainNumberPlayers(&numberPlayers);
 
 			Player* initialPlayerInList = new Player();
 			UnitListClass* firstUnitInUnitList = new UnitListClass();
-			generatePlayerList(numberPlayers, initialPlayerInList, firstUnitInUnitList);
+			this->generatePlayerList(numberPlayers, initialPlayerInList, firstUnitInUnitList);
 
-			if(!gamePlay(initialRound, initialPlayerTurn, initialPhase, numberPlayers, initialPlayerInList, initialGame, NULL, false))
+			if(!this->gamePlay(initialRound, initialPlayerTurn, initialPhase, numberPlayers, initialPlayerInList, initialGame, NULL, false))
 			{
 				result = false;
 			}
@@ -499,9 +482,9 @@ bool executeLRRCfunctionsInOrder()
 
 			Player* initialPlayerInList = new Player();
 			UnitListClass* firstUnitInUnitList = new UnitListClass();
-			generatePlayerList(numberPlayers, initialPlayerInList, firstUnitInUnitList);
+			this->generatePlayerList(numberPlayers, initialPlayerInList, firstUnitInUnitList);
 
-			if(!gamePlay(initialRound, initialPlayerTurn, initialPhase, numberPlayers, initialPlayerInList, initialGame, NULL, false))
+			if(!this->gamePlay(initialRound, initialPlayerTurn, initialPhase, numberPlayers, initialPlayerInList, initialGame, NULL, false))
 			{
 				result = false;
 			}
@@ -520,13 +503,13 @@ bool executeLRRCfunctionsInOrder()
 	return result;
 }
 
-bool gameObtainNumberPlayers(int* numberOfPlayers)
+bool LRRCgameClass::gameObtainNumberPlayers(int* numberOfPlayers)
 {
 	bool result = true;
 
 	cout << "\nEnter Number of Players (1, 2, 3, ... MAX_NUMBER_PLAYERS) \n" << endl;
 
-	if(!obtainUserInputInt(numberOfPlayers))
+	if(!LRRCgameReferenceManipulation.obtainUserInputInt(numberOfPlayers))
 	{
 		result = false;
 	}
@@ -536,26 +519,26 @@ bool gameObtainNumberPlayers(int* numberOfPlayers)
 	return result;
 }
 
-bool gameObtainRoundPlayerTurnAndPhase(int* initialRound, int* initialPlayerTurn, int* initialPhase)
+bool LRRCgameClass::gameObtainRoundPlayerTurnAndPhase(int* initialRound, int* initialPlayerTurn, int* initialPhase)
 {
 	bool result = true;
 
 	cout << "Enter Round Number (1, 2, 3, ...) \n" << endl;
-	if(!obtainUserInputInt(initialRound))
+	if(!LRRCgameReferenceManipulation.obtainUserInputInt(initialRound))
 	{
 		result = false;
 	}
 	cout << "\nRound Number selected = " <<* initialRound << "." << endl;
 
 	cout << "Enter Player Turn (1, 2, 3, ... MAX_NUMBER_PLAYERS) \n" << endl;
-	if(!obtainUserInputInt(initialPlayerTurn))
+	if(!LRRCgameReferenceManipulation.obtainUserInputInt(initialPlayerTurn))
 	{
 		result = false;
 	}
 	cout << "\nPlayer Turn selected = " <<* initialPlayerTurn << "." << endl;
 
 	cout << "Enter Phase (1 - movement, 2 - int distance combat, 3 - close combat) \n" << endl;
-	if(!obtainUserInputInt(initialPhase))
+	if(!LRRCgameReferenceManipulation.obtainUserInputInt(initialPhase))
 	{
 		result = false;
 	}
@@ -564,7 +547,7 @@ bool gameObtainRoundPlayerTurnAndPhase(int* initialRound, int* initialPlayerTurn
 	return result;
 }
 
-bool generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList, UnitListClass* firstUnitInUnitList)
+bool LRRCgameClass::generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList, UnitListClass* firstUnitInUnitList)
 {
 	bool allPlayersAI = true;
 
@@ -605,7 +588,7 @@ bool generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList, 
 			allPlayersAI = false;
 		}
 	#endif
-		fillPlayerDetails(currentPlayer, answerAsString, index, PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT);
+		LRRCplayerClass.fillPlayerDetails(currentPlayer, answerAsString, index, PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT);
 		currentPlayer->firstUnitInUnitList = firstUnitInUnitList;
 
 		//code to create a new reference object
@@ -618,7 +601,7 @@ bool generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList, 
 
 }
 
-bool generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList)
+bool LRRCgameClass::generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList)
 {
 	bool allPlayersAI = true;
 
@@ -659,7 +642,7 @@ bool generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList)
 			allPlayersAI = false;
 		}
 	#endif
-		fillPlayerDetails(currentPlayer, answerAsString, index, PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT);
+		LRRCplayerClass.fillPlayerDetails(currentPlayer, answerAsString, index, PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT);
 
 		//code to create a new reference object
 		Player* nextPlayer = new Player();
@@ -673,7 +656,7 @@ bool generatePlayerList(const int numberOfPlayers, Player* initialPlayerInList)
 
 
 
-bool gamePlay(const int initialRound, int initialPlayerTurn, int initialPhase, const int numberOfPlayers, Player* initialPlayerInList, const int currentGame, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
+bool LRRCgameClass::gamePlay(const int initialRound, int initialPlayerTurn, int initialPhase, const int numberOfPlayers, Player* initialPlayerInList, const int currentGame, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
 {
 
 	bool result = true;
@@ -693,7 +676,7 @@ bool gamePlay(const int initialRound, int initialPlayerTurn, int initialPhase, c
 		currentPlayerTurn = initialPlayerTurn;
 		Player* currentPlayer = initialPlayerInList;
 
-		searchUnitListAssignHasNotPerformedAction(initialPlayerInList->firstUnitInUnitList);
+		LRRCunitClass.searchUnitListAssignHasNotPerformedAction(initialPlayerInList->firstUnitInUnitList);
 
 		//cout << "H0" << endl;
 
@@ -716,13 +699,13 @@ bool gamePlay(const int initialRound, int initialPlayerTurn, int initialPhase, c
 
 				//update UnitLists for each player
 				string preMovementPhaseSceneFileName = "";
-				generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileName);
-				parseSceneFileAndUpdateUnitList(preMovementPhaseSceneFileName, initialPlayerInList->firstUnitInUnitList, currentRound);	//extract the unit list reference from an arbitrary player
+				this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileName);
+				LRRCgameAI.parseSceneFileAndUpdateUnitList(preMovementPhaseSceneFileName, initialPlayerInList->firstUnitInUnitList, currentRound);	//extract the unit list reference from an arbitrary player
 			}
 		#endif
 			//cout << "initialPlayerInList->firstUnitInUnitList->team = " << initialPlayerInList->firstUnitInUnitList->team;
 
-				//updatePlayerStatus(initialPlayerInList);
+				//this->updatePlayerStatus(initialPlayerInList);
 
 
 			if(currentPlayer->status == ALIVE)
@@ -745,7 +728,7 @@ bool gamePlay(const int initialRound, int initialPlayerTurn, int initialPhase, c
 					bool stillPerformingPlayerTurnPhaseTrials = true;
 					while(stillPerformingPlayerTurnPhaseTrials == true)
 					{
-						if(!executePhase(currentGame, currentRound, currentPlayerTurn, currentPhase, initialPlayerInList, numberOfPlayers, initialReferenceInThisPhaseStartSceneGlobal, allPlayersAI))
+						if(!this->executePhase(currentGame, currentRound, currentPlayerTurn, currentPhase, initialPlayerInList, numberOfPlayers, initialReferenceInThisPhaseStartSceneGlobal, allPlayersAI))
 						{
 							if(currentPlayer->playerIsAI == false)
 							{
@@ -786,13 +769,13 @@ bool gamePlay(const int initialRound, int initialPlayerTurn, int initialPhase, c
 		{
 			//update UnitLists for each player
 			string preMovementPhaseSceneFileName = "";
-			generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileName);
-			parseSceneFileAndUpdateUnitList(preMovementPhaseSceneFileName, initialPlayerInList->firstUnitInUnitList, currentRound);	//extract the unit list reference from an arbitrary player
+			this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileName);
+			LRRCgameAI.parseSceneFileAndUpdateUnitList(preMovementPhaseSceneFileName, initialPlayerInList->firstUnitInUnitList, currentRound);	//extract the unit list reference from an arbitrary player
 		}
 	#endif
 		//cout << "initialPlayerInList->firstUnitInUnitList->team = " << initialPlayerInList->firstUnitInUnitList->team;
 
-		updatePlayerStatus(initialPlayerInList);
+		this->updatePlayerStatus(initialPlayerInList);
 		Player* currentPlayerTest = initialPlayerInList;
 		numberOfPlayersStillAlive = 0;	//get ready to count numberOfPlayersStillAlive
 		while(currentPlayerTest->next != NULL)
@@ -836,7 +819,7 @@ bool gamePlay(const int initialRound, int initialPlayerTurn, int initialPhase, c
 			addSprites = false;
 		}
 
-		trainAndOutputNeuralNetwork(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn], currentPlayer->numberOfInputNeurons[nn], currentPlayer->numberOfOutputNeurons[nn], currentPlayer->firstExperience[nn], addSprites, false, nn, currentGame);
+		this->trainAndOutputNeuralNetwork(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn], currentPlayer->numberOfInputNeurons[nn], currentPlayer->numberOfOutputNeurons[nn], currentPlayer->firstExperience[nn], addSprites, false, nn, currentGame);
 	}
 
 #endif
@@ -845,7 +828,7 @@ bool gamePlay(const int initialRound, int initialPlayerTurn, int initialPhase, c
 }
 
 #ifdef USE_ANN
-void feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const long numberOfInputNeurons, const long numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn)
+void LRRCgameClass::feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const long numberOfInputNeurons, const long numberOfOutputNeurons, UnitListClass* firstUnitInUnitGroup, int nn)
 {
 	//cout << "h111" << endl;
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
@@ -854,14 +837,14 @@ void feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwo
 	{
 		//cout << "h112" << endl;
 		#ifndef DEBUG_DO_NOT_PERFORM_KILL_RATIO_CHECKS_BEFORE_ADDING_UNIT_EXPERIENCES_TO_NN
-		if(checkAverageKillRatioForUnitGroup(currentUnitInList) || (currentUnitInList->unitDetails->numPerson == 1))
+		if(LRRCgameAI.checkAverageKillRatioForUnitGroup(currentUnitInList) || (currentUnitInList->unitDetails->numPerson == 1))
 		{
 		#endif
-			feedNeuralNetworkWithASetOfExperiencesBackpropagation(firstInputNeuronInNetwork, firstOutputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, currentUnitInList->firstExperience[nn]);
+			ANNalgorithmBackpropagationTraining.feedNeuralNetworkWithASetOfExperiencesBackpropagation(firstInputNeuronInNetwork, firstOutputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, currentUnitInList->firstExperience[nn]);
 
 			if(currentUnitInList->isUnitGroup)
 			{
-				feedNeuralNetworkWithGameUnitExperiences(firstInputNeuronInNetwork, firstOutputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, currentUnitInList->firstUnitInUnitGroup, nn);
+				this->feedNeuralNetworkWithGameUnitExperiences(firstInputNeuronInNetwork, firstOutputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, currentUnitInList->firstUnitInUnitGroup, nn);
 			}
 		#ifndef DEBUG_DO_NOT_PERFORM_KILL_RATIO_CHECKS_BEFORE_ADDING_UNIT_EXPERIENCES_TO_NN
 		}
@@ -876,7 +859,7 @@ void feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInputNeuronInNetwo
 #endif
 
 
-bool executePhase(const int currentGame, const int currentRound, const int currentPlayerTurn, const int currentPhase, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
+bool LRRCgameClass::executePhase(const int currentGame, const int currentRound, const int currentPlayerTurn, const int currentPhase, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
 {
 
 
@@ -885,7 +868,7 @@ bool executePhase(const int currentGame, const int currentRound, const int curre
 	if(currentPhase == GAME_PHASE_MOVEMENT)
 	{
 		cout << "\tExecuting Phase Movement." << endl;
-		if(!executeMovement(currentGame, currentRound, currentPlayerTurn, initialPlayerInList, numberOfPlayers, initialReferenceInThisPhaseStartSceneGlobal, allPlayersAI))
+		if(!this->executeMovement(currentGame, currentRound, currentPlayerTurn, initialPlayerInList, numberOfPlayers, initialReferenceInThisPhaseStartSceneGlobal, allPlayersAI))
 		{
 			result = false;
 		}
@@ -893,7 +876,7 @@ bool executePhase(const int currentGame, const int currentRound, const int curre
 	else if(currentPhase == GAME_PHASE_LONGDISTANCECOMBAT)
 	{
 		cout << "\tExecuting Phase Long Distance Combat." << endl;
-		if(!executeLongDistanceCombat(currentGame, currentRound, currentPlayerTurn, initialPlayerInList, numberOfPlayers, initialReferenceInThisPhaseStartSceneGlobal, allPlayersAI))
+		if(!this->executeLongDistanceCombat(currentGame, currentRound, currentPlayerTurn, initialPlayerInList, numberOfPlayers, initialReferenceInThisPhaseStartSceneGlobal, allPlayersAI))
 		{
 			result = false;
 		}
@@ -901,7 +884,7 @@ bool executePhase(const int currentGame, const int currentRound, const int curre
 	else if(currentPhase == GAME_PHASE_CLOSECOMBAT)
 	{
 		cout << "\tExecuting Phase Close Combat." << endl;
-		if(!executeCloseCombat(currentGame, currentRound, currentPlayerTurn, initialPlayerInList, numberOfPlayers, initialReferenceInThisPhaseStartSceneGlobal, allPlayersAI))
+		if(!this->executeCloseCombat(currentGame, currentRound, currentPlayerTurn, initialPlayerInList, numberOfPlayers, initialReferenceInThisPhaseStartSceneGlobal, allPlayersAI))
 		{
 			result = false;
 		}
@@ -916,7 +899,7 @@ bool executePhase(const int currentGame, const int currentRound, const int curre
 }
 
 
-bool executeMovement(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
+bool LRRCgameClass::executeMovement(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
 {
 
 
@@ -930,18 +913,18 @@ bool executeMovement(const int currentGame, const int currentRound, const int cu
 	string nextSceneFileName = "";
 	string rangeSpritesNextSceneFile = "";
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileName);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_END, &thisPhaseStartSceneFileName);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileName);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_END, &thisPhaseStartSceneFileName);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_TARGETSPRITES, &targetSpritesSceneFileName);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_TARGETSPRITES, &targetSpritesSceneFileName);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, &nextSceneFileName);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesNextSceneFile);
-
-
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, &nextSceneFileName);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesNextSceneFile);
 
 
-	Player* currentPlayer = findPlayer(initialPlayerInList, currentPlayerTurn);
+
+
+	Player* currentPlayer = LRRCplayerClass.findPlayer(initialPlayerInList, currentPlayerTurn);
 	currentPlayer->currentPhase = GAME_PHASE_MOVEMENT;		//this is required for compareSceneFilesMovementPhase.
 
 
@@ -961,20 +944,20 @@ bool executeMovement(const int currentGame, const int currentRound, const int cu
 
 		//NB it is assumed in the first round, first player turn, no scene file with movement range sprites exists and so one should be created...
 		string rangeSpritesThisSceneFile = "";
-		generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesThisSceneFile);
+		this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesThisSceneFile);
 
 		bool addTextualSpriteInfo = true;
 		bool addRangeSpriteInfo = true;
 		if(allPlayersAI)
 		{
-			if(!LRRCaddUnitDetailsSpritesToScene(preMovementPhaseSceneFileName, rangeSpritesThisSceneFile, addTextualSpriteInfo, addRangeSpriteInfo, GAME_PHASE_MOVEMENT, currentPlayerTurn, initialReferenceInThisPhaseStartSceneGlobal))
+			if(!LRRCsprite.LRRCaddUnitDetailsSpritesToScene(preMovementPhaseSceneFileName, rangeSpritesThisSceneFile, addTextualSpriteInfo, addRangeSpriteInfo, GAME_PHASE_MOVEMENT, currentPlayerTurn, initialReferenceInThisPhaseStartSceneGlobal))
 			{
 				result = false;
 			}
 		}
 		else
 		{
-			if(!LRRCaddUnitDetailsSpritesToSceneFile(preMovementPhaseSceneFileName, rangeSpritesThisSceneFile, addTextualSpriteInfo, addRangeSpriteInfo, GAME_PHASE_MOVEMENT, currentPlayerTurn))
+			if(!LRRCsprite.LRRCaddUnitDetailsSpritesToSceneFile(preMovementPhaseSceneFileName, rangeSpritesThisSceneFile, addTextualSpriteInfo, addRangeSpriteInfo, GAME_PHASE_MOVEMENT, currentPlayerTurn))
 			{
 				result = false;
 			}
@@ -998,7 +981,7 @@ bool executeMovement(const int currentGame, const int currentRound, const int cu
 			initialReferenceInPreMovementPhaseScene = new LDreference();
 			LDreference* topLevelReferenceInPreMovementPhaseScene = new LDreference(true);
 			//parse the scene files and build LDreference linked lists
-			if(!parseFile(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
+			if(!LDparser.parseFile(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
 			{//file does not exist
 				cout << "The file: " << preMovementPhaseSceneFileName << " does not exist in the directory" << endl;
 				return false;
@@ -1017,7 +1000,7 @@ bool executeMovement(const int currentGame, const int currentRound, const int cu
 
 		//searchReferenceListPrintReferenceDetails(initialReferenceInPreMovementPhaseScene);
 
-		if(!AIsearchUnitListForPhaseActionSelectionInitialisation(currentRound, currentPlayerTurn, currentPhase, initialReferenceInPreMovementPhaseScene, preMovementPhaseSceneFileName, NULL, targetSpritesSceneFileName, targetSpriteListInitialReference, &numTargetSpritesAdded, initialPlayerInList, initialPlayerInList->firstUnitInUnitList, initialPlayerInList->firstUnitInUnitList))
+		if(!this->AIsearchUnitListForPhaseActionSelectionInitialisation(currentRound, currentPlayerTurn, currentPhase, initialReferenceInPreMovementPhaseScene, preMovementPhaseSceneFileName, NULL, targetSpritesSceneFileName, targetSpriteListInitialReference, &numTargetSpritesAdded, initialPlayerInList, initialPlayerInList->firstUnitInUnitList, initialPlayerInList->firstUnitInUnitList))
 		{
 			result = false;
 		}
@@ -1027,7 +1010,7 @@ bool executeMovement(const int currentGame, const int currentRound, const int cu
 		if(allPlayersAI)
 		{
 			//write reference list to file.
-			if(!write2DreferenceListCollapsedTo1DtoFile(thisPhaseStartSceneFileName, initialReferenceInPreMovementPhaseScene))
+			if(!LDreferenceManipulation.write2DreferenceListCollapsedTo1DtoFile(thisPhaseStartSceneFileName, initialReferenceInPreMovementPhaseScene))
 			{
 				result = false;
 			}
@@ -1035,7 +1018,7 @@ bool executeMovement(const int currentGame, const int currentRound, const int cu
 		else
 		{
 			//write reference list to file.
-			if(!writeReferencesToFile(thisPhaseStartSceneFileName, initialReferenceInPreMovementPhaseScene))
+			if(!LDreferenceManipulation.writeReferencesToFile(thisPhaseStartSceneFileName, initialReferenceInPreMovementPhaseScene))
 			{
 				result = false;
 			}
@@ -1046,7 +1029,7 @@ bool executeMovement(const int currentGame, const int currentRound, const int cu
 		if(addSprites)
 		{
 			//cout << "h1c" << endl;
-			if(!addSpriteReferenceListToSceneFile(preMovementPhaseSceneFileName, targetSpritesSceneFileName, targetSpriteListInitialReference, numTargetSpritesAdded))
+			if(!LDreferenceManipulation.addSpriteReferenceListToSceneFile(preMovementPhaseSceneFileName, targetSpritesSceneFileName, targetSpriteListInitialReference, numTargetSpritesAdded))
 			{
 				result = false;
 			}
@@ -1066,7 +1049,7 @@ bool executeMovement(const int currentGame, const int currentRound, const int cu
 		//cout << "nextSceneFileName = " << nextSceneFileName << endl;
 		//cout << "rangeSpritesNextSceneFile = " << rangeSpritesNextSceneFile << endl;
 
-		if(!prepareNextPhaseSceneFiles(nextPhase, nextPhasePlayerTurn, thisPhaseStartSceneFileName, nextSceneFileName, rangeSpritesNextSceneFile, initialReferenceInPreMovementPhaseScene, allPlayersAI))
+		if(!this->prepareNextPhaseSceneFiles(nextPhase, nextPhasePlayerTurn, thisPhaseStartSceneFileName, nextSceneFileName, rangeSpritesNextSceneFile, initialReferenceInPreMovementPhaseScene, allPlayersAI))
 		{
 			result = false;
 		}
@@ -1094,12 +1077,12 @@ bool executeMovement(const int currentGame, const int currentRound, const int cu
 		LDreference* topLevelReferenceInPostMovementPhaseScene = new LDreference(true);
 		LDreference* topLevelReferenceInPreMovementPhaseScene = new LDreference(true);
 		//parse the scene files and build LDreference linked lists
-		if(!parseFile(thisPhaseStartSceneFileName, initialReferenceInPostMovementPhaseScene, topLevelReferenceInPostMovementPhaseScene, false))
+		if(!LDparser.parseFile(thisPhaseStartSceneFileName, initialReferenceInPostMovementPhaseScene, topLevelReferenceInPostMovementPhaseScene, false))
 		{//file does not exist
 			cout << "The file: " << thisPhaseStartSceneFileName << " does not exist in the directory" << endl;
 			return false;
 		}
-		if(!parseFile(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
+		if(!LDparser.parseFile(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
 		{//file does not exist
 			cout << "The file: " << preMovementPhaseSceneFileName << " does not exist in the directory" << endl;
 			return false;
@@ -1107,14 +1090,14 @@ bool executeMovement(const int currentGame, const int currentRound, const int cu
 
 
 		//assumes preMovementPhaseSceneFileName and thisPhaseStartSceneFileName already exist
-		if(!compareScenesMovementPhase(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, initialReferenceInPostMovementPhaseScene, currentPlayer, targetSpritesSceneFileName, true))
+		if(!LRRCmovement.compareScenesMovementPhase(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, initialReferenceInPostMovementPhaseScene, currentPlayer, targetSpritesSceneFileName, true))
 		{
 			result = false;
 		}
 
 		int nextPhase = GAME_PHASE_LONGDISTANCECOMBAT;
 		int nextPhasePlayerTurn = currentPlayerTurn;
-		if(!prepareNextPhaseSceneFiles(nextPhase, nextPhasePlayerTurn, thisPhaseStartSceneFileName, nextSceneFileName, rangeSpritesNextSceneFile, initialReferenceInPreMovementPhaseScene, allPlayersAI))
+		if(!this->prepareNextPhaseSceneFiles(nextPhase, nextPhasePlayerTurn, thisPhaseStartSceneFileName, nextSceneFileName, rangeSpritesNextSceneFile, initialReferenceInPreMovementPhaseScene, allPlayersAI))
 		{
 			result = false;
 		}
@@ -1140,7 +1123,7 @@ bool executeMovement(const int currentGame, const int currentRound, const int cu
 }
 
 
-bool executeLongDistanceCombat(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
+bool LRRCgameClass::executeLongDistanceCombat(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
 {
 	bool result = true;
 
@@ -1156,16 +1139,16 @@ bool executeLongDistanceCombat(const int currentGame, const int currentRound, co
 	string rangeSpritesNextSceneFile = "";
 
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileNameMovement);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_END, &thisPhaseStartSceneFileNameMovement);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileNameMovement);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_END, &thisPhaseStartSceneFileNameMovement);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, &preCombatPhaseSceneFileName);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_END, &postCombatPhaseSceneFileName);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, &preCombatPhaseSceneFileName);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_END, &postCombatPhaseSceneFileName);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_TARGETSPRITES, &targetSpritesSceneFileName);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_TARGETSPRITES, &targetSpritesSceneFileName);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, &nextSceneFileName);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesNextSceneFile);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, &nextSceneFileName);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesNextSceneFile);
 
 	LDreference* initialReferenceInThisPhaseStartScene;
 	LDreference* initialReferenceInPreMovementPhaseScene;
@@ -1182,12 +1165,12 @@ bool executeLongDistanceCombat(const int currentGame, const int currentRound, co
 		LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);
 		LDreference* topLevelReferenceInPreMovementPhaseScene = new LDreference(true);
 		//parse the scene files and build LDreference linked lists
-		if(!parseFile(thisPhaseStartSceneFileNameMovement, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
+		if(!LDparser.parseFile(thisPhaseStartSceneFileNameMovement, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
 		{//file does not exist
 			cout << "The file: " << thisPhaseStartSceneFileNameMovement << " does not exist in the directory" << endl;
 			return false;
 		}
-		if(!parseFile(preMovementPhaseSceneFileNameMovement, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
+		if(!LDparser.parseFile(preMovementPhaseSceneFileNameMovement, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
 		{//file does not exist
 			cout << "The file: " << preMovementPhaseSceneFileNameMovement << " does not exist in the directory" << endl;
 			return false;
@@ -1199,11 +1182,11 @@ bool executeLongDistanceCombat(const int currentGame, const int currentRound, co
 
 	int nextPhase = GAME_PHASE_CLOSECOMBAT;
 	int nextPhasePlayerTurn = currentPlayerTurn;
-	if(!executeGenericCombat(currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT,  initialReferenceInPreMovementPhaseScene, initialReferenceInThisPhaseStartScene, preCombatPhaseSceneFileName, postCombatPhaseSceneFileName, targetSpritesSceneFileName, initialPlayerInList, allPlayersAI))
+	if(!this->executeGenericCombat(currentRound, currentPlayerTurn, GAME_PHASE_LONGDISTANCECOMBAT,  initialReferenceInPreMovementPhaseScene, initialReferenceInThisPhaseStartScene, preCombatPhaseSceneFileName, postCombatPhaseSceneFileName, targetSpritesSceneFileName, initialPlayerInList, allPlayersAI))
 	{
 		result = false;
 	}
-	if(!prepareNextPhaseSceneFiles(nextPhase, nextPhasePlayerTurn, postCombatPhaseSceneFileName, nextSceneFileName, rangeSpritesNextSceneFile, initialReferenceInThisPhaseStartScene, allPlayersAI))
+	if(!this->prepareNextPhaseSceneFiles(nextPhase, nextPhasePlayerTurn, postCombatPhaseSceneFileName, nextSceneFileName, rangeSpritesNextSceneFile, initialReferenceInThisPhaseStartScene, allPlayersAI))
 	{
 		result = false;
 	}
@@ -1217,7 +1200,7 @@ bool executeLongDistanceCombat(const int currentGame, const int currentRound, co
 	return result;
 }
 
-bool executeCloseCombat(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
+bool LRRCgameClass::executeCloseCombat(const int currentGame, const int currentRound, const int currentPlayerTurn, Player* initialPlayerInList, const int numberOfPlayers, LDreference* initialReferenceInThisPhaseStartSceneGlobal, const bool allPlayersAI)
 {
 	bool result = true;
 
@@ -1232,13 +1215,13 @@ bool executeCloseCombat(const int currentGame, const int currentRound, const int
 	string nextSceneFileName = "";
 	string rangeSpritesNextSceneFile = "";
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileNameMovement);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_END, &thisPhaseStartSceneFileNameMovement);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &preMovementPhaseSceneFileNameMovement);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_END, &thisPhaseStartSceneFileNameMovement);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, &preCombatPhaseSceneFileName);
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_END, &postCombatPhaseSceneFileName);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_START, &preCombatPhaseSceneFileName);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_END, &postCombatPhaseSceneFileName);
 
-	generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_TARGETSPRITES, &targetSpritesSceneFileName);
+	this->generateSceneFileName(currentGame, currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, GAME_PHASE_EXECUTION_DISPLAY_TARGETSPRITES, &targetSpritesSceneFileName);
 
 
 	LDreference* initialReferenceInThisPhaseStartScene;
@@ -1256,12 +1239,12 @@ bool executeCloseCombat(const int currentGame, const int currentRound, const int
 		LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);
 		LDreference* topLevelReferenceInPreMovementPhaseScene = new LDreference(true);
 		//parse the scene files and build LDreference linked lists
-		if(!parseFile(thisPhaseStartSceneFileNameMovement, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
+		if(!LDparser.parseFile(thisPhaseStartSceneFileNameMovement, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
 		{//file does not exist
 			cout << "The file: " << thisPhaseStartSceneFileNameMovement << " does not exist in the directory" << endl;
 			return false;
 		}
-		if(!parseFile(preMovementPhaseSceneFileNameMovement, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
+		if(!LDparser.parseFile(preMovementPhaseSceneFileNameMovement, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
 		{//file does not exist
 			cout << "The file: " << preMovementPhaseSceneFileNameMovement << " does not exist in the directory" << endl;
 			return false;
@@ -1275,22 +1258,22 @@ bool executeCloseCombat(const int currentGame, const int currentRound, const int
 	int nextPhasePlayerTurn;
 	if(currentPlayerTurn == numberOfPlayers)
 	{
-		generateSceneFileName(currentGame, (currentRound+1), GAME_PLAYER_TURN_DEFAULT, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &nextSceneFileName);
-		generateSceneFileName(currentGame, (currentRound+1), GAME_PLAYER_TURN_DEFAULT, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesNextSceneFile);
+		this->generateSceneFileName(currentGame, (currentRound+1), GAME_PLAYER_TURN_DEFAULT, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &nextSceneFileName);
+		this->generateSceneFileName(currentGame, (currentRound+1), GAME_PLAYER_TURN_DEFAULT, GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesNextSceneFile);
 		nextPhasePlayerTurn = GAME_PLAYER_TURN_DEFAULT;
 	}
 	else
 	{
-		generateSceneFileName(currentGame, currentRound, (currentPlayerTurn+1), GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &nextSceneFileName);
-		generateSceneFileName(currentGame, currentRound, (currentPlayerTurn+1), GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesNextSceneFile);
+		this->generateSceneFileName(currentGame, currentRound, (currentPlayerTurn+1), GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_START, &nextSceneFileName);
+		this->generateSceneFileName(currentGame, currentRound, (currentPlayerTurn+1), GAME_PHASE_MOVEMENT, GAME_PHASE_EXECUTION_DISPLAY_RANGESPRITES, &rangeSpritesNextSceneFile);
 		nextPhasePlayerTurn = (currentPlayerTurn+1);
 	}
 
-	if(!executeGenericCombat(currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, initialReferenceInPreMovementPhaseScene, initialReferenceInThisPhaseStartScene, preCombatPhaseSceneFileName, postCombatPhaseSceneFileName, targetSpritesSceneFileName, initialPlayerInList, allPlayersAI))
+	if(!this->executeGenericCombat(currentRound, currentPlayerTurn, GAME_PHASE_CLOSECOMBAT, initialReferenceInPreMovementPhaseScene, initialReferenceInThisPhaseStartScene, preCombatPhaseSceneFileName, postCombatPhaseSceneFileName, targetSpritesSceneFileName, initialPlayerInList, allPlayersAI))
 	{
 		result = false;
 	}
-	if(!prepareNextPhaseSceneFiles(nextPhase, nextPhasePlayerTurn, postCombatPhaseSceneFileName, nextSceneFileName, rangeSpritesNextSceneFile, initialReferenceInThisPhaseStartScene, allPlayersAI))
+	if(!this->prepareNextPhaseSceneFiles(nextPhase, nextPhasePlayerTurn, postCombatPhaseSceneFileName, nextSceneFileName, rangeSpritesNextSceneFile, initialReferenceInThisPhaseStartScene, allPlayersAI))
 	{
 		result = false;
 	}
@@ -1306,14 +1289,14 @@ bool executeCloseCombat(const int currentGame, const int currentRound, const int
 }
 
 
-bool prepareNextPhaseSceneFiles(const int nextPhase, const int nextPlayerTurn, string previousPhaseSceneFileName, const string nextSceneFileName, string rangeSpritesNextSceneFileName, LDreference* firstReferenceInPreviousScene, const bool allPlayersAI)
+bool LRRCgameClass::prepareNextPhaseSceneFiles(const int nextPhase, const int nextPlayerTurn, string previousPhaseSceneFileName, const string nextSceneFileName, string rangeSpritesNextSceneFileName, LDreference* firstReferenceInPreviousScene, const bool allPlayersAI)
 {
 	bool result = true;
 
 	//cout << "h5" << endl;
 
 	//create next scene file
-	copyFiles(nextSceneFileName, previousPhaseSceneFileName);
+	LDreferenceManipulation.copyFiles(nextSceneFileName, previousPhaseSceneFileName);
 
 	//cout << "h6" << endl;
 
@@ -1322,14 +1305,14 @@ bool prepareNextPhaseSceneFiles(const int nextPhase, const int nextPlayerTurn, s
 	bool addRangeSpriteInfo = true;
 	if(allPlayersAI)
 	{
-		if(!LRRCaddUnitDetailsSpritesToScene(previousPhaseSceneFileName, rangeSpritesNextSceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, nextPhase, nextPlayerTurn, firstReferenceInPreviousScene))
+		if(!LRRCsprite.LRRCaddUnitDetailsSpritesToScene(previousPhaseSceneFileName, rangeSpritesNextSceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, nextPhase, nextPlayerTurn, firstReferenceInPreviousScene))
 		{
 			result = false;
 		}
 	}
 	else
 	{
-		if(!LRRCaddUnitDetailsSpritesToSceneFile(previousPhaseSceneFileName, rangeSpritesNextSceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, nextPhase, nextPlayerTurn))
+		if(!LRRCsprite.LRRCaddUnitDetailsSpritesToSceneFile(previousPhaseSceneFileName, rangeSpritesNextSceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, nextPhase, nextPlayerTurn))
 		{
 			result = false;
 		}
@@ -1340,7 +1323,7 @@ bool prepareNextPhaseSceneFiles(const int nextPhase, const int nextPlayerTurn, s
 
 
 
-bool executeGenericCombat(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, const string preCombatPhaseSceneFileName, const string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, Player* initialPlayerInList, const bool allPlayersAI)
+bool LRRCgameClass::executeGenericCombat(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, const string preCombatPhaseSceneFileName, const string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, Player* initialPlayerInList, const bool allPlayersAI)
 {
 	bool result = true;
 
@@ -1374,12 +1357,12 @@ bool executeGenericCombat(const int currentRound, const int currentPlayerTurn, i
 	LDreference* targetSpriteListInitialReference = new LDreference();
 	int numTargetSpritesAdded = 0;
 
-	Player* currentPlayer = findPlayer(initialPlayerInList, currentPlayerTurn);
+	Player* currentPlayer = LRRCplayerClass.findPlayer(initialPlayerInList, currentPlayerTurn);
 	if(currentPlayer->playerIsAI == true)
 	{
 		//not complete yet
 		#ifdef USE_ANN
-		if(!AIsearchUnitListForPhaseActionSelectionInitialisation(currentRound, currentPlayerTurn, currentPhase, initialReferenceInThisPhaseStartScene, preCombatPhaseSceneFileName, postCombatPhaseSceneFileName, targetSpritesSceneFileName, targetSpriteListInitialReference, &numTargetSpritesAdded, initialPlayerInList, initialPlayerInList->firstUnitInUnitList, initialPlayerInList->firstUnitInUnitList))
+		if(!this->AIsearchUnitListForPhaseActionSelectionInitialisation(currentRound, currentPlayerTurn, currentPhase, initialReferenceInThisPhaseStartScene, preCombatPhaseSceneFileName, postCombatPhaseSceneFileName, targetSpritesSceneFileName, targetSpriteListInitialReference, &numTargetSpritesAdded, initialPlayerInList, initialPlayerInList->firstUnitInUnitList, initialPlayerInList->firstUnitInUnitList))
 		{
 			result = false;
 		}
@@ -1416,12 +1399,12 @@ bool executeGenericCombat(const int currentRound, const int currentPlayerTurn, i
 
 			if(UIstatus == true)
 			{
-				obtainUnitDetailsFromUserForCombat(&unitAttackerFileName, &unitDefenderFileName, &unitAttackerPlayerID, &unitDefenderPlayerID, initialReferenceInThisPhaseStartScene);
+				LRRCgameReferenceManipulation.obtainUnitDetailsFromUserForCombat(&unitAttackerFileName, &unitDefenderFileName, &unitAttackerPlayerID, &unitDefenderPlayerID, initialReferenceInThisPhaseStartScene);
 
 
 				UnitListClass* unit;
 				bool unitIDFound = false;
-				unit = searchUnitListFindUnit(initialPlayerInList->firstUnitInUnitList, unitAttackerFileName, unitAttackerPlayerID, &unitIDFound);
+				unit = LRRCunitClass.searchUnitListFindUnit(initialPlayerInList->firstUnitInUnitList, unitAttackerFileName, unitAttackerPlayerID, &unitIDFound);
 				if(!unitIDFound)
 				{
 					cout << "Error: unit " << unitAttackerFileName << " of the player " << currentPlayerTurn << " could not be found in unit list" << endl;
@@ -1464,7 +1447,7 @@ bool executeGenericCombat(const int currentRound, const int currentPlayerTurn, i
 
 				if(unitIDLocationSuccess == true)
 				{
-					performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(currentRound, currentPlayerTurn, currentPhase, initialReferenceInPreMovementPhaseScene, initialReferenceInThisPhaseStartScene, targetSpritesSceneFileName, unitAttackerFileName, unitDefenderFileName, unitAttackerPlayerID, unitDefenderPlayerID, targetSpriteListInitialReference, &numTargetSpritesAdded, initialPlayerInList, true);
+					this->performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(currentRound, currentPlayerTurn, currentPhase, initialReferenceInPreMovementPhaseScene, initialReferenceInThisPhaseStartScene, targetSpritesSceneFileName, unitAttackerFileName, unitDefenderFileName, unitAttackerPlayerID, unitDefenderPlayerID, targetSpriteListInitialReference, &numTargetSpritesAdded, initialPlayerInList, true);
 				}
 			}
 		}
@@ -1475,14 +1458,14 @@ bool executeGenericCombat(const int currentRound, const int currentPlayerTurn, i
 	//write reference list to file.
 	if(allPlayersAI)
 	{
-		if(!write2DreferenceListCollapsedTo1DtoFile(postCombatPhaseSceneFileName, initialReferenceInThisPhaseStartScene))
+		if(!LDreferenceManipulation.write2DreferenceListCollapsedTo1DtoFile(postCombatPhaseSceneFileName, initialReferenceInThisPhaseStartScene))
 		{
 			result = false;
 		}
 	}
 	else
 	{//1D LDreference list required - no unit groups
-		if(!writeReferencesToFile(postCombatPhaseSceneFileName, initialReferenceInThisPhaseStartScene))
+		if(!LDreferenceManipulation.writeReferencesToFile(postCombatPhaseSceneFileName, initialReferenceInThisPhaseStartScene))
 		{
 			result = false;
 		}
@@ -1490,7 +1473,7 @@ bool executeGenericCombat(const int currentRound, const int currentPlayerTurn, i
 	//cout << "h1" << endl;
 
 	//add target sprites to target sprites scene file
-	if(!addSpriteReferenceListToSceneFile(preCombatPhaseSceneFileName, targetSpritesSceneFileName, targetSpriteListInitialReference, numTargetSpritesAdded))
+	if(!LDreferenceManipulation.addSpriteReferenceListToSceneFile(preCombatPhaseSceneFileName, targetSpritesSceneFileName, targetSpriteListInitialReference, numTargetSpritesAdded))
 	{
 		result = false;
 	}
@@ -1510,7 +1493,7 @@ bool executeGenericCombat(const int currentRound, const int currentPlayerTurn, i
 
 
 
-bool updateAbsolutePositionOfAllSubModels(LDreference* firstReferenceWithinSubModel, LDreference* parentReference)
+bool LRRCgameClass::updateAbsolutePositionOfAllSubModels(LDreference* firstReferenceWithinSubModel, LDreference* parentReference)
 {
 	bool result = true;
 
@@ -1518,15 +1501,15 @@ bool updateAbsolutePositionOfAllSubModels(LDreference* firstReferenceWithinSubMo
 
 	while(currentReference->next != NULL)
 	{
-		multiplyMatricies(&(currentReference->absoluteDeformationMatrix), &(parentReference->absoluteDeformationMatrix), &(currentReference->deformationMatrix));
+		SHAREDvector.multiplyMatricies(&(currentReference->absoluteDeformationMatrix), &(parentReference->absoluteDeformationMatrix), &(currentReference->deformationMatrix));
 
-		currentReference->absolutePosition.x = calcModXPosBasedUponRotate(&(currentReference->relativePosition), &(parentReference->absoluteDeformationMatrix)) + parentReference->absolutePosition.x;
-		currentReference->absolutePosition.y = calcModYPosBasedUponRotate(&(currentReference->relativePosition), &(parentReference->absoluteDeformationMatrix)) + parentReference->absolutePosition.y;
-		currentReference->absolutePosition.z = calcModZPosBasedUponRotate(&(currentReference->relativePosition), &(parentReference->absoluteDeformationMatrix)) + parentReference->absolutePosition.z;
+		currentReference->absolutePosition.x = LDparser.calcModXPosBasedUponRotate(&(currentReference->relativePosition), &(parentReference->absoluteDeformationMatrix)) + parentReference->absolutePosition.x;
+		currentReference->absolutePosition.y = LDparser.calcModYPosBasedUponRotate(&(currentReference->relativePosition), &(parentReference->absoluteDeformationMatrix)) + parentReference->absolutePosition.y;
+		currentReference->absolutePosition.z = LDparser.calcModZPosBasedUponRotate(&(currentReference->relativePosition), &(parentReference->absoluteDeformationMatrix)) + parentReference->absolutePosition.z;
 
 		if(currentReference->isSubModelReference)
 		{
-			if(!updateAbsolutePositionOfAllSubModels(currentReference->firstReferenceWithinSubModel, currentReference))
+			if(!this->updateAbsolutePositionOfAllSubModels(currentReference->firstReferenceWithinSubModel, currentReference))
 			{
 				result = false;
 			}
@@ -1539,7 +1522,7 @@ bool updateAbsolutePositionOfAllSubModels(LDreference* firstReferenceWithinSubMo
 }
 
 
-bool moveUnitTowardsOpponent(LDreference* unitReference, LDreference* opponentReference)
+bool LRRCgameClass::moveUnitTowardsOpponent(LDreference* unitReference, LDreference* opponentReference)
 {//move to within long distance boundary, else move as close as possible to unit
 
 	//cout << "EXECUTING: moveUnitTowardsOpponent{}" << endl;
@@ -1547,9 +1530,9 @@ bool moveUnitTowardsOpponent(LDreference* unitReference, LDreference* opponentRe
 	bool result = true;
 
 	vec vectorBetweenUnitAndOpponent;
-	subtractVectors(&vectorBetweenUnitAndOpponent, &(opponentReference->absolutePosition), &(unitReference->absolutePosition));
+	SHAREDvector.subtractVectors(&vectorBetweenUnitAndOpponent, &(opponentReference->absolutePosition), &(unitReference->absolutePosition));
 
-	double initialDistanceBetweenUnits = calculateTheDistanceBetweenTwoUnits(&(unitReference->absolutePosition), &(opponentReference->absolutePosition));
+	double initialDistanceBetweenUnits = LRRCcombat.calculateTheDistanceBetweenTwoUnits(&(unitReference->absolutePosition), &(opponentReference->absolutePosition));
 
 	double unitMaximumMoveDistance = unitReference->subModelDetails->movementSpeed;
 
@@ -1576,7 +1559,7 @@ bool moveUnitTowardsOpponent(LDreference* unitReference, LDreference* opponentRe
 	bool unit1CanPerformLongDistanceAttack = false;
 	bool unit2CanPerformLongDistanceAttack = false;
 
-	calculateLongDistanceAttackBonus(unitReference, opponentReference, unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, &unit1CanPerformLongDistanceAttack, &unit2CanPerformLongDistanceAttack, closestDistanceToOpponentAfterMovementTest);
+	LRRCcombat.calculateLongDistanceAttackBonus(unitReference, opponentReference, unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, &unit1CanPerformLongDistanceAttack, &unit2CanPerformLongDistanceAttack, closestDistanceToOpponentAfterMovementTest);
 
 	bool foundOptimumLongDistanceWeapon = false;
 	if(unit1CanPerformLongDistanceAttack)
@@ -1588,7 +1571,7 @@ bool moveUnitTowardsOpponent(LDreference* unitReference, LDreference* opponentRe
 			double unit1RangeModifier;
 
 			unit1RangeModifier = calculateLongDistanceRangeModifier(opponentReference, unitReference);
-			//longRangeDistanceBetweenTheTwoUnits = calculateTheDistanceBetweenTwoUnits(&(unitReference->absolutePosition), &(opponentReference->absolutePosition));
+			//longRangeDistanceBetweenTheTwoUnits = LRRCcombat.calculateTheDistanceBetweenTwoUnits(&(unitReference->absolutePosition), &(opponentReference->absolutePosition));
 
 			XMLrulesClass* currentReferenceRulesClass = LRRCrulesUnitCombatDetailsAttackLongDistance;
 			RecordClass* currentReferenceRecordClass = unitReference->subModelDetails->recordOfUnitCombatDetailsAttackLongDistance;
@@ -1637,9 +1620,9 @@ bool moveUnitTowardsOpponent(LDreference* unitReference, LDreference* opponentRe
 		//cout << "\t longDistanceAttackBaseRange = " << longDistanceAttackBaseRange << endl;
 
 		//position unit within firing range of the unit's best possible long range weapon
-		multiplyVectorByScalar(&vectorBetweenUnitAndOpponent, (initialDistanceBetweenUnits-(longDistanceAttackBaseRange-DOUBLE_COMPARISON_CORRECTION))/initialDistanceBetweenUnits);
-		addVectors(&(unitReference->relativePosition), &(unitReference->relativePosition), &vectorBetweenUnitAndOpponent);	//CHECK THIS: I am not sure if relative positions changes based upon movements are been calcualted correctly at this time...
-		addVectors(&(unitReference->absolutePosition), &(unitReference->absolutePosition), &vectorBetweenUnitAndOpponent);
+		SHAREDvector.multiplyVectorByScalar(&vectorBetweenUnitAndOpponent, (initialDistanceBetweenUnits-(longDistanceAttackBaseRange-DOUBLE_COMPARISON_CORRECTION))/initialDistanceBetweenUnits);
+		SHAREDvector.addVectors(&(unitReference->relativePosition), &(unitReference->relativePosition), &vectorBetweenUnitAndOpponent);	//CHECK THIS: I am not sure if relative positions changes based upon movements are been calcualted correctly at this time...
+		SHAREDvector.addVectors(&(unitReference->absolutePosition), &(unitReference->absolutePosition), &vectorBetweenUnitAndOpponent);
 
 	}
 	else
@@ -1648,16 +1631,16 @@ bool moveUnitTowardsOpponent(LDreference* unitReference, LDreference* opponentRe
 		if(initialDistanceBetweenUnits < (unitMaximumMoveDistance-CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY))
 		{
 			//position unit within the close combat boundary of the opponent
-			multiplyVectorByScalar(&vectorBetweenUnitAndOpponent, (initialDistanceBetweenUnits-(CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY-DOUBLE_COMPARISON_CORRECTION))/initialDistanceBetweenUnits);
-			addVectors(&(unitReference->relativePosition), &(unitReference->relativePosition), &(vectorBetweenUnitAndOpponent));	//CHECK THIS: I am not sure if relative positions changes based upon movements are been calcualted correctly at this time...
-			addVectors(&(unitReference->absolutePosition), &(unitReference->absolutePosition), &(vectorBetweenUnitAndOpponent));
+			SHAREDvector.multiplyVectorByScalar(&vectorBetweenUnitAndOpponent, (initialDistanceBetweenUnits-(CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY-DOUBLE_COMPARISON_CORRECTION))/initialDistanceBetweenUnits);
+			SHAREDvector.addVectors(&(unitReference->relativePosition), &(unitReference->relativePosition), &(vectorBetweenUnitAndOpponent));	//CHECK THIS: I am not sure if relative positions changes based upon movements are been calcualted correctly at this time...
+			SHAREDvector.addVectors(&(unitReference->absolutePosition), &(unitReference->absolutePosition), &(vectorBetweenUnitAndOpponent));
 		}
 		else
 		{
 			//position unit as close as possible to the opponent
-			multiplyVectorByScalar(&vectorBetweenUnitAndOpponent, unitMaximumMoveDistance/initialDistanceBetweenUnits);
-			addVectors(&(unitReference->relativePosition), &(unitReference->relativePosition), &vectorBetweenUnitAndOpponent);	//CHECK THIS: I am not sure if relative positions changes based upon movements are been calcualted correctly at this time...
-			addVectors(&(unitReference->absolutePosition), &(unitReference->absolutePosition), &vectorBetweenUnitAndOpponent);
+			SHAREDvector.multiplyVectorByScalar(&vectorBetweenUnitAndOpponent, unitMaximumMoveDistance/initialDistanceBetweenUnits);
+			SHAREDvector.addVectors(&(unitReference->relativePosition), &(unitReference->relativePosition), &vectorBetweenUnitAndOpponent);	//CHECK THIS: I am not sure if relative positions changes based upon movements are been calcualted correctly at this time...
+			SHAREDvector.addVectors(&(unitReference->absolutePosition), &(unitReference->absolutePosition), &vectorBetweenUnitAndOpponent);
 		}
 	}
 
@@ -1674,7 +1657,7 @@ bool moveUnitTowardsOpponent(LDreference* unitReference, LDreference* opponentRe
 //required for AI player
 	//cycle through each character the player owns on the board, and determine  and
 		//make sure to check that a unit selected is combat ready, if a unit is selected and performs combat make it no longer combat ready
-bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, const string preCombatPhaseSceneFileName, const string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* firstUnitInOpponentUnitGroup)
+bool LRRCgameClass::AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, const string preCombatPhaseSceneFileName, const string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* firstUnitInOpponentUnitGroup)
 {
 
 	//cout << "EXECUTING AIsearchUnitListForPhaseActionSelectionInitialisation{}:" << endl;
@@ -1688,7 +1671,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 	alternatively, can use a player's unit list to perform this search, ie;
 	*/
 
-	Player* thisPlayer = findPlayer(initialPlayerInList, currentPlayerTurn);
+	Player* thisPlayer = LRRCplayerClass.findPlayer(initialPlayerInList, currentPlayerTurn);
 	UnitListClass* thisPlayerCurrentUnit = firstUnitInUnitGroup;
 
 	//cout << "here0" << endl;
@@ -1724,18 +1707,18 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 			LDreference* referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent = new LDreference(true);
 			referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->colour = thisPlayerCurrentUnit->team;
 			referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->name = thisPlayerCurrentUnit->name;
-			if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent, initialReferenceInThisPhaseStartScene, NULL, false))
+			if(!LRRCcombat.searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent, initialReferenceInThisPhaseStartScene, NULL, false))
 			{
 				cout << "error: cannot find player unit reference in scene file, name = " << referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->name << " id=" << referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->colour << endl;
 				result = false;
 			}
-			performFinalUnitClassCalculations(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->subModelDetails);
+			LRRCcombat.performFinalUnitClassCalculations(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->subModelDetails);
 
 			//2. create a reference to the reference in the scene file
 			bool thisPlayerUnitIDFound = false;
 			bool thisPlayerUnitFoundResult = true;
 			LDreference* referenceForThisPlayersCurrentUnitThatIsFindingAnOpponentInScene;
-			referenceForThisPlayersCurrentUnitThatIsFindingAnOpponentInScene = searchReferenceListFindReference(initialReferenceInThisPhaseStartScene, thisPlayerCurrentUnit->name, thisPlayerCurrentUnit->team, &thisPlayerUnitIDFound, &thisPlayerUnitFoundResult);
+			referenceForThisPlayersCurrentUnitThatIsFindingAnOpponentInScene = LRRCgameReferenceManipulation.searchReferenceListFindReference(initialReferenceInThisPhaseStartScene, thisPlayerCurrentUnit->name, thisPlayerCurrentUnit->team, &thisPlayerUnitIDFound, &thisPlayerUnitFoundResult);
 			if(!thisPlayerUnitIDFound || !thisPlayerUnitFoundResult)
 			{
 				cout << "error: cannot find player unit reference in scene file, name = " << thisPlayerCurrentUnit->name << " id=" << thisPlayerCurrentUnit->team << endl;
@@ -1752,7 +1735,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 			//cout << "here2" << endl;
 
 			//cout << "firstUnitInOpponentUnitGroup->name = " << firstUnitInOpponentUnitGroup->name << endl;
-			if(!AIsearchUnitListAndCalculateWorthOfOpponents(currentPlayerTurn, currentPhase, initialReferenceInThisPhaseStartScene, initialPlayerInList, firstUnitInOpponentUnitGroup, thisPlayerCurrentUnit, referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent))		//firstUnitInOpponentUnitGroup: first unit in an arbitrary player list, as there is only 1 unit list
+			if(!this->AIsearchUnitListAndCalculateWorthOfOpponents(currentPlayerTurn, currentPhase, initialReferenceInThisPhaseStartScene, initialPlayerInList, firstUnitInOpponentUnitGroup, thisPlayerCurrentUnit, referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent))		//firstUnitInOpponentUnitGroup: first unit in an arbitrary player list, as there is only 1 unit list
 			{
 				result = false;
 			}
@@ -1803,7 +1786,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 			#endif
 
 				//cout << "h11" << endl;
-				opposingPlayerCurrentUnit = searchUnitListFindOpponentWithLowestError(currentPlayerTurn, GAME_INDEX_OF_ALL_EXPERIENCES_NN, firstUnitInOpponentUnitGroup, &currentLowestError, &foundOpponent, NNcurrentPhase);
+				opposingPlayerCurrentUnit = LRRCunitClass.searchUnitListFindOpponentWithLowestError(currentPlayerTurn, GAME_INDEX_OF_ALL_EXPERIENCES_NN, firstUnitInOpponentUnitGroup, &currentLowestError, &foundOpponent, NNcurrentPhase);
 				//cout << "opposingPlayerCurrentUnit->name = " << opposingPlayerCurrentUnit->name << endl;
 				//cout << "h22" << endl;
 
@@ -1846,7 +1829,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 
 					//cout << "here6aaa" << endl;
 
-					if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(referenceForOpposingPlayerCurrentUnit, initialReferenceInThisPhaseStartScene, NULL, false))
+					if(!LRRCcombat.searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(referenceForOpposingPlayerCurrentUnit, initialReferenceInThisPhaseStartScene, NULL, false))
 					{
 
 						cout << "error: cannot find opposing player unit reference in scene file, name = " << referenceForOpposingPlayerCurrentUnit->name << " id=" << referenceForOpposingPlayerCurrentUnit->colour << endl;
@@ -1856,7 +1839,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 
 						result = false;
 					}
-					performFinalUnitClassCalculations(referenceForOpposingPlayerCurrentUnit->subModelDetails);
+					LRRCcombat.performFinalUnitClassCalculations(referenceForOpposingPlayerCurrentUnit->subModelDetails);
 
 					//cout << "here6b" << endl;
 
@@ -1895,7 +1878,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 								firstUnitInOpposingPlayerUnitGroupForPlayerUnitGroupToTarget = firstUnitInOpponentUnitGroup;
 							}
 
-							if(!AIsearchUnitListForPhaseActionSelectionInitialisation(currentRound, currentPlayerTurn, currentPhase, initialReferenceInThisPhaseStartScene, preCombatPhaseSceneFileName, postCombatPhaseSceneFileName, targetSpritesSceneFileName, targetSpriteListInitialReference, numTargetSpritesAdded, initialPlayerInList, thisPlayerCurrentUnit->firstUnitInUnitGroup, firstUnitInOpposingPlayerUnitGroupForPlayerUnitGroupToTarget))
+							if(!this->AIsearchUnitListForPhaseActionSelectionInitialisation(currentRound, currentPlayerTurn, currentPhase, initialReferenceInThisPhaseStartScene, preCombatPhaseSceneFileName, postCombatPhaseSceneFileName, targetSpritesSceneFileName, targetSpriteListInitialReference, numTargetSpritesAdded, initialPlayerInList, thisPlayerCurrentUnit->firstUnitInUnitGroup, firstUnitInOpposingPlayerUnitGroupForPlayerUnitGroupToTarget))
 							{
 								opposingPlayerCurrentUnit->selfLearningTempVarUnitHasBeenTried = true;
 							}
@@ -1909,7 +1892,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 							//cout << "here6b11" << endl;
 
 							//add experience information for unit group [assuming average kill:death ratio of units in group is > 1.0 {and unit group is still alive???}]
-							if(!determineIfUnitGroupHasAliveUnits(thisPlayerCurrentUnit->firstUnitInUnitGroup))
+							if(!LRRCgameAI.determineIfUnitGroupHasAliveUnits(thisPlayerCurrentUnit->firstUnitInUnitGroup))
 							{
 								thisPlayerCurrentUnit->status = false;
 							}
@@ -1942,7 +1925,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 						#else
 							int NNcurrentPhase = currentPhase;
 						#endif
-							if(!addExperiencesFromUnitDecision(thisPlayerCurrentUnit, referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, unitTheoreticalBestDecisionToRecord, initialReferenceInThisPhaseStartScene, NNcurrentPhase, initialPlayerInList))
+							if(!LRRCgameAI.addExperiencesFromUnitDecision(thisPlayerCurrentUnit, referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, unitTheoreticalBestDecisionToRecord, initialReferenceInThisPhaseStartScene, NNcurrentPhase, initialPlayerInList))
 							{
 								result = false;
 								cout << "Error: cannot addExperiencesFromUnitDecision" << endl;
@@ -1974,14 +1957,14 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 								//cout << "y before mov = " << referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->relativePosition.y << endl;
 								//cout << "z before mov = " << referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->relativePosition.z << endl;
 
-								copyReferencesAndSubmodelDetails(backupOfUnitReferenceBeforeMovement, referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent, REFERENCE_TYPE_SUBMODEL);
-								copyVectors(&(backupOfUnitReferenceBeforeMovement->absolutePosition), &(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->absolutePosition));		//copy in context absolute position details
+								this->copyReferencesAndSubmodelDetails(backupOfUnitReferenceBeforeMovement, referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent, REFERENCE_TYPE_SUBMODEL);
+								SHAREDvector.copyVectors(&(backupOfUnitReferenceBeforeMovement->absolutePosition), &(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->absolutePosition));		//copy in context absolute position details
 
 								//cout << "referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->movementSpeed = " << referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->subModelDetails->movementSpeed << endl;
 								//cout << "backupOfUnitReferenceBeforeMovement->movementSpeed = " << backupOfUnitReferenceBeforeMovement->subModelDetails->movementSpeed << endl;
 
-									//CHECK THIS; moveUnitTowardsOpponent() is out by ~ a factor of 4
-								if(moveUnitTowardsOpponent(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit))
+									//CHECK THIS; this->moveUnitTowardsOpponent() is out by ~ a factor of 4
+								if(this->moveUnitTowardsOpponent(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit))
 								{
 
 
@@ -1991,9 +1974,9 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 
 
 									//update absolute position of all subparts movement
-									copyVectors(&(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponentInScene->relativePosition), &(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->relativePosition));	//CHECK THIS: I am not sure if relative positions changes based upon movements are been calcualted correctly at this time...  [NB they are not used by LRRC]		//copy relative position details into official reference in scene
-									copyVectors(&(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponentInScene->absolutePosition), &(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->absolutePosition));							//copy absolute position details into official reference in scene
-									updateAbsolutePositionOfAllSubModels(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponentInScene->firstReferenceWithinSubModel, referenceForThisPlayersCurrentUnitThatIsFindingAnOpponentInScene);
+									SHAREDvector.copyVectors(&(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponentInScene->relativePosition), &(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->relativePosition));	//CHECK THIS: I am not sure if relative positions changes based upon movements are been calcualted correctly at this time...  [NB they are not used by LRRC]		//copy relative position details into official reference in scene
+									SHAREDvector.copyVectors(&(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponentInScene->absolutePosition), &(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->absolutePosition));							//copy absolute position details into official reference in scene
+									this->updateAbsolutePositionOfAllSubModels(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponentInScene->firstReferenceWithinSubModel, referenceForThisPlayersCurrentUnitThatIsFindingAnOpponentInScene);
 
 									//cout << "x after mov = " << referenceForThisPlayersCurrentUnitThatIsFindingAnOpponentInScene->relativePosition.x << endl;
 									//cout << "y after mov = " << referenceForThisPlayersCurrentUnitThatIsFindingAnOpponentInScene->relativePosition.y << endl;
@@ -2017,14 +2000,14 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 									#define ALLOW_FAULTY_MOVEMENTS_TO_BE_MADE_BY_NEURAL_NETWORK
 									#ifdef ALLOW_FAULTY_MOVEMENTS_TO_BE_MADE_BY_NEURAL_NETWORK
 											//currently allow faulty movements to be made by neural network...
-										copyVectors(&(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->relativePosition), &backupOfUnitRelativePostion);
-										copyVectors(&(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->absolutePosition), &backupOfUnitAbsolutePostion);
+										SHAREDvector.copyVectors(&(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->relativePosition), &backupOfUnitRelativePostion);
+										SHAREDvector.copyVectors(&(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->absolutePosition), &backupOfUnitAbsolutePostion);
 										opposingPlayerCurrentUnit->selfLearningTempVarUnitHasBeenTried  = true;	//this is redundant
 
 									#else
 											//if not allow faulty movements to be made by neural network:
-										copyVectors(&(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->relativePosition), &backupOfUnitRelativePostion);
-										copyVectors(&(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->absolutePosition), &backupOfUnitAbsolutePostion);
+										SHAREDvector.copyVectors(&(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->relativePosition), &backupOfUnitRelativePostion);
+										SHAREDvector.copyVectors(&(referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->absolutePosition), &backupOfUnitAbsolutePostion);
 										opposingPlayerCurrentUnit->selfLearningTempVarUnitHasBeenTried  = true;	//this is redundant
 										performedActionYet = true;
 
@@ -2071,7 +2054,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 									int NNcurrentPhase = currentPhase;
 								#endif
 
-									if(!addExperiencesFromUnitDecision(thisPlayerCurrentUnit, referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, unitTheoreticalBestDecisionToRecord, initialReferenceInThisPhaseStartScene, NNcurrentPhase, initialPlayerInList))
+									if(!LRRCgameAI.addExperiencesFromUnitDecision(thisPlayerCurrentUnit, referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, unitTheoreticalBestDecisionToRecord, initialReferenceInThisPhaseStartScene, NNcurrentPhase, initialPlayerInList))
 									{
 										result = false;
 										cout << "Error: cannot addExperiencesFromUnitDecision" << endl;
@@ -2102,7 +2085,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 									addRangeSpriteInfo = true;
 									addTargetSpriteInfo = true;
 									relevantPhaseForSprite = currentPhase;	//GAME_PHASE_MOVEMENT
-									if(!LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(backupOfUnitReferenceBeforeMovement, referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent, targetSpriteListInitialReference, &eyeCoords, numTargetSpritesAdded, targetSpritesSceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, addTargetSpriteInfo, relevantPhaseForSprite, currentPlayerTurn))
+									if(!LRRCsprite.LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(backupOfUnitReferenceBeforeMovement, referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent, targetSpriteListInitialReference, &eyeCoords, numTargetSpritesAdded, targetSpritesSceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, addTargetSpriteInfo, relevantPhaseForSprite, currentPlayerTurn))
 									{
 										result = false;
 									}
@@ -2112,7 +2095,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 									addTargetSpriteInfo = true;
 
 									relevantPhaseForSprite = GAME_PHASE_AIONLY_TARGET_SELECTION;
-									if(!LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(backupOfUnitReferenceBeforeMovement, referenceForOpposingPlayerCurrentUnit, targetSpriteListInitialReference, &eyeCoords, numTargetSpritesAdded, targetSpritesSceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, addTargetSpriteInfo, relevantPhaseForSprite, currentPlayerTurn))
+									if(!LRRCsprite.LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(backupOfUnitReferenceBeforeMovement, referenceForOpposingPlayerCurrentUnit, targetSpriteListInitialReference, &eyeCoords, numTargetSpritesAdded, targetSpritesSceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, addTargetSpriteInfo, relevantPhaseForSprite, currentPlayerTurn))
 									{
 										result = false;
 									}
@@ -2134,7 +2117,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 								int unitAttackerPlayerID = referenceForThisPlayersCurrentUnitThatIsFindingAnOpponent->colour;
 								int unitDefenderPlayerID = referenceForOpposingPlayerCurrentUnit->colour;
 
-								int combatResult = performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(currentRound, currentPlayerTurn, currentPhase, NULL, initialReferenceInThisPhaseStartScene, targetSpritesSceneFileName, unitAttackerFileName, unitDefenderFileName, unitAttackerPlayerID, unitDefenderPlayerID, targetSpriteListInitialReference, numTargetSpritesAdded, initialPlayerInList, false);
+								int combatResult = this->performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(currentRound, currentPlayerTurn, currentPhase, NULL, initialReferenceInThisPhaseStartScene, targetSpritesSceneFileName, unitAttackerFileName, unitDefenderFileName, unitAttackerPlayerID, unitDefenderPlayerID, targetSpriteListInitialReference, numTargetSpritesAdded, initialPlayerInList, false);
 
 								if(!combatResult)
 								{
@@ -2212,7 +2195,7 @@ bool AIsearchUnitListForPhaseActionSelectionInitialisation(const int currentRoun
 
 
 //bool AIsearchUnitListAndCalculateWorthOfOpponents(int currentPlayerTurn, int currentPhase, string preMovementPhaseSceneFileNameMovement, string thisPhaseStartSceneFileNameMovement, string preCombatPhaseSceneFileName, string postCombatPhaseSceneFileName, string targetSpritesSceneFileName, LDreference* initialReferenceInSceneFile, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, UnitListClass* firstUnitInUnitGroup, UnitListClass* playerUnitThatIsFindingAnOpponent, LDreference* referenceToPlayerUnitThatIsFindingAnOpponent)
-bool AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, const int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, Player* initialPlayerInList, UnitListClass* firstUnitInOpponentUnitGroup, const UnitListClass* playerUnitThatIsFindingAnOpponent, LDreference* referenceToPlayerUnitThatIsFindingAnOpponent)
+bool LRRCgameClass::AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, const int currentPhase, LDreference* initialReferenceInThisPhaseStartScene, Player* initialPlayerInList, UnitListClass* firstUnitInOpponentUnitGroup, const UnitListClass* playerUnitThatIsFindingAnOpponent, LDreference* referenceToPlayerUnitThatIsFindingAnOpponent)
 {
 	bool result = true;
 
@@ -2253,16 +2236,16 @@ bool AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, c
 			LDreference* referenceForOpposingPlayerCurrentUnit = new LDreference(true);
 			referenceForOpposingPlayerCurrentUnit->colour = currentUnit->team;
 			referenceForOpposingPlayerCurrentUnit->name = currentUnit->name;
-			if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(referenceForOpposingPlayerCurrentUnit, initialReferenceInThisPhaseStartScene, NULL, false))
+			if(!LRRCcombat.searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(referenceForOpposingPlayerCurrentUnit, initialReferenceInThisPhaseStartScene, NULL, false))
 			{
 				cout << "error: cannot find player unit reference in scene file, name = " << referenceForOpposingPlayerCurrentUnit->name << " id=" << referenceForOpposingPlayerCurrentUnit->colour << endl;
 				result = false;
 			}
-			performFinalUnitClassCalculations(referenceForOpposingPlayerCurrentUnit->subModelDetails);
+			LRRCcombat.performFinalUnitClassCalculations(referenceForOpposingPlayerCurrentUnit->subModelDetails);
 
 			//cout << "here3c" << endl;
 
-			Player* currentPlayer = findPlayer(initialPlayerInList, currentPlayerTurn);
+			Player* currentPlayer = LRRCplayerClass.findPlayer(initialPlayerInList, currentPlayerTurn);
 
 				//create an experience object (inputs only) given the current unit and its envirornment
 
@@ -2304,8 +2287,8 @@ bool AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, c
 			//Save real positions
 			vec savedPlayerUnitThatIsFindingAnOpponentAbsolutePosition;
 			vec savedOpposingPlayerCurrentUnitAbsolutePosition;
-			copyVectors(&savedPlayerUnitThatIsFindingAnOpponentAbsolutePosition, &(referenceToPlayerUnitThatIsFindingAnOpponent->absolutePosition));
-			copyVectors(&savedOpposingPlayerCurrentUnitAbsolutePosition, &(referenceForOpposingPlayerCurrentUnit->absolutePosition));
+			SHAREDvector.copyVectors(&savedPlayerUnitThatIsFindingAnOpponentAbsolutePosition, &(referenceToPlayerUnitThatIsFindingAnOpponent->absolutePosition));
+			SHAREDvector.copyVectors(&savedOpposingPlayerCurrentUnitAbsolutePosition, &(referenceForOpposingPlayerCurrentUnit->absolutePosition));
 
 			//cout << "h1" << endl;
 
@@ -2337,19 +2320,19 @@ bool AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, c
 				LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.x = 0;
 				LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.y = longDistanceAttackBaseRange;
 				LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.z = 0;
-				copyVectors(&(referenceToPlayerUnitThatIsFindingAnOpponent->absolutePosition), &LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
-				copyVectors(&(referenceForOpposingPlayerCurrentUnit->absolutePosition), &LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition);
+				SHAREDvector.copyVectors(&(referenceToPlayerUnitThatIsFindingAnOpponent->absolutePosition), &LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
+				SHAREDvector.copyVectors(&(referenceForOpposingPlayerCurrentUnit->absolutePosition), &LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition);
 					//find error of LD attack/LD evasion when at optimum LD attack distance
 
 
 
-				optimumPositionAttackLDpropertiesExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				optimumPositionAttackLDpropertiesExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
-				optimumPositionAttackLDcombatExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				optimumPositionAttackLDcombatExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
-				optimumPositionEvadeLDpropertiesExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				optimumPositionEvadeLDpropertiesExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
-				optimumPositionEvadeLDcombatExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				optimumPositionEvadeLDcombatExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
 			}
 
@@ -2365,23 +2348,23 @@ bool AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, c
 				LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.x = 0;
 				LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.y = (CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY-1);
 				LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition.z = 0;
-				copyVectors(&(referenceToPlayerUnitThatIsFindingAnOpponent->absolutePosition), &LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
-				copyVectors(&(referenceForOpposingPlayerCurrentUnit->absolutePosition), &LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition);
+				SHAREDvector.copyVectors(&(referenceToPlayerUnitThatIsFindingAnOpponent->absolutePosition), &LDhypotheticalPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
+				SHAREDvector.copyVectors(&(referenceForOpposingPlayerCurrentUnit->absolutePosition), &LDhypotheticalOpposingPlayerCurrentUnitAbsolutePosition);
 					//find error of CC attack/CC evasion when at optimum CC attack distance
 
-				optimumPositionAttackCCpropertiesExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				optimumPositionAttackCCpropertiesExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
-				optimumPositionAttackCCcombatExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				optimumPositionAttackCCcombatExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
-				optimumPositionEvadeCCpropertiesExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				optimumPositionEvadeCCpropertiesExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
-				optimumPositionEvadeCCcombatExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				optimumPositionEvadeCCcombatExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
 			}
 
 			//Restore real positions
-			copyVectors(&(referenceToPlayerUnitThatIsFindingAnOpponent->absolutePosition), &savedPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
-			copyVectors(&(referenceForOpposingPlayerCurrentUnit->absolutePosition), &savedOpposingPlayerCurrentUnitAbsolutePosition);
+			SHAREDvector.copyVectors(&(referenceToPlayerUnitThatIsFindingAnOpponent->absolutePosition), &savedPlayerUnitThatIsFindingAnOpponentAbsolutePosition);
+			SHAREDvector.copyVectors(&(referenceForOpposingPlayerCurrentUnit->absolutePosition), &savedOpposingPlayerCurrentUnitAbsolutePosition);
 
 
 			if((currentPhase == GAME_PHASE_MOVEMENT) || (currentPhase == GAME_PHASE_LONGDISTANCECOMBAT))
@@ -2389,13 +2372,13 @@ bool AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, c
 				//Long Distance Consideration
 					//find error of LD attack/LD evasion when at optimum LD attack distance
 
-				attackLDpropertiesExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				attackLDpropertiesExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
-				attackLDcombatExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				attackLDcombatExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
-				evadeLDpropertiesExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				evadeLDpropertiesExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
-				evadeLDcombatExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				evadeLDcombatExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_LONGDISTANCECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_LONGDISTANCE, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 			}
 
 			if((currentPhase == GAME_PHASE_MOVEMENT) || (currentPhase == GAME_PHASE_CLOSECOMBAT))
@@ -2404,13 +2387,13 @@ bool AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, c
 					//find error of CC attack/CC evasion when at optimum CC attack distance
 
 
-				attackCCpropertiesExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				attackCCpropertiesExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
-				attackCCcombatExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				attackCCcombatExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_ATTACK_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
-				evadeCCpropertiesExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				evadeCCpropertiesExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 
-				evadeCCcombatExperienceBackPropagationPassError = addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
+				evadeCCcombatExperienceBackPropagationPassError = LRRCgameAI.addOrCompareExperienceFromUnitDecision(GAME_PHASE_CLOSECOMBAT, NULL, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, COMBAT_EXPERIENCE_OUTPUT_DECISION_EVADE_CLOSECOMBAT, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, COMPARE_EXPERIENCE, NULL);
 			}
 
 			//cout << "h2" << endl;
@@ -2535,8 +2518,8 @@ bool AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, c
 			nn = GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN;
 		#endif
 			ANNexperience* experienceWithoutKnownOutput = new ANNexperience[GAME_NUMBER_OF_EXPERIENCE_NN];
-			generateExperienceFromGlobalDecision(currentPlayer->firstUnitInUnitList, initialReferenceInThisPhaseStartScene, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, &(experienceWithoutKnownOutput[nn]));
-			experienceBackPropagationPassError = calculateExperienceErrorForHypotheticalDecisionBackpropagation(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn], currentPlayer->numberOfInputNeurons[nn], currentPlayer->numberOfOutputNeurons[nn], &(experienceWithoutKnownOutput[nn]));
+			LRRCgameAI.generateExperienceFromGlobalDecision(currentPlayer->firstUnitInUnitList, initialReferenceInThisPhaseStartScene, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, &(experienceWithoutKnownOutput[nn]));
+			experienceBackPropagationPassError = ANNalgorithmBackpropagationTraining.calculateExperienceErrorForHypotheticalDecisionBackpropagation(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn], currentPlayer->numberOfInputNeurons[nn], currentPlayer->numberOfOutputNeurons[nn], &(experienceWithoutKnownOutput[nn]));
 			currentUnit->selfLearningTempVarBackPropagationPassError[nn] = experienceBackPropagationPassError;
 			delete[] experienceWithoutKnownOutput;
 		#endif
@@ -2560,7 +2543,7 @@ bool AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, c
 
 			//cout << "\t currentUnit->isUnitGroup,  currentUnit->name = " << currentUnit->name << endl;
 			//cout << "\t currentUnit->firstUnitInUnitGroup->name = " << currentUnit->firstUnitInUnitGroup->name << endl;
-			if(!AIsearchUnitListAndCalculateWorthOfOpponents(currentPlayerTurn, currentPhase, initialReferenceInThisPhaseStartScene, initialPlayerInList, currentUnit->firstUnitInUnitGroup, playerUnitThatIsFindingAnOpponent, referenceToPlayerUnitThatIsFindingAnOpponent))
+			if(!this->AIsearchUnitListAndCalculateWorthOfOpponents(currentPlayerTurn, currentPhase, initialReferenceInThisPhaseStartScene, initialPlayerInList, currentUnit->firstUnitInUnitGroup, playerUnitThatIsFindingAnOpponent, referenceToPlayerUnitThatIsFindingAnOpponent))
 			{
 				result = false;
 			}
@@ -2583,7 +2566,7 @@ bool AIsearchUnitListAndCalculateWorthOfOpponents(const int currentPlayerTurn, c
 
 
 
-int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, string targetSpritesSceneFileName, string unitAttackerFileName, string unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, const bool checkPreviousSceneFile)
+int LRRCgameClass::performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRound, const int currentPlayerTurn, int currentPhase, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, string targetSpritesSceneFileName, string unitAttackerFileName, string unitDefenderFileName, int unitAttackerPlayerID, int unitDefenderPlayerID, LDreference* targetSpriteListInitialReference, int* numTargetSpritesAdded, Player* initialPlayerInList, const bool checkPreviousSceneFile)
 {
 	bool result = true;
 
@@ -2592,11 +2575,11 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRo
 	{
 		if(checkPreviousSceneFile)
 		{
-			combatResult = performCloseCombatWithConsecutiveScenes(unitAttackerFileName, unitDefenderFileName, unitAttackerPlayerID, unitDefenderPlayerID, true, true, initialReferenceInThisPhaseStartScene, initialReferenceInPreMovementPhaseScene);
+			combatResult = LRRCcombat.performCloseCombatWithConsecutiveScenes(unitAttackerFileName, unitDefenderFileName, unitAttackerPlayerID, unitDefenderPlayerID, true, true, initialReferenceInThisPhaseStartScene, initialReferenceInPreMovementPhaseScene);
 		}
 		else
 		{
-			combatResult = performCloseCombatWithScene(unitAttackerFileName, unitDefenderFileName, unitAttackerPlayerID, unitDefenderPlayerID, true, true, initialReferenceInThisPhaseStartScene);
+			combatResult = LRRCcombat.performCloseCombatWithScene(unitAttackerFileName, unitDefenderFileName, unitAttackerPlayerID, unitDefenderPlayerID, true, true, initialReferenceInThisPhaseStartScene);
 		}
 			//slight deviation from current rules: NB player 2 will not have moved in previous round [therefore player 2/the defender cannot ever get a charge advantage]
 	}
@@ -2604,12 +2587,12 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRo
 	{
 		if(checkPreviousSceneFile)
 		{
-			combatResult = performLongDistanceCombatWithConsecutiveScenes(unitAttackerFileName, unitDefenderFileName, unitAttackerPlayerID, unitDefenderPlayerID, true, false, initialReferenceInThisPhaseStartScene, initialReferenceInPreMovementPhaseScene);
+			combatResult = LRRCcombat.performLongDistanceCombatWithConsecutiveScenes(unitAttackerFileName, unitDefenderFileName, unitAttackerPlayerID, unitDefenderPlayerID, true, false, initialReferenceInThisPhaseStartScene, initialReferenceInPreMovementPhaseScene);
 		}
 		else
 		{
 			//cout << "perform LD..." << endl;
-			combatResult = performLongDistanceCombatWithScene(unitAttackerFileName, unitDefenderFileName, unitAttackerPlayerID, unitDefenderPlayerID, true, false, initialReferenceInThisPhaseStartScene);
+			combatResult = LRRCcombat.performLongDistanceCombatWithScene(unitAttackerFileName, unitDefenderFileName, unitAttackerPlayerID, unitDefenderPlayerID, true, false, initialReferenceInThisPhaseStartScene);
 		}
 	}
 	else
@@ -2636,19 +2619,19 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRo
 
 		locationResult = true;
 
-		if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unitReference, initialReferenceInThisPhaseStartScene, topLevelReferenceInSceneFile, false))
+		if(!LRRCcombat.searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unitReference, initialReferenceInThisPhaseStartScene, topLevelReferenceInSceneFile, false))
 		{
 			cout << "error: cannot refind unit unitAttackerFileName=" << unitAttackerFileName << " unitAttackerPlayerID=" << unitAttackerPlayerID << endl;
 			result = false;
 		}
-		performFinalUnitClassCalculations(unitReference->subModelDetails);
+		LRRCcombat.performFinalUnitClassCalculations(unitReference->subModelDetails);
 
-		if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(targetReference, initialReferenceInThisPhaseStartScene, topLevelReferenceInSceneFile, false))
+		if(!LRRCcombat.searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(targetReference, initialReferenceInThisPhaseStartScene, topLevelReferenceInSceneFile, false))
 		{
 			cout << "error: cannot refind unit unitDefenderFileName=" << unitDefenderFileName << " unitDefenderPlayerID=" << unitDefenderPlayerID << endl;
 			result = false;
 		}
-		performFinalUnitClassCalculations(targetReference->subModelDetails);
+		LRRCcombat.performFinalUnitClassCalculations(targetReference->subModelDetails);
 
 
 		//CHECKTHIS: new rule: only assign - has performed combat - if combat resulted in a strike (death)
@@ -2670,14 +2653,14 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRo
 
 
 		locationResult = false;
-		UnitListClass* unitDefenderInUnitList = searchUnitListFindUnit(initialPlayerInList->firstUnitInUnitList, unitDefenderFileName, unitDefenderPlayerID, &locationResult);
+		UnitListClass* unitDefenderInUnitList = LRRCunitClass.searchUnitListFindUnit(initialPlayerInList->firstUnitInUnitList, unitDefenderFileName, unitDefenderPlayerID, &locationResult);
 		if(!locationResult)
 		{
 			result = false;
 			cout << "error: cannot find unit in unit list, unitDefenderFileName=" << unitDefenderFileName << " unitDefenderPlayerID=" << unitDefenderPlayerID << endl;
 		}
 		locationResult = false;
-		UnitListClass* unitAttackerInUnitList = searchUnitListFindUnit(initialPlayerInList->firstUnitInUnitList, unitAttackerFileName, unitAttackerPlayerID, &locationResult);
+		UnitListClass* unitAttackerInUnitList = LRRCunitClass.searchUnitListFindUnit(initialPlayerInList->firstUnitInUnitList, unitAttackerFileName, unitAttackerPlayerID, &locationResult);
 		if(!locationResult)
 		{
 			result = false;
@@ -2690,7 +2673,7 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRo
 		if((combatResult == ATTACK_UNIT1_STRIKES_BOTH_CAN_STRIKE) || (combatResult == ATTACK_UNIT1_STRIKES_UNIT1_CAN_STRIKE))
 		{//remove dead units from reference list:
 
-			unitAttackerInUnitList->killPoints = unitAttackerInUnitList->killPoints + determineUnitWorthInPoints(unitDefenderInUnitList->unitDetails);
+			unitAttackerInUnitList->killPoints = unitAttackerInUnitList->killPoints + LRRCunitClass.determineUnitWorthInPoints(unitDefenderInUnitList->unitDetails);
 			unitAttackerInUnitList->numKills = unitAttackerInUnitList->numKills + 1;
 
 			locationResult = false;
@@ -2699,7 +2682,7 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRo
 			//searchReferenceListPrintReferenceDetails(initialReferenceInThisPhaseStartScene);
 
 			//cout << "deleting reference: searchReferenceListRemoveReference" << endl;
-			initialReferenceInThisPhaseStartScene = searchReferenceListRemoveReference(initialReferenceInThisPhaseStartScene, unitDefenderFileName, unitDefenderPlayerID, &locationResult, &result);
+			initialReferenceInThisPhaseStartScene = LRRCgameReferenceManipulation.searchReferenceListRemoveReference(initialReferenceInThisPhaseStartScene, unitDefenderFileName, unitDefenderPlayerID, &locationResult, &result);
 			//cout << "finished deleting reference: searchReferenceListRemoveReference" << endl;
 
 			//cout << "DEBUG: scene after removing reference: " << endl;
@@ -2735,11 +2718,11 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRo
 		if((combatResult == ATTACK_UNIT2_STRIKES_BOTH_CAN_STRIKE) || (combatResult == ATTACK_UNIT2_STRIKES_UNIT2_CAN_STRIKE))
 		{//remove dead units from reference list:
 
-			unitDefenderInUnitList->killPoints = unitDefenderInUnitList->killPoints + determineUnitWorthInPoints(unitAttackerInUnitList->unitDetails);
+			unitDefenderInUnitList->killPoints = unitDefenderInUnitList->killPoints + LRRCunitClass.determineUnitWorthInPoints(unitAttackerInUnitList->unitDetails);
 			unitDefenderInUnitList->numKills = unitDefenderInUnitList->numKills + 1;
 
 			locationResult = false;
-			initialReferenceInThisPhaseStartScene = searchReferenceListRemoveReference(initialReferenceInThisPhaseStartScene, unitAttackerFileName, unitAttackerPlayerID, &locationResult, &result);
+			initialReferenceInThisPhaseStartScene = LRRCgameReferenceManipulation.searchReferenceListRemoveReference(initialReferenceInThisPhaseStartScene, unitAttackerFileName, unitAttackerPlayerID, &locationResult, &result);
 			if(!locationResult)
 			{
 				result = false;
@@ -2796,9 +2779,9 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRo
 			//cout << "h1" << endl;
 
 			unitTheoreticalBestDecisionToRecord = attackDecision;
-			addExperiencesFromUnitDecision(unitAttackerInUnitList, unitReference, targetReference, unitTheoreticalBestDecisionToRecord, initialReferenceInThisPhaseStartScene, currentPhase, initialPlayerInList);
+			LRRCgameAI.addExperiencesFromUnitDecision(unitAttackerInUnitList, unitReference, targetReference, unitTheoreticalBestDecisionToRecord, initialReferenceInThisPhaseStartScene, currentPhase, initialPlayerInList);
 			/*
-			if(!addExperiencesFromUnitDecision(unitReference, targetReference, unitTheoreticalBestDecisionToRecord, initialPlayerInList->firstUnitInUnitList, initialReferenceInThisPhaseStartScene))		//arbitrary player, OLD=attackerPlayer
+			if(!LRRCgameAI.addExperiencesFromUnitDecision(unitReference, targetReference, unitTheoreticalBestDecisionToRecord, initialPlayerInList->firstUnitInUnitList, initialReferenceInThisPhaseStartScene))		//arbitrary player, OLD=attackerPlayer
 			{
 				result = false;
 				cout << "Error: cannot addExperiencesFromUnitDecision" << endl;
@@ -2808,8 +2791,8 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRo
 			//cout << "h2" << endl;
 
 			unitTheoreticalBestDecisionToRecord = evadeDecision;
-			addOrCompareExperienceFromUnitDecision(currentPhase, unitDefenderInUnitList, targetReference, unitReference, unitTheoreticalBestDecisionToRecord, initialPlayerInList, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
-			addOrCompareExperienceFromUnitDecision(currentPhase, unitDefenderInUnitList, targetReference, unitReference, unitTheoreticalBestDecisionToRecord, initialPlayerInList, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
+			LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitDefenderInUnitList, targetReference, unitReference, unitTheoreticalBestDecisionToRecord, initialPlayerInList, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
+			LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitDefenderInUnitList, targetReference, unitReference, unitTheoreticalBestDecisionToRecord, initialPlayerInList, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
 
 			/*
 			if(!addExperienceFromUnitPropertiesDecision(targetReference, unitReference, unitTheoreticalBestDecisionToRecord, initialPlayerInList->firstUnitInUnitList))		//arbitrary player, OLD=defenderPlayer
@@ -2831,10 +2814,10 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRo
 			//cout << "h4" << endl;
 
 			unitTheoreticalBestDecisionToRecord = attackDecision;
-			addExperiencesFromUnitDecision(unitDefenderInUnitList, targetReference, unitReference, unitTheoreticalBestDecisionToRecord, initialReferenceInThisPhaseStartScene, currentPhase, initialPlayerInList);
+			LRRCgameAI.addExperiencesFromUnitDecision(unitDefenderInUnitList, targetReference, unitReference, unitTheoreticalBestDecisionToRecord, initialReferenceInThisPhaseStartScene, currentPhase, initialPlayerInList);
 
 			/*
-			if(!addExperiencesFromUnitDecision(targetReference, unitReference, unitTheoreticalBestDecisionToRecord, initialPlayerInList->firstUnitInUnitList, initialReferenceInThisPhaseStartScene))		//arbitrary player, OLD=defenderPlayer
+			if(!LRRCgameAI.addExperiencesFromUnitDecision(targetReference, unitReference, unitTheoreticalBestDecisionToRecord, initialPlayerInList->firstUnitInUnitList, initialReferenceInThisPhaseStartScene))		//arbitrary player, OLD=defenderPlayer
 			{
 				result = false;
 				cout << "Error: cannot addExperiencesFromUnitDecision" << endl;
@@ -2843,8 +2826,8 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRo
 			//cout << "h5" << endl;
 
 			unitTheoreticalBestDecisionToRecord = evadeDecision;
-			addOrCompareExperienceFromUnitDecision(currentPhase, unitAttackerInUnitList, unitReference, targetReference, unitTheoreticalBestDecisionToRecord, initialPlayerInList, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
-			addOrCompareExperienceFromUnitDecision(currentPhase, unitAttackerInUnitList, unitReference, targetReference, unitTheoreticalBestDecisionToRecord, initialPlayerInList, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
+			LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitAttackerInUnitList, unitReference, targetReference, unitTheoreticalBestDecisionToRecord, initialPlayerInList, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
+			LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitAttackerInUnitList, unitReference, targetReference, unitTheoreticalBestDecisionToRecord, initialPlayerInList, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
 
 			//cout << "h6" << endl;
 
@@ -2880,7 +2863,7 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRo
 		eyeCoords.x = 0.0;
 		eyeCoords.y = 0.0;
 		eyeCoords.z = 0.0;
-		if(!LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(unitReference, targetReference, targetSpriteListInitialReference, &eyeCoords, numTargetSpritesAdded, targetSpritesSceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, addTargetSpriteInfo, currentPhase, currentPlayerTurn))
+		if(!LRRCsprite.LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(unitReference, targetReference, targetSpriteListInitialReference, &eyeCoords, numTargetSpritesAdded, targetSpritesSceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, addTargetSpriteInfo, currentPhase, currentPlayerTurn))
 		{
 			result = false;
 		}
@@ -2898,7 +2881,7 @@ int performGenericCombatWithTwoCombatReadyUnitsAndAddSprites(const int currentRo
 
 
 
-bool generateSceneFileName(const int currentGame, const int currentRound, const int currentPlayerTurn, const int currentPhase, const int phaseExecutionStage, string* sceneFileName)
+bool LRRCgameClass::generateSceneFileName(const int currentGame, const int currentRound, const int currentPlayerTurn, const int currentPhase, const int phaseExecutionStage, string* sceneFileName)
 {
 	bool result = true;
 
@@ -2906,9 +2889,9 @@ bool generateSceneFileName(const int currentGame, const int currentRound, const 
 	string currentPlayerTurnString = "";
 	string currentGameString = "";
 
-	currentRoundString = convertIntToString(currentRound);
-	currentPlayerTurnString = convertIntToString(currentPlayerTurn);
-	currentGameString = convertIntToString(currentGame);
+	currentRoundString = SHAREDvars.convertIntToString(currentRound);
+	currentPlayerTurnString = SHAREDvars.convertIntToString(currentPlayerTurn);
+	currentGameString = SHAREDvars.convertIntToString(currentGame);
 
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
@@ -2961,11 +2944,11 @@ bool generateSceneFileName(const int currentGame, const int currentRound, const 
 }
 
 
-void generateXMLNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
+void LRRCgameClass::generateXMLNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
 {
-	string currentGameString = convertIntToString(currentGame);
+	string currentGameString = SHAREDvars.convertIntToString(currentGame);
 
-	string currentNeuralNetworkString = convertIntToString(nnIndex);
+	string currentNeuralNetworkString = SHAREDvars.convertIntToString(nnIndex);
 
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
@@ -2976,11 +2959,11 @@ void generateXMLNNSceneFileName(const int currentGame, string* sceneFileName, co
 }
 
 
-void generateVectorGraphicsLDRNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
+void LRRCgameClass::generateVectorGraphicsLDRNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
 {
-	string currentGameString = convertIntToString(currentGame);
+	string currentGameString = SHAREDvars.convertIntToString(currentGame);
 
-	string currentNeuralNetworkString = convertIntToString(nnIndex);
+	string currentNeuralNetworkString = SHAREDvars.convertIntToString(nnIndex);
 
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
@@ -2990,11 +2973,11 @@ void generateVectorGraphicsLDRNNSceneFileName(const int currentGame, string* sce
 	*sceneFileName = *sceneFileName + VECGRAPHICS_LDR_NN_SCENE_FILE_NAME_EXTENSION;
 }
 
-void generateVectorGraphicsLDRNNSceneFileNameWithSprites(const int currentGame, string* sceneFileName, const int nnIndex)
+void LRRCgameClass::generateVectorGraphicsLDRNNSceneFileNameWithSprites(const int currentGame, string* sceneFileName, const int nnIndex)
 {
-	string currentGameString = convertIntToString(currentGame);
+	string currentGameString = SHAREDvars.convertIntToString(currentGame);
 
-	string currentNeuralNetworkString = convertIntToString(nnIndex);
+	string currentNeuralNetworkString = SHAREDvars.convertIntToString(nnIndex);
 
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
@@ -3007,11 +2990,11 @@ void generateVectorGraphicsLDRNNSceneFileNameWithSprites(const int currentGame, 
 
 
 
-void generateVectorGraphicsTALNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
+void LRRCgameClass::generateVectorGraphicsTALNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
 {
-	string currentGameString = convertIntToString(currentGame);
+	string currentGameString = SHAREDvars.convertIntToString(currentGame);
 
-	string currentNeuralNetworkString = convertIntToString(nnIndex);
+	string currentNeuralNetworkString = SHAREDvars.convertIntToString(nnIndex);
 
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
@@ -3021,11 +3004,11 @@ void generateVectorGraphicsTALNNSceneFileName(const int currentGame, string* sce
 	*sceneFileName = *sceneFileName + VECGRAPHICS_TAL_NN_SCENE_FILE_NAME_EXTENSION;
 }
 
-void generateRaytracedImagePPMNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
+void LRRCgameClass::generateRaytracedImagePPMNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
 {
-	string currentGameString = convertIntToString(currentGame);
+	string currentGameString = SHAREDvars.convertIntToString(currentGame);
 
-	string currentNeuralNetworkString = convertIntToString(nnIndex);
+	string currentNeuralNetworkString = SHAREDvars.convertIntToString(nnIndex);
 
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
@@ -3039,11 +3022,11 @@ void generateRaytracedImagePPMNNSceneFileName(const int currentGame, string* sce
 
 
 
-void generateExperiencesNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
+void LRRCgameClass::generateExperiencesNNSceneFileName(const int currentGame, string* sceneFileName, const int nnIndex)
 {
-	string currentGameString = convertIntToString(currentGame);
+	string currentGameString = SHAREDvars.convertIntToString(currentGame);
 
-	string currentNeuralNetworkString = convertIntToString(nnIndex);
+	string currentNeuralNetworkString = SHAREDvars.convertIntToString(nnIndex);
 
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_START;
 	*sceneFileName = *sceneFileName + SCENE_FILE_NAME_GAME_HEADER;
@@ -3054,71 +3037,71 @@ void generateExperiencesNNSceneFileName(const int currentGame, string* sceneFile
 }
 
 
-void copyReferencesAndSubmodelDetails(LDreference* referenceNew, LDreference* referenceToCopy, const int type)
+void LRRCgameClass::copyReferencesAndSubmodelDetails(LDreference* referenceNew, LDreference* referenceToCopy, const int type)
 {
 	referenceNew->type = referenceToCopy->type;
 	referenceNew->colour = referenceToCopy->colour;
 
 	if(type == REFERENCE_TYPE_SUBMODEL)
 	{
-		copyVectors(&(referenceNew->relativePosition),  &(referenceToCopy->relativePosition));
-		copyMatricies(&(referenceNew->deformationMatrix),  &(referenceToCopy->deformationMatrix));
+		SHAREDvector.copyVectors(&(referenceNew->relativePosition),  &(referenceToCopy->relativePosition));
+		SHAREDvector.copyMatricies(&(referenceNew->deformationMatrix),  &(referenceToCopy->deformationMatrix));
 		referenceNew->name = referenceToCopy->name;
-		copyAllUnitDetails(referenceNew->subModelDetails, referenceToCopy->subModelDetails);
+		LRRCmodelClass.copyAllUnitDetails(referenceNew->subModelDetails, referenceToCopy->subModelDetails);
 	}
 	else
 	{
 		if((type == REFERENCE_TYPE_LINE) || (type == REFERENCE_TYPE_TRI) || (type == REFERENCE_TYPE_QUAD) || (type == REFERENCE_TYPE_OPTIONALLINE))
 		{
-			copyVectors(&(referenceNew->vertex1relativePosition),  &(referenceToCopy->vertex1relativePosition));
-			copyVectors(&(referenceNew->vertex2relativePosition),  &(referenceToCopy->vertex2relativePosition));
+			SHAREDvector.copyVectors(&(referenceNew->vertex1relativePosition),  &(referenceToCopy->vertex1relativePosition));
+			SHAREDvector.copyVectors(&(referenceNew->vertex2relativePosition),  &(referenceToCopy->vertex2relativePosition));
 		}
 		if((type == REFERENCE_TYPE_TRI) || (type == REFERENCE_TYPE_QUAD) || (type == REFERENCE_TYPE_OPTIONALLINE))
 		{
-			copyVectors(&(referenceNew->vertex3relativePosition),  &(referenceToCopy->vertex3relativePosition));
+			SHAREDvector.copyVectors(&(referenceNew->vertex3relativePosition),  &(referenceToCopy->vertex3relativePosition));
 		}
 		if((type == REFERENCE_TYPE_QUAD) || (type == REFERENCE_TYPE_OPTIONALLINE))
 		{
-			copyVectors(&(referenceNew->vertex4relativePosition),  &(referenceToCopy->vertex4relativePosition));
+			SHAREDvector.copyVectors(&(referenceNew->vertex4relativePosition),  &(referenceToCopy->vertex4relativePosition));
 		}
 	}
 }
 
 
 #ifdef USE_ANN
-void trainAndOutputNeuralNetwork(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const int numberOfInputNeurons, int numberOfOutputNeurons, ANNexperience* firstExperienceInList, bool addSprites, const bool allowRaytrace, const int nn, const int currentGame)
+void LRRCgameClass::trainAndOutputNeuralNetwork(ANNneuron* firstInputNeuronInNetwork, ANNneuron* firstOutputNeuronInNetwork, const int numberOfInputNeurons, int numberOfOutputNeurons, ANNexperience* firstExperienceInList, bool addSprites, const bool allowRaytrace, const int nn, const int currentGame)
 {
 
 	string* XMLNNSceneFileName = new string();
-	generateXMLNNSceneFileName(currentGame, XMLNNSceneFileName, nn);
+	this->generateXMLNNSceneFileName(currentGame, XMLNNSceneFileName, nn);
 	cout << "XMLNNSceneFileName = " <<* XMLNNSceneFileName << endl;
 
 	//now output the network to vector graphics file
 	string* vectorGraphicsLDRNNSceneFileName = new string();
-	generateVectorGraphicsLDRNNSceneFileName(currentGame, vectorGraphicsLDRNNSceneFileName, nn);
+	this->generateVectorGraphicsLDRNNSceneFileName(currentGame, vectorGraphicsLDRNNSceneFileName, nn);
 	cout << "vectorGraphicsLDRNNSceneFileName = " <<* vectorGraphicsLDRNNSceneFileName << endl;
 	char* charstarvectorGraphicsLDRNNSceneFileName = const_cast<char*>(vectorGraphicsLDRNNSceneFileName->c_str());
 
 	string* vectorGraphicsLDRNNSceneFileNameWithSprites = new string();
-	generateVectorGraphicsLDRNNSceneFileNameWithSprites(currentGame, vectorGraphicsLDRNNSceneFileNameWithSprites, nn);
+	this->generateVectorGraphicsLDRNNSceneFileNameWithSprites(currentGame, vectorGraphicsLDRNNSceneFileNameWithSprites, nn);
 	cout << "vectorGraphicsLDRNNSceneFileName = " <<* vectorGraphicsLDRNNSceneFileNameWithSprites << endl;
 	char* charstarvectorGraphicsLDRNNSceneFileNameWithSprites = const_cast<char*>(vectorGraphicsLDRNNSceneFileNameWithSprites->c_str());
 
 	//now output the vector graphics file to image file via ray tracer
 	string* vectorGraphicsTALNNSceneFileName = new string();
-	generateVectorGraphicsTALNNSceneFileName(currentGame, vectorGraphicsTALNNSceneFileName, nn);
+	this->generateVectorGraphicsTALNNSceneFileName(currentGame, vectorGraphicsTALNNSceneFileName, nn);
 	cout << "vectorGraphicsTALNNSceneFileName = " <<* vectorGraphicsTALNNSceneFileName << endl;
 	char* charstarvectorGraphicsTALNNSceneFileName = const_cast<char*>(vectorGraphicsTALNNSceneFileName->c_str());
 
 	string* raytracedImagePPMNNSceneFileName = new string();
-	generateRaytracedImagePPMNNSceneFileName(currentGame, raytracedImagePPMNNSceneFileName, nn);
+	this->generateRaytracedImagePPMNNSceneFileName(currentGame, raytracedImagePPMNNSceneFileName, nn);
 	cout << "raytracedImagePPMNNSceneFileName = " <<* raytracedImagePPMNNSceneFileName << endl;
 	char* charstarraytracedImagePPMNNSceneFileName = const_cast<char*>(raytracedImagePPMNNSceneFileName->c_str());
 
 
 	//now output the experiences to experience data set file
 	string* experienceNNSceneFileName = new string();
-	generateExperiencesNNSceneFileName(currentGame, experienceNNSceneFileName, nn);
+	this->generateExperiencesNNSceneFileName(currentGame, experienceNNSceneFileName, nn);
 	cout << "experienceNNSceneFileName = " <<* experienceNNSceneFileName << endl;
 	char* charstarexperienceNNSceneFileName = const_cast<char*>(experienceNNSceneFileName->c_str());
 
@@ -3141,19 +3124,19 @@ void trainAndOutputNeuralNetwork(ANNneuron* firstInputNeuronInNetwork, ANNneuron
 		#endif
 	}
 
-	trainAndOutputNeuralNetworkWithFileNames(firstInputNeuronInNetwork, firstOutputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, firstExperienceInList, addSprites, allowRaytrace, XMLNNSceneFileName, charstarvectorGraphicsLDRNNSceneFileName, charstarvectorGraphicsTALNNSceneFileName, charstarraytracedImagePPMNNSceneFileName, charstarexperienceNNSceneFileName, useFoldsDuringTraining, maxOrSetNumEpochs);
+	ANNdisplay.trainAndOutputNeuralNetworkWithFileNames(firstInputNeuronInNetwork, firstOutputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, firstExperienceInList, addSprites, allowRaytrace, XMLNNSceneFileName, charstarvectorGraphicsLDRNNSceneFileName, charstarvectorGraphicsTALNNSceneFileName, charstarraytracedImagePPMNNSceneFileName, charstarexperienceNNSceneFileName, useFoldsDuringTraining, maxOrSetNumEpochs);
 
 }
 #endif
 
 
-void updatePlayerStatus(Player* initialPlayerInList)
+void LRRCgameClass::updatePlayerStatus(Player* initialPlayerInList)
 {
 	Player* currentPlayer = initialPlayerInList;
 
 	while(currentPlayer->next != NULL)
 	{
-		if(!searchUnitListAndCheckThatSomePlayerUnitsAreAlive(currentPlayer->id, initialPlayerInList->firstUnitInUnitList))		//arbitrary player, OLD=defenderPlayer
+		if(!this->searchUnitListAndCheckThatSomePlayerUnitsAreAlive(currentPlayer->id, initialPlayerInList->firstUnitInUnitList))		//arbitrary player, OLD=defenderPlayer
 		{
 			currentPlayer->status = false;
 		}
@@ -3165,7 +3148,7 @@ void updatePlayerStatus(Player* initialPlayerInList)
 
 
 
-bool searchUnitListAndCheckThatSomePlayerUnitsAreAlive(const int playerTeam, const UnitListClass* firstUnitInUnitGroup)
+bool LRRCgameClass::searchUnitListAndCheckThatSomePlayerUnitsAreAlive(const int playerTeam, const UnitListClass* firstUnitInUnitGroup)
 {
 	bool playerStillHasAUnitAlive = false;
 
@@ -3180,7 +3163,7 @@ bool searchUnitListAndCheckThatSomePlayerUnitsAreAlive(const int playerTeam, con
 
 		if(currentUnitInList->isUnitGroup)
 		{
-			if(searchUnitListAndCheckThatSomePlayerUnitsAreAlive(playerTeam, currentUnitInList->firstUnitInUnitGroup))
+			if(this->searchUnitListAndCheckThatSomePlayerUnitsAreAlive(playerTeam, currentUnitInList->firstUnitInUnitGroup))
 			{
 				playerStillHasAUnitAlive = true;
 			}

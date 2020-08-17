@@ -26,7 +26,7 @@
  * File Name: LRRCplayerClass.h
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -48,6 +48,7 @@
 #ifdef USE_ANN
 #include "ANNexperienceClass.h"
 #include "ANNneuronClass.h"
+#include "LRRCrules.h"
 #define DEFAULT_AI_PLAYER_CREATIVITY (0.3)
 #define PERFORM_MOVEMENT_FOR_CC_BIAS (2.0)	//PERFORM_MOVEMENT_FOR_CC_BIAS*DEFAULT_AI_PLAYER_CREATIVITY must be less than 1
 #endif
@@ -85,14 +86,6 @@ extern long PLAYER_ROUND_RITUAL_COMBAT_POINTS_ALLOCATED;
 extern long PLAYER_ROUND_RITUAL_BUILDING_POINTS_ALLOCATED;
 extern double PLAYER_MAXIMUM_BUILD_DISTANCE_FROM_STARTING_POST;		//the max distance any ModelDetails / building part can be initially placed away from the starting post
 extern int BUILDING_DEFAULT_MOD;
-
-
-void fillInPlayerClassExternVariables();
-
-//#define NUMBER_OF_FREE_BUILDING_BRICKS_BASED_ON_BUILDING_WALLS_RATIO 14
-
-
-
 
 class Player
 {
@@ -138,10 +131,18 @@ public:
 	Player* next;
 };
 
-void fillPlayerDetails(Player* p, string playerName, int playerID, int playerInitialCredits);
-void fillPlayerDetails(Player* p, string playerName, int playerID, int playerInitialCredits, vec* playerStartPosition);
+class LRRCplayerClassClass
+{
+	private: SHAREDvectorClass SHAREDvector;
+	public: void fillInPlayerClassExternVariables();
 
-Player* findPlayer(Player* initialPlayerInList, const int playerID);
+	//#define NUMBER_OF_FREE_BUILDING_BRICKS_BASED_ON_BUILDING_WALLS_RATIO 14
+
+	public: void fillPlayerDetails(Player* p, string playerName, int playerID, int playerInitialCredits);
+	public: void fillPlayerDetails(Player* p, string playerName, int playerID, int playerInitialCredits, vec* playerStartPosition);
+
+	public: Player* findPlayer(Player* initialPlayerInList, const int playerID);
+};
 
 #endif
 

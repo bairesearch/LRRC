@@ -23,7 +23,7 @@
  * File Name: LRRCparser.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -34,14 +34,12 @@
 
 
 #include "LRRCparser.h"
-#include "LRRCmodelClass.h"
-#include "LRRCrules.h"
 
 
 #ifdef USE_LRRC
 int HAND_DAGGER_MOD;
 
-void fillInParserExternVariables()
+void LRRCparserClass::fillInParserExternVariables()
 {
 	XMLrulesClass* currentReferenceRulesClass = LRRCrulesMiscellaneous;
 
@@ -62,15 +60,15 @@ void fillInParserExternVariables()
 	//white space removal required for messy dat files from ldraw parts library
 
 
-void updateUnitDetails(string subPartFileName, ModelDetails* u)
+void LRRCparserClass::updateUnitDetails(string subPartFileName, ModelDetails* u)
 {
-	updateUnitDetailsWithTypeDetails(subPartFileName, u);
-	updateUnitDetailsWithCombatDetails(subPartFileName, u);
-	updateUnitDetailsWithBuildingDetails(subPartFileName, u);		//this is currently not needed here - but could be used in the future for battlment protection rules during combat.
-	updateUnitDetailsWithTerrainDefenceDetails(subPartFileName, u);
+	this->updateUnitDetailsWithTypeDetails(subPartFileName, u);
+	this->updateUnitDetailsWithCombatDetails(subPartFileName, u);
+	this->updateUnitDetailsWithBuildingDetails(subPartFileName, u);		//this is currently not needed here - but could be used in the future for battlment protection rules during combat.
+	this->updateUnitDetailsWithTerrainDefenceDetails(subPartFileName, u);
 }
 
-void updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails* u)
+void LRRCparserClass::updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails* u)
 {
 	/*defence levels
 	breast
@@ -360,7 +358,7 @@ void updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails* u)
 	//u.hasCape.. ? , u.hasBucket.. ?
 }
 
-void updateUnitDetailsWithTypeDetails(string subPartFileName, ModelDetails* u)
+void LRRCparserClass::updateUnitDetailsWithTypeDetails(string subPartFileName, ModelDetails* u)
 {
 	//////////////////////////////
 	//ModelDetails Type modification
@@ -449,7 +447,7 @@ void updateUnitDetailsWithTypeDetails(string subPartFileName, ModelDetails* u)
 
 
 
-void updateUnitDetailsWithTerrainDefenceDetails(string subPartFileName, ModelDetails* u)
+void LRRCparserClass::updateUnitDetailsWithTerrainDefenceDetails(string subPartFileName, ModelDetails* u)
 {
 	XMLrulesClass* currentReferenceRulesClass = LRRCrulesTerrainDetails;
 	while(currentReferenceRulesClass->next != NULL)
@@ -482,7 +480,7 @@ void updateUnitDetailsWithTerrainDefenceDetails(string subPartFileName, ModelDet
 }
 
 
-void updateUnitDetailsWithBuildingDetails(string subPartFileName, ModelDetails* u)
+void LRRCparserClass::updateUnitDetailsWithBuildingDetails(string subPartFileName, ModelDetails* u)
 {
 	bool foundBuildingPartInList = false;
 

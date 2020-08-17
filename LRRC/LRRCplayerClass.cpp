@@ -26,7 +26,7 @@
  * File Name: LRRCplayerClass.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -39,7 +39,6 @@
 /*LDreferenceClass.cpp: Defines a class for references to submodels/parts/units within a scene file*/
 
 #include "LRRCplayerClass.h"
-#include "LRRCrules.h"
 //#include "LRRCmodelClass.h"
 
 long PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT;
@@ -49,7 +48,7 @@ double PLAYER_MAXIMUM_BUILD_DISTANCE_FROM_STARTING_POST;
 int BUILDING_DEFAULT_MOD;
 
 
-void fillInPlayerClassExternVariables()
+void LRRCplayerClassClass::fillInPlayerClassExternVariables()
 {
 	XMLrulesClass* currentReferenceRulesClass = LRRCrulesMiscellaneous;
 
@@ -174,23 +173,23 @@ Player::~Player()
 
 }
 
-void fillPlayerDetails(Player* p, string playerName, int playerID, int playerInitialCredits)
+void LRRCplayerClassClass::fillPlayerDetails(Player* p, string playerName, int playerID, int playerInitialCredits)
 {
 	p->name = playerName;
 	p->id = playerID;			//player ID - Eg colour
 	p->credits = playerInitialCredits;
 }
 
-void fillPlayerDetails(Player* p, string playerName, int playerID, int playerInitialCredits, vec* playerStartPosition)
+void LRRCplayerClassClass::fillPlayerDetails(Player* p, string playerName, int playerID, int playerInitialCredits, vec* playerStartPosition)
 {
 	p->name = playerName;
 	p->id = playerID;			//player ID - Eg colour
 	p->credits = playerInitialCredits;
-	copyVectors(&(p->startPosition), playerStartPosition);
+	SHAREDvector.copyVectors(&(p->startPosition), playerStartPosition);
 }
 
 
-Player* findPlayer(Player* initialPlayerInList, const int playerID)
+Player* LRRCplayerClassClass::findPlayer(Player* initialPlayerInList, const int playerID)
 {
 	Player* playerThatWasLocated = NULL;
 

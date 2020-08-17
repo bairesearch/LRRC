@@ -26,7 +26,7 @@
  * File Name: LRRCsprite.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -37,15 +37,7 @@
 /*This code allows the addition of a sprite into a given scene file where a sprite is a paragraph of text. [The text is to be rendered in 3D, and point towards the user POV - see CHECK THIS for missing code]*/
 
 
-#include "LRRCglobalDefs.h"
 #include "LRRCsprite.h"
-#include "LRRCcombat.h"
-#include "LRRCrules.h"
-#include "LDsprite.h"
-#include "LDparser.h"
-#include "LDreferenceManipulation.h"
-#include "SHAREDvector.h"
-#include "math.h"
 
 
 
@@ -62,7 +54,7 @@ static int SPRITE_SUBMODEL_RANGE_TARGET_SELECTION_COLOUR_OPAQ;
 static double SPRITE_SUBMODEL_RANGE_SCALE_FACTOR;
 
 
-void fillInLRRCSpriteExternVariables()
+void LRRCspriteClass::fillInLRRCSpriteExternVariables()
 {
 	XMLrulesClass* currentReferenceRulesClass = LRRCrulesSprite;
 
@@ -117,12 +109,12 @@ void fillInLRRCSpriteExternVariables()
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
 	}
 
-	fillInLDspriteExternVariables();
+	LDsprite.fillInLDspriteExternVariables();
 }
 /*top level sprite routines - required for independent LRRCsprite.cpp calculations*/
 
 	//NB this function does not add round's player's phase specific [movement/attack] sprites - these have to be added in LRRCmovement.cpp, and LRRCgame.cpp functions respectively
-bool LRRCaddUnitDetailsSpritesToSceneFile(string sceneFileName, string sceneFileNameWithSprites, const bool addTextualSpriteInfo, const bool addRangeSpriteInfo, const int currentPhase, const int currentPlayerTurn)
+bool LRRCspriteClass::LRRCaddUnitDetailsSpritesToSceneFile(string sceneFileName, string sceneFileNameWithSprites, const bool addTextualSpriteInfo, const bool addRangeSpriteInfo, const int currentPhase, const int currentPlayerTurn)
 {
 	bool result = true;
 
@@ -131,7 +123,7 @@ bool LRRCaddUnitDetailsSpritesToSceneFile(string sceneFileName, string sceneFile
 	LDreference* topLevelReferenceInSceneFile = new LDreference(true);		//The model details information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
 
 	//parse the scene files and build LDreference linked lists
-	if(!parseFile(sceneFileName, initialReferenceInSceneFile, topLevelReferenceInSceneFile, false))
+	if(!LDparser.parseFile(sceneFileName, initialReferenceInSceneFile, topLevelReferenceInSceneFile, false))
 	{//file does not exist
 		cout << "The file: " << sceneFileName << " does not exist in the directory" << endl;
 		return false;
@@ -145,9 +137,9 @@ bool LRRCaddUnitDetailsSpritesToSceneFile(string sceneFileName, string sceneFile
 	eyeCoords.z = 0.0;
 
 	LDreference* spriteListInitialReference = new LDreference();
-	LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(initialReferenceInSceneFile, spriteListInitialReference, &eyeCoords, &numSpritesAdded, sceneFileNameWithSprites, initialReferenceInSceneFile, addTextualSpriteInfo, addRangeSpriteInfo, currentPhase, currentPlayerTurn);
+	this->LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(initialReferenceInSceneFile, spriteListInitialReference, &eyeCoords, &numSpritesAdded, sceneFileNameWithSprites, initialReferenceInSceneFile, addTextualSpriteInfo, addRangeSpriteInfo, currentPhase, currentPlayerTurn);
 
-	if(!addSpriteReferenceListToSceneFile(sceneFileName, sceneFileNameWithSprites, spriteListInitialReference, numSpritesAdded))
+	if(!LDreferenceManipulation.addSpriteReferenceListToSceneFile(sceneFileName, sceneFileNameWithSprites, spriteListInitialReference, numSpritesAdded))
 	{
 		result = false;
 	}
@@ -159,7 +151,7 @@ bool LRRCaddUnitDetailsSpritesToSceneFile(string sceneFileName, string sceneFile
 	return result;
 }
 
-bool LRRCaddUnitDetailsSpritesToScene(const string sceneFileName, string sceneFileNameWithSprites, const bool addTextualSpriteInfo, const bool addRangeSpriteInfo, const int currentPhase, const int currentPlayerTurn, LDreference* firstReferenceInScene)
+bool LRRCspriteClass::LRRCaddUnitDetailsSpritesToScene(const string sceneFileName, string sceneFileNameWithSprites, const bool addTextualSpriteInfo, const bool addRangeSpriteInfo, const int currentPhase, const int currentPlayerTurn, LDreference* firstReferenceInScene)
 {
 	bool result = true;
 
@@ -173,9 +165,9 @@ bool LRRCaddUnitDetailsSpritesToScene(const string sceneFileName, string sceneFi
 	eyeCoords.z = 0.0;
 
 	LDreference* spriteListInitialReference = new LDreference();
-	LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(initialReferenceInSceneFile, spriteListInitialReference, &eyeCoords, &numSpritesAdded, sceneFileNameWithSprites, initialReferenceInSceneFile, addTextualSpriteInfo, addRangeSpriteInfo, currentPhase, currentPlayerTurn);
+	this->LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(initialReferenceInSceneFile, spriteListInitialReference, &eyeCoords, &numSpritesAdded, sceneFileNameWithSprites, initialReferenceInSceneFile, addTextualSpriteInfo, addRangeSpriteInfo, currentPhase, currentPlayerTurn);
 
-	if(!addSpriteReferenceListToSceneFile(sceneFileName, sceneFileNameWithSprites, spriteListInitialReference, numSpritesAdded))
+	if(!LDreferenceManipulation.addSpriteReferenceListToSceneFile(sceneFileName, sceneFileNameWithSprites, spriteListInitialReference, numSpritesAdded))
 	{
 		result = false;
 	}
@@ -189,7 +181,7 @@ bool LRRCaddUnitDetailsSpritesToScene(const string sceneFileName, string sceneFi
 
 
 //preconditions; assumes scene file has more than 1 person
-void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referenceInSceneFile, LDreference* spriteListInitialReference, const vec* eyeCoords, int* numSpritesAdded, string sceneFileName, const LDreference* initialReferenceInSceneFile, const bool addTextualSpriteInfo, const bool addRangeSpriteInfo, const int currentPhase, const int currentPlayerTurn)
+void LRRCspriteClass::LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referenceInSceneFile, LDreference* spriteListInitialReference, const vec* eyeCoords, int* numSpritesAdded, string sceneFileName, const LDreference* initialReferenceInSceneFile, const bool addTextualSpriteInfo, const bool addRangeSpriteInfo, const int currentPhase, const int currentPlayerTurn)
 {
 	//cout << "here03" << endl;
 
@@ -204,7 +196,7 @@ void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referen
 	{
 		if(currentReference->isSubModelReference)
 		{
-			performFinalUnitClassCalculations(currentReference->subModelDetails);
+			LRRCcombat.performFinalUnitClassCalculations(currentReference->subModelDetails);
 
 			/*a)  parse down the tree from the unit. NB this does not allow for copying of parent combat relevant items into child unit
 				extract from performCloseCombatNormal*/
@@ -214,14 +206,14 @@ void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referen
 			//declare current submodel top level reference
 			LDreference* topLevelReferenceInCurrentSubmodel = new LDreference(currentReference->name, currentReference->colour, true);
 			//cout << "here0311" << endl;
-				copyReferencePosition(topLevelReferenceInCurrentSubmodel, currentReference);
-				copyAllUnitDetails(topLevelReferenceInCurrentSubmodel->subModelDetails, currentReference->subModelDetails);
+				LDreferenceClass.copyReferencePosition(topLevelReferenceInCurrentSubmodel, currentReference);
+				LRRCmodelClass.copyAllUnitDetails(topLevelReferenceInCurrentSubmodel->subModelDetails, currentReference->subModelDetails);
 				//cout << "here0312" << endl;
-			searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInCurrentSubmodel, currentReference->firstReferenceWithinSubModel, topLevelReferenceInCurrentSubmodel, true);
+			LRRCcombat.searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInCurrentSubmodel, currentReference->firstReferenceWithinSubModel, topLevelReferenceInCurrentSubmodel, true);
 				//cout << "here0313" << endl;
-			determineUnitTypeAndMinSpeedOfUnitGroup(topLevelReferenceInCurrentSubmodel->subModelDetails);
+			LRRCmodelClass.determineUnitTypeAndMinSpeedOfUnitGroup(topLevelReferenceInCurrentSubmodel->subModelDetails);
 				//cout << "here0314" << endl;
-			performFinalUnitClassCalculations(topLevelReferenceInCurrentSubmodel->subModelDetails);
+			LRRCcombat.performFinalUnitClassCalculations(topLevelReferenceInCurrentSubmodel->subModelDetails);
 
 
 			//cout << "topLevelReferenceInCurrentSubmodel->colour = " << topLevelReferenceInCurrentSubmodel->colour << endl;
@@ -231,7 +223,7 @@ void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referen
 			if(topLevelReferenceInCurrentSubmodel->subModelDetails->numPerson > 1)
 			{
 				//cout << "DEBUG 1c" << endl;
-				LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(currentReference->firstReferenceWithinSubModel, spriteListInitialReference, eyeCoords, numSpritesAdded, sceneFileName, initialReferenceInSceneFile, addTextualSpriteInfo, addRangeSpriteInfo, currentPhase, currentPlayerTurn);
+				this->LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(currentReference->firstReferenceWithinSubModel, spriteListInitialReference, eyeCoords, numSpritesAdded, sceneFileName, initialReferenceInSceneFile, addTextualSpriteInfo, addRangeSpriteInfo, currentPhase, currentPlayerTurn);
 				//cout << "DEBUG 1d" << endl;
 			}
 
@@ -250,7 +242,7 @@ void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referen
 			if((topLevelReferenceInCurrentSubmodel->subModelDetails->numPerson == 1) || ((topLevelReferenceInCurrentSubmodel->subModelDetails->unitType > UNIT_TYPE_HORSE_AND_SADDLE) && (topLevelReferenceInCurrentSubmodel->subModelDetails->numPerson > 0)))
 			{
 				//cout << "here033" << endl;
-				if(!LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(topLevelReferenceInCurrentSubmodel, unusedTargetReference, spriteListInitialReference, eyeCoords, numSpritesAdded, sceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, addTargetSpriteInfo, currentPhase, currentPlayerTurn))
+				if(!this->LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(topLevelReferenceInCurrentSubmodel, unusedTargetReference, spriteListInitialReference, eyeCoords, numSpritesAdded, sceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, addTargetSpriteInfo, currentPhase, currentPlayerTurn))
 				{
 					result = false;
 				}
@@ -310,7 +302,7 @@ void LRRCsearchSceneRefListAddUnitDetailsSpriteForSubmodels(LDreference* referen
 
 /*medium level sprite routines - these can be used by LRRCsprite.cpp top level routines or by LRRCgame.cpp routines*/
 
-bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReference, LDreference* targetReference, LDreference* spriteListInitialReference, const vec* eyeCoords, int* numSpritesAdded, string sceneFileName, const bool addTextualSpriteInfo, const bool addRangeSpriteInfo, const bool addTargetSpriteInfo, const int currentPhase, const int currentPlayerTurn)
+bool LRRCspriteClass::LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReference, LDreference* targetReference, LDreference* spriteListInitialReference, const vec* eyeCoords, int* numSpritesAdded, string sceneFileName, const bool addTextualSpriteInfo, const bool addRangeSpriteInfo, const bool addTargetSpriteInfo, const int currentPhase, const int currentPlayerTurn)
 {
 	bool result = true;
 
@@ -346,7 +338,7 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReferen
 	numSpritesAddedLocal = &numSpritesAddedLocalUnused;
 #else
 	numSpritesAddedLocal = numSpritesAdded;
-	spriteSubmodelCurrentReference = search1DrefListFindLastReference(spriteListInitialReference);
+	spriteSubmodelCurrentReference = LDreferenceManipulation.search1DrefListFindLastReference(spriteListInitialReference);
 #endif
 
 	//cout << "spriteSubmodelCurrentReference->deformationMatrix->a.x = " << (&((&(spriteSubmodelCurrentReference->deformationMatrix))->a))->x << endl;
@@ -361,26 +353,26 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReferen
 		int spriteNumberOfLines;
 		spriteNumberOfLines = SPRITE_TEXTUAL_NUM_OF_LINES;
 		int spriteColourArray[SPRITE_TEXTUAL_NUM_OF_LINES];
-		LRRCgenerateTextualSpriteInfoString(unitReference, &spriteTextString, spriteColourArray);
+		this->LRRCgenerateTextualSpriteInfoString(unitReference, &spriteTextString, spriteColourArray);
 
 		#ifdef DEBUG_ADD_INDIVIDUAL_SPRITES
 		bool addIndividualSprites = true;
 		#else
 		bool addIndividualSprites = false;
 		#endif
-		spriteSubmodelCurrentReference = LDaddTextualSpriteInfoStringToReferenceList(unitReference, spriteTextString, spriteColourArray, spriteSubmodelCurrentReference, spriteNumberOfLines, numSpritesAddedLocal, addIndividualSprites);
+		spriteSubmodelCurrentReference = LDsprite.LDaddTextualSpriteInfoStringToReferenceList(unitReference, spriteTextString, spriteColourArray, spriteSubmodelCurrentReference, spriteNumberOfLines, numSpritesAddedLocal, addIndividualSprites);
 	}
 
 	//cout << "here1b" << endl;
 
-	if((addRangeSpriteInfo) && ((obtainReferencePlayerID(unitReference) == currentPlayerTurn) || (currentPhase == GAME_PHASE_GENERIC)))
+	if((addRangeSpriteInfo) && ((LDreferenceClass.obtainReferencePlayerID(unitReference) == currentPlayerTurn) || (currentPhase == GAME_PHASE_GENERIC)))
 	{
 		//cout << "here1b1" << endl;
 
-		//cout << "obtainReferencePlayerID(unitReference) = " << obtainReferencePlayerID(unitReference) << endl;
+		//cout << "LDreferenceClass.obtainReferencePlayerID(unitReference) = " << LDreferenceClass.obtainReferencePlayerID(unitReference) << endl;
 		//cout << "currentPlayerTurn = " << currentPlayerTurn << endl;
 		//cout << "here12" << endl;
-		spriteSubmodelCurrentReference = LRRCaddRangeSpriteInfoToReferenceList(spriteSubmodelCurrentReference, unitReference, currentPhase, numSpritesAddedLocal);
+		spriteSubmodelCurrentReference = this->LRRCaddRangeSpriteInfoToReferenceList(spriteSubmodelCurrentReference, unitReference, currentPhase, numSpritesAddedLocal);
 	}
 
 	//cout << "here1c" << endl;
@@ -388,7 +380,7 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReferen
 	if(addTargetSpriteInfo)
 	{
 		//cout << "here13" << endl;
-		spriteSubmodelCurrentReference = LRRCaddTargetSpriteInfoToReferenceList(spriteSubmodelCurrentReference, unitReference, targetReference, currentPhase, numSpritesAddedLocal);
+		spriteSubmodelCurrentReference = this->LRRCaddTargetSpriteInfoToReferenceList(spriteSubmodelCurrentReference, unitReference, targetReference, currentPhase, numSpritesAddedLocal);
 	}
 
 
@@ -403,7 +395,7 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReferen
 
 
 	//cout << "here2a" << endl;
-	string spriteReferenceFileName = LDcreateSpriteReferenceName(*numSpritesAdded, sceneFileName);
+	string spriteReferenceFileName = LDsprite.LDcreateSpriteReferenceName(*numSpritesAdded, sceneFileName);
 	#ifdef DEBUG_SPRITES
 	cout << "spriteReferenceFileName = " << spriteReferenceFileName << endl;
 	#endif
@@ -413,7 +405,7 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReferen
 	//cout << "here3" << endl;
 
 	//writeReferencesToFile
-	if(!writeReferencesToFile(spriteReferenceFileName, spriteSubmodelInitialReference))
+	if(!LDreferenceManipulation.writeReferencesToFile(spriteReferenceFileName, spriteSubmodelInitialReference))
 	{
 		result = false;
 	}
@@ -425,7 +417,7 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReferen
 	//cout << "here4" << endl;
 
 	//addSpriteReferenceToSpriteListByteArray
-	if(!LDaddSpriteToSpriteReferenceList(&(unitReference->absolutePosition), eyeCoords, spriteListInitialReference, spriteReferenceFileName, spriteDefaultColour, 1))
+	if(!LDsprite.LDaddSpriteToSpriteReferenceList(&(unitReference->absolutePosition), eyeCoords, spriteListInitialReference, spriteReferenceFileName, spriteDefaultColour, 1))
 	{
 		result = false;
 	}
@@ -445,7 +437,7 @@ bool LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(LDreference* unitReferen
 
 
 //currently this function just adds a plain line between the unit and the target, in the future it could be more complex
-LDreference* LRRCaddTargetSpriteInfoToReferenceList(LDreference* spriteSubmodelInitialReference, LDreference* unitReference, LDreference* targetReference, const int currentPhase, int* numSpritesAdded)
+LDreference* LRRCspriteClass::LRRCaddTargetSpriteInfoToReferenceList(LDreference* spriteSubmodelInitialReference, LDreference* unitReference, LDreference* targetReference, const int currentPhase, int* numSpritesAdded)
 {
 	bool result = true;
 	LDreference* spriteSubmodelCurrentReference = spriteSubmodelInitialReference;
@@ -475,14 +467,14 @@ LDreference* LRRCaddTargetSpriteInfoToReferenceList(LDreference* spriteSubmodelI
 	}
 
 	#ifndef DEBUG_ADD_INDIVIDUAL_SPRITES
-	copyVectors(&(spriteSubmodelCurrentReference->vertex1relativePosition), &(unitReference->absolutePosition));
-	copyVectors(&(spriteSubmodelCurrentReference->vertex2relativePosition), &(targetReference->absolutePosition));
+	SHAREDvector.copyVectors(&(spriteSubmodelCurrentReference->vertex1relativePosition), &(unitReference->absolutePosition));
+	SHAREDvector.copyVectors(&(spriteSubmodelCurrentReference->vertex2relativePosition), &(targetReference->absolutePosition));
 	#else
 	vec localvec;
-	subtractVectors(&localvec, &(unitReference->absolutePosition), &(unitReference->absolutePosition));
-	copyVectors(&(spriteSubmodelCurrentReference->vertex1relativePosition), &localvec);
-	subtractVectors(&localvec, &(targetReference->absolutePosition), &(unitReference->absolutePosition));
-	copyVectors(&(spriteSubmodelCurrentReference->vertex2relativePosition), &localvec);
+	SHAREDvector.subtractVectors(&localvec, &(unitReference->absolutePosition), &(unitReference->absolutePosition));
+	SHAREDvector.copyVectors(&(spriteSubmodelCurrentReference->vertex1relativePosition), &localvec);
+	SHAREDvector.subtractVectors(&localvec, &(targetReference->absolutePosition), &(unitReference->absolutePosition));
+	SHAREDvector.copyVectors(&(spriteSubmodelCurrentReference->vertex2relativePosition), &localvec);
 	#endif
 
 	LDreference* newReference1 = new LDreference();
@@ -494,7 +486,7 @@ LDreference* LRRCaddTargetSpriteInfoToReferenceList(LDreference* spriteSubmodelI
 	return spriteSubmodelCurrentReference;
 }
 
-LDreference* LRRCaddRangeSpriteInfoToReferenceList(LDreference* spriteSubmodelInitialReference, LDreference* unitReference, const int currentPhase, int* numSpritesAdded)
+LDreference* LRRCspriteClass::LRRCaddRangeSpriteInfoToReferenceList(LDreference* spriteSubmodelInitialReference, LDreference* unitReference, const int currentPhase, int* numSpritesAdded)
 {
 	LDreference* spriteSubmodelCurrentReference = spriteSubmodelInitialReference;
 
@@ -509,18 +501,18 @@ LDreference* LRRCaddRangeSpriteInfoToReferenceList(LDreference* spriteSubmodelIn
 		//add movement range info [green ring/sphere/cylinder]
 		//cout << "(unitDetails->movementSpeed)" << (unitDetails->movementSpeed) << endl;
 		//cout << "vv1" << endl;
-		createIdentityMatrix(&currentDeformationMatrix);
-		scaleMatrix(&currentDeformationMatrix, ((unitDetails->movementSpeed)*(SPRITE_SUBMODEL_RANGE_SCALE_FACTOR*LDRAW_UNITS_PER_CM)));
+		SHAREDvector.createIdentityMatrix(&currentDeformationMatrix);
+		SHAREDvector.scaleMatrix(&currentDeformationMatrix, ((unitDetails->movementSpeed)*(SPRITE_SUBMODEL_RANGE_SCALE_FACTOR*LDRAW_UNITS_PER_CM)));
 		//cout << "vv1a" << endl;
 		//cout << "spriteSubmodelCurrentReference->deformationMatrix->a.x = " << (&((&(spriteSubmodelCurrentReference->deformationMatrix))->a))->x << endl;
 
-		copyMatrixTwoIntoMatrixOne(&(spriteSubmodelCurrentReference->deformationMatrix), &(currentDeformationMatrix));
+		SHAREDvector.copyMatrixTwoIntoMatrixOne(&(spriteSubmodelCurrentReference->deformationMatrix), &(currentDeformationMatrix));
 		//cout << "vv1b" << endl;
 		spriteSubmodelCurrentReference->type = REFERENCE_TYPE_SUBMODEL;
 		spriteSubmodelCurrentReference->colour = SPRITE_SUBMODEL_RANGE_MOVEMENT_COLOUR_OPAQ;
 		spriteSubmodelCurrentReference->name = SPRITE_SUBMODEL_RANGE_FILE_NAME;
 		#ifndef DEBUG_ADD_INDIVIDUAL_SPRITES
-		addVectors(&(spriteSubmodelCurrentReference->relativePosition), &(spriteSubmodelCurrentReference->relativePosition), &(unitReference->absolutePosition));
+		SHAREDvector.addVectors(&(spriteSubmodelCurrentReference->relativePosition), &(spriteSubmodelCurrentReference->relativePosition), &(unitReference->absolutePosition));
 		#endif
 		//cout << "vv1c" << endl;
 		LDreference* newReference1 = new LDreference();
@@ -535,14 +527,14 @@ LDreference* LRRCaddRangeSpriteInfoToReferenceList(LDreference* spriteSubmodelIn
 	{
 		//add long distance combat range info [orange ring/sphere/cylinder]
 		//cout << "vv2" << endl;
-		createIdentityMatrix(&currentDeformationMatrix);
-		scaleMatrix(&currentDeformationMatrix, ((unitDetails->longDistanceAttackBaseRange)*SPRITE_SUBMODEL_RANGE_SCALE_FACTOR*LDRAW_UNITS_PER_CM));
-		copyMatrixTwoIntoMatrixOne(&(spriteSubmodelCurrentReference->deformationMatrix), &(currentDeformationMatrix));
+		SHAREDvector.createIdentityMatrix(&currentDeformationMatrix);
+		SHAREDvector.scaleMatrix(&currentDeformationMatrix, ((unitDetails->longDistanceAttackBaseRange)*SPRITE_SUBMODEL_RANGE_SCALE_FACTOR*LDRAW_UNITS_PER_CM));
+		SHAREDvector.copyMatrixTwoIntoMatrixOne(&(spriteSubmodelCurrentReference->deformationMatrix), &(currentDeformationMatrix));
 		spriteSubmodelCurrentReference->type = REFERENCE_TYPE_SUBMODEL;
 		spriteSubmodelCurrentReference->colour = SPRITE_SUBMODEL_RANGE_LONGDISTANCE_COMBAT_COLOUR_OPAQ;
 		spriteSubmodelCurrentReference->name = SPRITE_SUBMODEL_RANGE_FILE_NAME;
 		#ifndef DEBUG_ADD_INDIVIDUAL_SPRITES
-		addVectors(&(spriteSubmodelCurrentReference->relativePosition), &(spriteSubmodelCurrentReference->relativePosition), &(unitReference->absolutePosition));
+		SHAREDvector.addVectors(&(spriteSubmodelCurrentReference->relativePosition), &(spriteSubmodelCurrentReference->relativePosition), &(unitReference->absolutePosition));
 		#endif
 		LDreference* newReference2 = new LDreference();
 		spriteSubmodelCurrentReference -> next = newReference2;
@@ -554,14 +546,14 @@ LDreference* LRRCaddRangeSpriteInfoToReferenceList(LDreference* spriteSubmodelIn
 	{
 		//add close combat range info [red ring/sphere/cylinder - only a few units in diameter - ie quite small]
 		//cout << "vv3" << endl;
-		createIdentityMatrix(&currentDeformationMatrix);
-		scaleMatrix(&currentDeformationMatrix, (CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY*(SPRITE_SUBMODEL_RANGE_SCALE_FACTOR*LDRAW_UNITS_PER_CM)));
-		copyMatrixTwoIntoMatrixOne(&(spriteSubmodelCurrentReference->deformationMatrix), &(currentDeformationMatrix));
+		SHAREDvector.createIdentityMatrix(&currentDeformationMatrix);
+		SHAREDvector.scaleMatrix(&currentDeformationMatrix, (CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY*(SPRITE_SUBMODEL_RANGE_SCALE_FACTOR*LDRAW_UNITS_PER_CM)));
+		SHAREDvector.copyMatrixTwoIntoMatrixOne(&(spriteSubmodelCurrentReference->deformationMatrix), &(currentDeformationMatrix));
 		spriteSubmodelCurrentReference->type = REFERENCE_TYPE_SUBMODEL;
 		spriteSubmodelCurrentReference->colour = SPRITE_SUBMODEL_RANGE_CLOSE_COMBAT_COLOUR_OPAQ;
 		spriteSubmodelCurrentReference->name = SPRITE_SUBMODEL_RANGE_FILE_NAME;
 		#ifndef DEBUG_ADD_INDIVIDUAL_SPRITES
-		addVectors(&(spriteSubmodelCurrentReference->relativePosition), &(spriteSubmodelCurrentReference->relativePosition), &(unitReference->absolutePosition));
+		SHAREDvector.addVectors(&(spriteSubmodelCurrentReference->relativePosition), &(spriteSubmodelCurrentReference->relativePosition), &(unitReference->absolutePosition));
 		#endif
 		LDreference* newReference3 = new LDreference();
 		spriteSubmodelCurrentReference -> next = newReference3;
@@ -585,7 +577,7 @@ LDreference* LRRCaddRangeSpriteInfoToReferenceList(LDreference* spriteSubmodelIn
 /*primary sprite routines*/
 
 
-void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, string* spriteTextString, int spriteColourArray[])
+void LRRCspriteClass::LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, string* spriteTextString, int spriteColourArray[])
 {
 	*spriteTextString = "";
 
@@ -611,9 +603,9 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 #endif
 
 	//ii)  perform sprite calculations
-	int baseDefenceLevel = invertLevel(unitDetailsInSceneFile->armourDefenceValue);
-	int baseCloseCombatAttackLevel = invertLevel(unitDetailsInSceneFile->closeCombatAttackValue);
-	int baseLongDistanceAttackLevel = invertLevel(unitDetailsInSceneFile->longDistanceAttackValue);
+	int baseDefenceLevel = LRRCmodelClass.invertLevel(unitDetailsInSceneFile->armourDefenceValue);
+	int baseCloseCombatAttackLevel = LRRCmodelClass.invertLevel(unitDetailsInSceneFile->closeCombatAttackValue);
+	int baseLongDistanceAttackLevel = LRRCmodelClass.invertLevel(unitDetailsInSceneFile->longDistanceAttackValue);
 
 	//cout << "DEBUG: movementSpeed = " << movementSpeed << endl;
 
@@ -642,7 +634,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 	/*Player ID Information*/
 	*spriteTextString = *spriteTextString + '\n';
 #ifdef SPRITE_TEXTUAL_INCLUDE_PLAYERID_INFO
-	string tempString = convertIntToString(obtainReferencePlayerID(unitReferenceInSceneFile));
+	string tempString = SHAREDvars.convertIntToString(LDreferenceClass.obtainReferencePlayerID(unitReferenceInSceneFile));
 
 	*spriteTextString = *spriteTextString + "ID = " + tempString;
 	//cout << "*spriteTextString=" <<* spriteTextString << endl;
@@ -663,7 +655,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 	#ifdef SPRITE_ALWAYS_ADD_TEXT
 		if(unitDetailsInSceneFile->defenceBonus > 0)
 		{
-			string tempString = convertIntToString(unitDetailsInSceneFile->defenceBonus);
+			string tempString = SHAREDvars.convertIntToString(unitDetailsInSceneFile->defenceBonus);
 			*spriteTextString = *spriteTextString + " - " + tempString;
 		}
 	#endif
@@ -676,7 +668,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 		else
 		{
 	#ifndef SPRITE_ALWAYS_ADD_TEXT
-			string tempString = convertIntToString((unitDetailsInSceneFile->defenceTotal)*2);
+			string tempString = SHAREDvars.convertIntToString((unitDetailsInSceneFile->defenceTotal)*2);
 			*spriteTextString = *spriteTextString + tempString;
 	#endif
 		}
@@ -702,11 +694,11 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 		{
 			//cout << "DEBUG 1i1" << endl;
 		#ifdef SPRITE_ALWAYS_ADD_TEXT
-			string tempString = convertIntToString(baseLongDistanceAttackLevel);
+			string tempString = SHAREDvars.convertIntToString(baseLongDistanceAttackLevel);
 			*spriteTextString = *spriteTextString + tempString;
 			if(unitDetailsInSceneFile->longDistanceAttackBonus > 0)
 			{
-				string tempString = convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
+				string tempString = SHAREDvars.convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
 				*spriteTextString = *spriteTextString + " - " + tempString;
 			}
 		#endif
@@ -720,7 +712,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 			else
 			{
 			#ifndef SPRITE_ALWAYS_ADD_TEXT
-				string tempString = convertIntToString((unitDetailsInSceneFile->longDistanceAttackTotal)*2);
+				string tempString = SHAREDvars.convertIntToString((unitDetailsInSceneFile->longDistanceAttackTotal)*2);
 				*spriteTextString = *spriteTextString + tempString;
 			#endif
 			}
@@ -743,11 +735,11 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 		if(unitDetailsInSceneFile->closeCombatAttackTotal > 0)
 		{
 		#ifdef SPRITE_ALWAYS_ADD_TEXT
-			string tempString = convertIntToString(baseCloseCombatAttackLevel);
+			string tempString = SHAREDvars.convertIntToString(baseCloseCombatAttackLevel);
 			*spriteTextString = *spriteTextString + tempString;
 			if(unitDetailsInSceneFile->closeCombatAttackBonus > 0)
 			{
-				string tempString = convertIntToString(unitDetailsInSceneFile->closeCombatAttackBonus);
+				string tempString = SHAREDvars.convertIntToString(unitDetailsInSceneFile->closeCombatAttackBonus);
 				*spriteTextString = *spriteTextString + " + " + tempString;
 			}
 		#endif
@@ -759,7 +751,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 			else
 			{
 			#ifndef SPRITE_ALWAYS_ADD_TEXT
-				string tempString = convertIntToString((unitDetailsInSceneFile->closeCombatAttackTotal)*2);
+				string tempString = SHAREDvars.convertIntToString((unitDetailsInSceneFile->closeCombatAttackTotal)*2);
 				*spriteTextString = *spriteTextString + tempString;
 			#endif
 			}
@@ -784,11 +776,11 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 			if((unitDetailsInSceneFile->closeCombatAttackValue) > (unitDetailsInSceneFile->longDistanceAttackValue))
 			{
 			#ifdef SPRITE_ALWAYS_ADD_TEXT
-				string tempString = convertIntToString(baseCloseCombatAttackLevel);
+				string tempString = SHAREDvars.convertIntToString(baseCloseCombatAttackLevel);
 				*spriteTextString = *spriteTextString + tempString;
 				if(unitDetailsInSceneFile->closeCombatAttackBonus > 0)
 				{
-					string tempString = convertIntToString(unitDetailsInSceneFile->closeCombatAttackBonus);
+					string tempString = SHAREDvars.convertIntToString(unitDetailsInSceneFile->closeCombatAttackBonus);
 					*spriteTextString = *spriteTextString + " + " + tempString;
 				}
 			#endif
@@ -801,7 +793,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 				else
 				{
 				#ifndef SPRITE_ALWAYS_ADD_TEXT
-					string tempString = convertIntToString((unitDetailsInSceneFile->closeCombatAttackTotal)*2);
+					string tempString = SHAREDvars.convertIntToString((unitDetailsInSceneFile->closeCombatAttackTotal)*2);
 					*spriteTextString = *spriteTextString + tempString;
 				#endif
 				}
@@ -810,11 +802,11 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 			else
 			{
 			#ifdef SPRITE_ALWAYS_ADD_TEXT
-				string tempString = convertIntToString(baseLongDistanceAttackLevel);
+				string tempString = SHAREDvars.convertIntToString(baseLongDistanceAttackLevel);
 				*spriteTextString = *spriteTextString + tempString;
 				if(unitDetailsInSceneFile->longDistanceAttackBonus > 0)
 				{
-					string tempString = convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
+					string tempString = SHAREDvars.convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
 					*spriteTextString = *spriteTextString + " - " + tempString;
 				}
 			#endif
@@ -829,7 +821,7 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 				else
 				{
 				#ifndef SPRITE_ALWAYS_ADD_TEXT
-					string tempString = convertIntToString((unitDetailsInSceneFile->longDistanceAttackTotal)*2);
+					string tempString = SHAREDvars.convertIntToString((unitDetailsInSceneFile->longDistanceAttackTotal)*2);
 					*spriteTextString = *spriteTextString + tempString;
 				#endif
 				}
@@ -856,12 +848,12 @@ void LRRCgenerateTextualSpriteInfoString(LDreference* unitReferenceInSceneFile, 
 	if(unitDetailsInSceneFile->movementSpeed > 0)
 	{
 		//itoa(unitDetailsInSceneFile->movementSpeed, tempString, 10);
-		string tempString = convertIntToString(unitDetailsInSceneFile->movementSpeed);
+		string tempString = SHAREDvars.convertIntToString(unitDetailsInSceneFile->movementSpeed);
 		*spriteTextString = *spriteTextString + tempString;
 
 		if(unitDetailsInSceneFile->longDistanceAttackBonus > 0)
 		{
-			string tempString = convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
+			string tempString = SHAREDvars.convertIntToString(unitDetailsInSceneFile->longDistanceAttackBonus);
 			*spriteTextString = *spriteTextString + " + " + tempString;
 		}
 	}

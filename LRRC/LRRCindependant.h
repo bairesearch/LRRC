@@ -26,7 +26,7 @@
  * File Name: LRRCindependant.h
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -40,12 +40,36 @@
 #define HEADER_LRRC_INDEPENDANT
 
 #include "LRRCglobalDefs.h"
+#include "LRRCmovement.h"
+#include "LRRCcombat.h"
+#include "LRRCsprite.h"
+#include "LDreferenceManipulation.h"
+#include "LRRCgameReferenceManipulation.h"
+#include "LRRCplayerClass.h"
+#include "LRRCgame.h"
+#include "LRRCrules.h"
+#include "LRRCparser.h"
+#include "LRRCsprite.h"	//required for extern variable initialisation only
+#include "LDparser.h"	//is this required?
 
-void executeLRRCfunctionsIndependantly();
+class LRRCindependantClass
+{
+	private: LRRCmovementClass LRRCmovement;
+	private: SHAREDvarsClass SHAREDvars;
+	private: LRRCmodelClassClass LRRCmodelClass;
+	private: LRRCrulesClass LRRCrules;
+	private: LRRCplayerClassClass LRRCplayerClass;
+	private: LRRCspriteClass LRRCsprite;
+	private: LRRCcombatClass LRRCcombat;
+	private: LRRCparserClass LRRCparser;
+	private: LRRCgameReferenceManipulationClass LRRCgameReferenceManipulation;
+	private: LRRCgameClass LRRCgame;
+	public: void executeLRRCfunctionsIndependantly();
 
-bool obtainAttackIntentionsFromUser(bool* unit1intendsToPerformAttack, bool* unit2intendsToPerformAttack);
-bool obtainSceneFileNamesFromUser(string* currentSceneFileName, string* previousSceneFileName);
-bool obtainSceneFileNameFromUser(string* currentSceneFileName);
+	private: bool obtainAttackIntentionsFromUser(bool* unit1intendsToPerformAttack, bool* unit2intendsToPerformAttack);
+	private: bool obtainSceneFileNamesFromUser(string* currentSceneFileName, string* previousSceneFileName);
+	private: bool obtainSceneFileNameFromUser(string* currentSceneFileName);
+};
 
 //User Options	//current routines supported by backend rules checker software
 /*

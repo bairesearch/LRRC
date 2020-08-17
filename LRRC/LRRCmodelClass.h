@@ -26,7 +26,7 @@
  * File Name: LRRCmodelClass.h
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -51,6 +51,9 @@
 #ifdef USE_ANN
 	#include "ANNexperienceClass.h"
 #endif
+#include "LRRCrules.h"
+#include "SHAREDvars.h"
+
 
 
 //shared variables [not model class specific]
@@ -142,8 +145,6 @@
 
 extern double DICE_MODIFIER;
 extern double LDRAW_UNITS_PER_CM;
-
-void fillInModelClassExternVariables();
 
 class ModelDetails{
 private:
@@ -261,20 +262,27 @@ public:
 
 };
 
-//no longer used due to algorithm break down
-//void copyCombatRelevantInheritedImmediateParentUnitDetailsIntoChildObject(ModelDetails* unitChild, ModelDetails* unitParent);
 
-void copyAllUnitDetails(ModelDetails* u, ModelDetails* unitToCopy);
-void copyEnvironmentRelevantChildUnitDetailsIntoParentObject(ModelDetails* unitChild, ModelDetails* unitParent);
-void addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails* unitChild, ModelDetails* unitParent);
-void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails* u);
+class LRRCmodelClassClass
+{
+	private: SHAREDvarsClass SHAREDvars;
+	public: void fillInModelClassExternVariables();
 
-bool calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(ModelDetails* u);
-void copyRecordLists(RecordClass* recordToFill, RecordClass* recordToCopy);
-void addRecordLists(RecordClass* recordToFill, RecordClass* recordToAdd);
+	//no longer used due to algorithm break down
+	//void copyCombatRelevantInheritedImmediateParentUnitDetailsIntoChildObject(ModelDetails* unitChild, ModelDetails* unitParent);
 
-//generic
-//int maxInt(int a, int b);
-int invertLevel(const int level);
+	public: void copyAllUnitDetails(ModelDetails* u, ModelDetails* unitToCopy);
+	public: void copyEnvironmentRelevantChildUnitDetailsIntoParentObject(ModelDetails* unitChild, ModelDetails* unitParent);
+	public: void addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails* unitChild, ModelDetails* unitParent);
+	public: void determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails* u);
+
+	private: bool calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(ModelDetails* u);
+	private: void copyRecordLists(RecordClass* recordToFill, RecordClass* recordToCopy);
+	private: void addRecordLists(RecordClass* recordToFill, RecordClass* recordToAdd);
+
+	//generic
+	//int maxInt(int a, int b);
+	public: int invertLevel(const int level);
+};
 
 #endif

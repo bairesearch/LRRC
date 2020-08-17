@@ -26,7 +26,7 @@
  * File Name: LRRCunitClass.cpp
  * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
  * Project: Lego Rules CG Rounds Checker
- * Project Version: 3j1a 14-January-2017
+ * Project Version: 3j1b 14-January-2017
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -39,7 +39,6 @@
 
 
 #include "LRRCunitClass.h"
-#include "SHAREDvars.h"
 
 
 UnitListClass::UnitListClass(void)
@@ -117,7 +116,7 @@ UnitListClass::~UnitListClass()
 
 
 
-UnitListClass* searchUnitListFindUnit(UnitListClass* firstUnitInUnitGroup, const string unitName, const int unitColour, bool* unitIDFound)
+UnitListClass* LRRCunitClassClass::searchUnitListFindUnit(UnitListClass* firstUnitInUnitGroup, const string unitName, const int unitColour, bool* unitIDFound)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 	UnitListClass* unitFound = NULL;
@@ -139,7 +138,7 @@ UnitListClass* searchUnitListFindUnit(UnitListClass* firstUnitInUnitGroup, const
 			{
 				//cout << "h1" << endl;
 				UnitListClass* tempUnit;
-				tempUnit = searchUnitListFindUnit(currentUnitInList->firstUnitInUnitGroup, unitName, unitColour, unitIDFound);
+				tempUnit = this->searchUnitListFindUnit(currentUnitInList->firstUnitInUnitGroup, unitName, unitColour, unitIDFound);
 				if(*unitIDFound)
 				{
 					unitFound = tempUnit;
@@ -158,7 +157,7 @@ UnitListClass* searchUnitListFindUnit(UnitListClass* firstUnitInUnitGroup, const
 
 
 
-void addUnitToList(UnitListClass* firstUnitInUnitList, string unitName, int unitColour, ModelDetails* unitDetails, int currentRound)
+void LRRCunitClassClass::addUnitToList(UnitListClass* firstUnitInUnitList, string unitName, int unitColour, ModelDetails* unitDetails, int currentRound)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitList;
 
@@ -186,7 +185,7 @@ void addUnitToList(UnitListClass* firstUnitInUnitList, string unitName, int unit
 
 #ifdef USE_ANN
 
-UnitListClass* searchUnitListFindOpponentWithLowestError(const int currentPlayerTurn, const int nn, UnitListClass* firstUnitInUnitGroup, double* currentLowestError, bool* foundOpponent, const int NNcurrentPhase)
+UnitListClass* LRRCunitClassClass::searchUnitListFindOpponentWithLowestError(const int currentPlayerTurn, const int nn, UnitListClass* firstUnitInUnitGroup, double* currentLowestError, bool* foundOpponent, const int NNcurrentPhase)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 	UnitListClass* unitFound = NULL;
@@ -284,7 +283,7 @@ UnitListClass* searchUnitListFindOpponentWithLowestError(const int currentPlayer
 		{
 			UnitListClass* tempUnit;
 			bool tempFoundUnit = false;
-			tempUnit = searchUnitListFindOpponentWithLowestError(currentPlayerTurn, nn, currentUnitInList->firstUnitInUnitGroup, currentLowestError, &tempFoundUnit, NNcurrentPhase);
+			tempUnit = this->searchUnitListFindOpponentWithLowestError(currentPlayerTurn, nn, currentUnitInList->firstUnitInUnitGroup, currentLowestError, &tempFoundUnit, NNcurrentPhase);
 			if(tempFoundUnit)
 			{
 				*foundOpponent = true;
@@ -299,7 +298,7 @@ UnitListClass* searchUnitListFindOpponentWithLowestError(const int currentPlayer
 }
 #endif
 
-bool splitUnitGroup(UnitListClass* firstUnitInUnitList, const string unitGroupName, const int unitGroupColour, int currentRound)
+bool LRRCunitClassClass::splitUnitGroup(UnitListClass* firstUnitInUnitList, const string unitGroupName, const int unitGroupColour, int currentRound)
 {
 	bool result = true;
 
@@ -334,7 +333,7 @@ bool splitUnitGroup(UnitListClass* firstUnitInUnitList, const string unitGroupNa
 
 		if(currentUnitInList->isUnitGroup == true)
 		{
-			if(!splitUnitGroup(currentUnitInList->firstUnitInUnitGroup, unitGroupName, unitGroupColour, currentRound))
+			if(!this->splitUnitGroup(currentUnitInList->firstUnitInUnitGroup, unitGroupName, unitGroupColour, currentRound))
 			{
 				result = false;
 			}
@@ -352,7 +351,7 @@ bool splitUnitGroup(UnitListClass* firstUnitInUnitList, const string unitGroupNa
 }
 
 
-void searchUnitListAssignHasNotPerformedAction(UnitListClass* firstUnitInUnitGroup)
+void LRRCunitClassClass::searchUnitListAssignHasNotPerformedAction(UnitListClass* firstUnitInUnitGroup)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
@@ -366,14 +365,14 @@ void searchUnitListAssignHasNotPerformedAction(UnitListClass* firstUnitInUnitGro
 
 		if(currentUnitInList->isUnitGroup)
 		{
-			searchUnitListAssignHasNotPerformedAction(currentUnitInList->firstUnitInUnitGroup);
+			this->searchUnitListAssignHasNotPerformedAction(currentUnitInList->firstUnitInUnitGroup);
 		}
 
 		currentUnitInList = currentUnitInList->next;
 	}
 }
 
-int determineUnitWorthInPoints(const ModelDetails* unitDetails)
+int LRRCunitClassClass::determineUnitWorthInPoints(const ModelDetails* unitDetails)
 {
 	int totalPoints;
 
@@ -385,7 +384,7 @@ int determineUnitWorthInPoints(const ModelDetails* unitDetails)
 	longDistancePoints = unitDetails->longDistanceAttackTotal + unitDetails->longDistanceAttackBaseRange/GAME_UNIT_POINTS_LONG_DISTANCE_RANGE_MODIFIER;
 	closeCombatPoints = unitDetails->closeCombatAttackTotal;
 
-	totalPoints = (movementPoints + maxInt(longDistancePoints, closeCombatPoints));
+	totalPoints = (movementPoints + SHAREDvars.maxInt(longDistancePoints, closeCombatPoints));
 
 	return totalPoints;
 }
