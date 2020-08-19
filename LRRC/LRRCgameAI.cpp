@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCgameAI.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -66,12 +66,12 @@ void LRRCgameAIClass::initialiseNeuralNetwork(const int NNBeingTested, Player* c
 	if(NNBeingTested == GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN)
 	{
 		numberOfOutputNeurons = PROPERTIES_EXPERIENCE_NUMBER_OF_DIFFERENT_OUTPUT_DECISIONS;
-		this->generateExperienceFromUnitPropertiesDecision(tempUnitReference, tempUnitRefenceOpponent, tempUnitDecision, tempExperience, currentPhase);
+		generateExperienceFromUnitPropertiesDecision(tempUnitReference, tempUnitRefenceOpponent, tempUnitDecision, tempExperience, currentPhase);
 	}
 	else if(NNBeingTested == GAME_INDEX_OF_COMBAT_EXPERIENCE_NN)
 	{
 		numberOfOutputNeurons = COMBAT_EXPERIENCE_NUMBER_OF_DIFFERENT_OUTPUT_DECISIONS;
-		this->generateExperienceFromUnitCombatDecision(tempUnitReference, tempUnitRefenceOpponent, tempUnitDecision, tempExperience, currentPhase);
+		generateExperienceFromUnitCombatDecision(tempUnitReference, tempUnitRefenceOpponent, tempUnitDecision, tempExperience, currentPhase);
 	}
 #ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
 	else if(NNBeingTested == GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN)
@@ -79,29 +79,27 @@ void LRRCgameAIClass::initialiseNeuralNetwork(const int NNBeingTested, Player* c
 		UnitListClass* tempUnit = new UnitListClass();
 		LDreference* tempReferenceInNULLSceneFile;
 		numberOfOutputNeurons = GLOBAL_EXPERIENCE_NUMBER_OF_DIFFERENT_OUTPUT_DECISIONS;
-		this->generateExperienceFromGlobalDecision(tempUnit, tempReferenceInNULLSceneFile, tempUnitReference, tempUnitRefenceOpponent, tempExperience);
+		generateExperienceFromGlobalDecision(tempUnit, tempReferenceInNULLSceneFile, tempUnitReference, tempUnitRefenceOpponent, tempExperience);
 	}
 #endif
 #ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
 	else if(NNBeingTested == GAME_INDEX_OF_OBJECT_EXPERIENCE_NN)
 	{
-		numberOfOutputNeurons = (int64_t)this->addOrCompareAllObjectExperiences(NULL, NULL, NULL, true);
+		numberOfOutputNeurons = (int64_t)addOrCompareAllObjectExperiences(NULL, NULL, NULL, true);
 		/*
 		ANNexperience* tempExperience2 = new ANNexperience;
 		LDreference* tempUnitReference2 = new LDreference(true);
 		int64_t tempUnitDecision2 = IRRELEVANT;
-		this->generateExperienceFromUnitPropertiesDecision(tempUnitReference2, tempUnitRefenceOpponent, tempUnitDecision2, tempExperience2, currentPhase);
+		generateExperienceFromUnitPropertiesDecision(tempUnitReference2, tempUnitRefenceOpponent, tempUnitDecision2, tempExperience2, currentPhase);
 		numberOfOutputNeurons = ANNexperienceClass.countNumberOfExperienceInputs(tempExperience2) - 2;	//-2 for distanceBetweenUnits and currentPhase properties experience inputs
 		delete tempExperience2;
 		delete tempUnitReference2;
 		*/
 
-
-
 		XMLrulesClass* currentReferenceRulesClass = LRRCrulesUnitTypeDetails;
 		tempUnitReference->name = currentReferenceRulesClass->next->stringValue;	//generate a random reference name [NB not reference 1, as this is not an exclusive name]
 		cout << "tempUnitReference->name = " << tempUnitReference->name << "\n\n" << endl;
-		this->generateExperienceFromObjectDecision(tempUnitReference, tempUnitDecision, tempExperience, true);
+		generateExperienceFromObjectDecision(tempUnitReference, tempUnitDecision, tempExperience, true);
 	}
 #endif
 	else
@@ -112,13 +110,10 @@ void LRRCgameAIClass::initialiseNeuralNetwork(const int NNBeingTested, Player* c
 	numberOfInputNeurons = ANNexperienceClass.countNumberOfExperienceInputs(tempExperience);
 
 
-	//cout << "\n\n*** numberOfInputNeurons = " << numberOfInputNeurons << endl;
-
 	delete tempUnitReference;
 	delete tempUnitRefenceOpponent;
 	delete tempExperience;
 		//arbitrary NN number of layers heuristic - need to optimise this
-
 
 	if((NNBeingTested == GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN) || (NNBeingTested == GAME_INDEX_OF_COMBAT_EXPERIENCE_NN))
 	{
@@ -170,8 +165,6 @@ void LRRCgameAIClass::initialiseNeuralNetwork(const int NNBeingTested, Player* c
 }
 
 
-
-
 int64_t LRRCgameAIClass::mergePlayerUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, const int unitGroupTeam, int nnIndex)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
@@ -179,7 +172,7 @@ int64_t LRRCgameAIClass::mergePlayerUnitExperiencesIntoPlayerExperienceList(Play
 	while(currentUnitInList->next != NULL)
 	{
 		#ifndef DEBUG_DO_NOT_PERFORM_KILL_RATIO_CHECKS_BEFORE_ADDING_UNIT_EXPERIENCES_TO_NN
-		if(this->checkAverageKillRatioForUnitGroup(currentUnitInList) || (currentUnitInList->unitDetails->numPerson == 1))
+		if(checkAverageKillRatioForUnitGroup(currentUnitInList) || (currentUnitInList->unitDetails->numPerson == 1))
 		{
 		#endif
 			if(currentUnitInList->team == unitGroupTeam)
@@ -200,7 +193,7 @@ int64_t LRRCgameAIClass::mergePlayerUnitExperiencesIntoPlayerExperienceList(Play
 
 			if(currentUnitInList->isUnitGroup)
 			{
-				this->mergePlayerUnitExperiencesIntoPlayerExperienceList(currentPlayer, currentUnitInList->firstUnitInUnitGroup, unitGroupTeam, nnIndex);
+				mergePlayerUnitExperiencesIntoPlayerExperienceList(currentPlayer, currentUnitInList->firstUnitInUnitGroup, unitGroupTeam, nnIndex);
 			}
 		#ifndef DEBUG_DO_NOT_PERFORM_KILL_RATIO_CHECKS_BEFORE_ADDING_UNIT_EXPERIENCES_TO_NN
 		}
@@ -212,19 +205,14 @@ int64_t LRRCgameAIClass::mergePlayerUnitExperiencesIntoPlayerExperienceList(Play
 	return 1;
 }
 
-
-
-
 int64_t LRRCgameAIClass::mergeAllUnitExperiencesIntoPlayerExperienceList(Player* currentPlayer, UnitListClass* firstUnitInUnitGroup, int nnIndex)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
 
 	while(currentUnitInList->next != NULL)
 	{
-		//cout << "h1" << endl;
-
 		#ifndef DEBUG_DO_NOT_PERFORM_KILL_RATIO_CHECKS_BEFORE_ADDING_UNIT_EXPERIENCES_TO_NN
-		if(this->checkAverageKillRatioForUnitGroup(currentUnitInList) || (currentUnitInList->unitDetails->numPerson == 1))
+		if(checkAverageKillRatioForUnitGroup(currentUnitInList) || (currentUnitInList->unitDetails->numPerson == 1))
 		{
 		#endif
 			ANNexperience* currentExperienceInCurrentUnit = currentUnitInList->firstExperience[nnIndex];
@@ -241,7 +229,7 @@ int64_t LRRCgameAIClass::mergeAllUnitExperiencesIntoPlayerExperienceList(Player*
 
 			if(currentUnitInList->isUnitGroup)
 			{
-				this->mergeAllUnitExperiencesIntoPlayerExperienceList(currentPlayer, currentUnitInList->firstUnitInUnitGroup, nnIndex);
+				mergeAllUnitExperiencesIntoPlayerExperienceList(currentPlayer, currentUnitInList->firstUnitInUnitGroup, nnIndex);
 			}
 		#ifndef DEBUG_DO_NOT_PERFORM_KILL_RATIO_CHECKS_BEFORE_ADDING_UNIT_EXPERIENCES_TO_NN
 		}
@@ -267,15 +255,11 @@ void LRRCgameAIClass::parseSceneFileAndFillUnitLists(string sceneFileName, UnitL
 		result = false;
 	}
 
-	this->fillUnitList(initialReferenceInSceneFile, firstUnitInUnitList, currentRound);
+	fillUnitList(initialReferenceInSceneFile, firstUnitInUnitList, currentRound);
 
 	delete initialReferenceInSceneFile;
 	delete topLevelReferenceInSceneFile;
 }
-
-
-
-
 
 void LRRCgameAIClass::fillUnitList(LDreference* currentReferenceInSceneFile, UnitListClass* firstUnitInUnitGroup, int currentRound)
 {
@@ -285,13 +269,13 @@ void LRRCgameAIClass::fillUnitList(LDreference* currentReferenceInSceneFile, Uni
 	{
 		if(currentReference->isSubModelReference)
 		{
-			//cout << "currentReference->name = " << currentReference->name << endl;
-
 			LDreference* topLevelReferenceInUnit = new LDreference(currentReference->name, currentReference->colour, true);
 			LRRCmodelClass.copyAllUnitDetails(topLevelReferenceInUnit->subModelDetails, currentReference->subModelDetails);
 			LRRCcombat.searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit, currentReference->firstReferenceWithinSubModel, topLevelReferenceInUnit, true);
+			
 			/*
 			//debug:
+			//cout << "currentReference->name = " << currentReference->name << endl;
 			RecordClass* currentReferenceRecordClass = topLevelReferenceInUnit->subModelDetails->recordOfUnitTypeDetails;
 			while(currentReferenceRecordClass->next != NULL)
 			{
@@ -304,8 +288,8 @@ void LRRCgameAIClass::fillUnitList(LDreference* currentReferenceInSceneFile, Uni
 				currentReferenceRecordClass = currentReferenceRecordClass->next;
 			}
 			*/
+			
 			LRRCmodelClass.determineUnitTypeAndMinSpeedOfUnitGroup(topLevelReferenceInUnit->subModelDetails);
-
 
 
 			if(topLevelReferenceInUnit->subModelDetails->numPerson >= 1)
@@ -332,7 +316,7 @@ void LRRCgameAIClass::fillUnitList(LDreference* currentReferenceInSceneFile, Uni
 					UnitListClass* newUnitList1 = new UnitListClass();
 					currentUnitInUnitList->firstUnitInUnitGroup = newUnitList1;
 					currentUnitInUnitList->isUnitGroup = true;
-					this->fillUnitList(currentReference->firstReferenceWithinSubModel, currentUnitInUnitList->firstUnitInUnitGroup, currentRound);
+					fillUnitList(currentReference->firstReferenceWithinSubModel, currentUnitInUnitList->firstUnitInUnitGroup, currentRound);
 				}
 
 				currentUnitInUnitList=currentUnitInUnitList->next;
@@ -344,79 +328,6 @@ void LRRCgameAIClass::fillUnitList(LDreference* currentReferenceInSceneFile, Uni
 		currentReference = currentReference->next;
 	}
 }
-
-
-
-
-
-bool LRRCgameAIClass::determineIfUnitGroupHasAliveUnits(const UnitListClass* firstUnitInUnitGroup)
-{
-	bool foundAliveUnit = false;
-	const UnitListClass* currentUnitInList = firstUnitInUnitGroup;
-
-	while(currentUnitInList->next != NULL)
-	{
-		if(currentUnitInList->status == true)
-		{
-			foundAliveUnit = true;
-
-		}
-
-		if(currentUnitInList->isUnitGroup)
-		{
-			if(this->determineIfUnitGroupHasAliveUnits(currentUnitInList->firstUnitInUnitGroup))
-			{
-				foundAliveUnit = true;
-			}
-		}
-
-		currentUnitInList = currentUnitInList->next;
-	}
-	return foundAliveUnit;
-}
-
-bool LRRCgameAIClass::checkAverageKillRatioForUnitGroup(UnitListClass* firstUnitInUnitGroup)
-{
-	bool result;
-
-	int unitGroupTotalKillPoints = 0;
-	int unitGroupTotalDeathPoints = 0;
-	this->determineAverageKillRatioForUnitGroup(firstUnitInUnitGroup, &unitGroupTotalKillPoints, &unitGroupTotalDeathPoints);
-	if(double(unitGroupTotalKillPoints)/double(unitGroupTotalDeathPoints) >= GAME_AI_NN_EXPERIENCE_RECORD_MIN_KILL_RATIO_REQUIREMENT)
-	{
-		result = true;
-	}
-	else
-	{
-		result = false;
-	}
-
-	return result;
-}
-
-void LRRCgameAIClass::determineAverageKillRatioForUnitGroup(UnitListClass* firstUnitInUnitGroup, int* killPoints, int* deathPoints)
-{
-	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
-
-	while(currentUnitInList->next != NULL)
-	{
-		if(currentUnitInList->isUnitGroup)
-		{
-			this->determineAverageKillRatioForUnitGroup(currentUnitInList->firstUnitInUnitGroup, killPoints, deathPoints);
-		}
-		else
-		{
-			*killPoints = *killPoints + currentUnitInList->killPoints;
-			if(currentUnitInList->status == false)
-			{
-				*deathPoints = *deathPoints + LRRCunitClass.determineUnitWorthInPoints(currentUnitInList->unitDetails);
-			}
-		}
-
-		currentUnitInList = currentUnitInList->next;
-	}
-}
-
 
 
 
@@ -432,7 +343,7 @@ void LRRCgameAIClass::parseSceneFileAndUpdateUnitList(string sceneFileName, Unit
 		result = false;
 	}
 
-	this->updateUnitList(initialReferenceInSceneFile, firstUnitInUnitList, currentRound);
+	updateUnitList(initialReferenceInSceneFile, firstUnitInUnitList, currentRound);
 
 	delete initialReferenceInSceneFile;
 	delete firstUnitInUnitList;
@@ -440,9 +351,9 @@ void LRRCgameAIClass::parseSceneFileAndUpdateUnitList(string sceneFileName, Unit
 
 void LRRCgameAIClass::updateUnitList(LDreference* initialReferenceInSceneFile, UnitListClass* firstUnitInUnitList, int currentRound)	//required after every round
 {
-	this->updateUnitListWithNewUnits(initialReferenceInSceneFile, firstUnitInUnitList, currentRound);
+	updateUnitListWithNewUnits(initialReferenceInSceneFile, firstUnitInUnitList, currentRound);
 
-	this->updateUnitListWithDeadUnits(initialReferenceInSceneFile, firstUnitInUnitList, currentRound);
+	updateUnitListWithDeadUnits(initialReferenceInSceneFile, firstUnitInUnitList, currentRound);
 
 }
 
@@ -457,7 +368,7 @@ void LRRCgameAIClass::updateUnitListWithNewUnits(LDreference* currentReferenceIn
 
 			bool foundUnitInList = false;
 			UnitListClass* foundUnit;
-			foundUnit = this->searchUnitListForUnitAndIfNotThereAddToList(firstUnitInUnitGroup, currentReference, currentRound, true, &foundUnitInList);
+			foundUnit = searchUnitListForUnitAndIfNotThereAddToList(firstUnitInUnitGroup, currentReference, currentRound, true, &foundUnitInList);
 
 			//go down further into reference tree
 			if(foundUnitInList)
@@ -480,35 +391,10 @@ void LRRCgameAIClass::updateUnitListWithNewUnits(LDreference* currentReferenceIn
 				foundUnit->firstUnitInUnitGroup = newUnit;
 
 			}
-			this->updateUnitListWithNewUnits(currentReference->firstReferenceWithinSubModel, foundUnit->firstUnitInUnitGroup, currentRound);
+			updateUnitListWithNewUnits(currentReference->firstReferenceWithinSubModel, foundUnit->firstUnitInUnitGroup, currentRound);
 		}
 
 		currentReference = currentReference->next;
-	}
-}
-
-void LRRCgameAIClass::updateUnitListWithDeadUnits(LDreference* initialReferenceInSceneFile, UnitListClass* firstUnitInUnitGroup, int currentRound)
-{
-	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
-
-	while(currentUnitInList->next != NULL)
-	{
-		bool unitIDFound = false;
-		bool result = true;
-
-		LDreference* foundReference = LRRCgameReferenceManipulation.searchReferenceListFindReference(initialReferenceInSceneFile, currentUnitInList->name, currentUnitInList->team, &unitIDFound, &result);
-		if(!unitIDFound)
-		{
-			currentUnitInList->status = false;
-			currentUnitInList->roundRemoved = currentRound;
-		}
-
-		if(currentUnitInList->isUnitGroup)
-		{
-			this->updateUnitListWithDeadUnits(initialReferenceInSceneFile, currentUnitInList->firstUnitInUnitGroup, currentRound);
-		}
-
-		currentUnitInList = currentUnitInList->next;
 	}
 }
 
@@ -529,14 +415,13 @@ UnitListClass* LRRCgameAIClass::searchUnitListForUnitAndIfNotThereAddToList(Unit
 			if(currentUnitInList->isUnitGroup)
 			{
 				UnitListClass* tempUnit;
-				tempUnit = this->searchUnitListForUnitAndIfNotThereAddToList(currentUnitInList->firstUnitInUnitGroup, unitReferenceInSceneFile, currentRound, false, foundUnitInList);
+				tempUnit = searchUnitListForUnitAndIfNotThereAddToList(currentUnitInList->firstUnitInUnitGroup, unitReferenceInSceneFile, currentRound, false, foundUnitInList);
 				if(*foundUnitInList)
 				{
 					foundUnit = tempUnit;
 				}
 			}
 		}
-
 
 		if((currentUnitInList->next == NULL) && (!(*foundUnitInList)) && (topLevelInTree))
 		{
@@ -555,10 +440,104 @@ UnitListClass* LRRCgameAIClass::searchUnitListForUnitAndIfNotThereAddToList(Unit
 		}
 
 		currentUnitInList = currentUnitInList->next;
-
 	}
 
 	return foundUnit;
+}
+
+void LRRCgameAIClass::updateUnitListWithDeadUnits(LDreference* initialReferenceInSceneFile, UnitListClass* firstUnitInUnitGroup, int currentRound)
+{
+	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
+
+	while(currentUnitInList->next != NULL)
+	{
+		bool unitIDFound = false;
+		bool result = true;
+
+		LDreference* foundReference = LRRCgameReferenceManipulation.searchReferenceListFindReference(initialReferenceInSceneFile, currentUnitInList->name, currentUnitInList->team, &unitIDFound, &result);
+		if(!unitIDFound)
+		{
+			currentUnitInList->status = false;
+			currentUnitInList->roundRemoved = currentRound;
+		}
+
+		if(currentUnitInList->isUnitGroup)
+		{
+			updateUnitListWithDeadUnits(initialReferenceInSceneFile, currentUnitInList->firstUnitInUnitGroup, currentRound);
+		}
+
+		currentUnitInList = currentUnitInList->next;
+	}
+}
+
+
+
+bool LRRCgameAIClass::determineIfUnitGroupHasAliveUnits(const UnitListClass* firstUnitInUnitGroup)
+{
+	bool foundAliveUnit = false;
+	const UnitListClass* currentUnitInList = firstUnitInUnitGroup;
+
+	while(currentUnitInList->next != NULL)
+	{
+		if(currentUnitInList->status == true)
+		{
+			foundAliveUnit = true;
+
+		}
+
+		if(currentUnitInList->isUnitGroup)
+		{
+			if(determineIfUnitGroupHasAliveUnits(currentUnitInList->firstUnitInUnitGroup))
+			{
+				foundAliveUnit = true;
+			}
+		}
+
+		currentUnitInList = currentUnitInList->next;
+	}
+	return foundAliveUnit;
+}
+
+bool LRRCgameAIClass::checkAverageKillRatioForUnitGroup(UnitListClass* firstUnitInUnitGroup)
+{
+	bool result;
+
+	int unitGroupTotalKillPoints = 0;
+	int unitGroupTotalDeathPoints = 0;
+	determineAverageKillRatioForUnitGroup(firstUnitInUnitGroup, &unitGroupTotalKillPoints, &unitGroupTotalDeathPoints);
+	if(double(unitGroupTotalKillPoints)/double(unitGroupTotalDeathPoints) >= GAME_AI_NN_EXPERIENCE_RECORD_MIN_KILL_RATIO_REQUIREMENT)
+	{
+		result = true;
+	}
+	else
+	{
+		result = false;
+	}
+
+	return result;
+}
+
+void LRRCgameAIClass::determineAverageKillRatioForUnitGroup(UnitListClass* firstUnitInUnitGroup, int* killPoints, int* deathPoints)
+{
+	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
+
+	while(currentUnitInList->next != NULL)
+	{
+		if(currentUnitInList->isUnitGroup)
+		{
+			determineAverageKillRatioForUnitGroup(currentUnitInList->firstUnitInUnitGroup, killPoints, deathPoints);
+		}
+		else
+		{
+			*killPoints = *killPoints + currentUnitInList->killPoints;
+			if(currentUnitInList->status == false)
+			{
+				*deathPoints = *deathPoints + LRRCunitClass.determineUnitWorthInPoints(currentUnitInList->unitDetails);
+			}
+		}
+
+		currentUnitInList = currentUnitInList->next;
+	}
 }
 
 
@@ -612,12 +591,12 @@ double LRRCgameAIClass::addExperiencesFromUnitDecision(UnitListClass* unit, LDre
 
 	double totalError = 0.0;
 
-	totalError = totalError + this->addOrCompareExperienceFromUnitDecision(NNcurrentPhase, unit, unitReference, unitReferenceOpponent, unitDecision, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
+	totalError = totalError + addOrCompareExperienceFromUnitDecision(NNcurrentPhase, unit, unitReference, unitReferenceOpponent, unitDecision, currentPlayer, GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
 
-	totalError = totalError + this->addOrCompareExperienceFromUnitDecision(NNcurrentPhase, unit, unitReference, unitReferenceOpponent, unitDecision, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
+	totalError = totalError + addOrCompareExperienceFromUnitDecision(NNcurrentPhase, unit, unitReference, unitReferenceOpponent, unitDecision, currentPlayer, GAME_INDEX_OF_COMBAT_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
 
 	#ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
-	totalError = totalError + this->addOrCompareExperienceFromUnitDecision(NNcurrentPhase, unit, unitReference, unitReferenceOpponent, unitDecision, currentPlayer, GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
+	totalError = totalError + addOrCompareExperienceFromUnitDecision(NNcurrentPhase, unit, unitReference, unitReferenceOpponent, unitDecision, currentPlayer, GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN, ADD_EXPERIENCE, initialReferenceInThisPhaseStartScene);		//arbitrary player, OLD=attackerPlayer
 	#endif
 
 	//return result;
@@ -636,26 +615,19 @@ double LRRCgameAIClass::addOrCompareExperienceFromUnitDecision(int currentPhase,
 	int nn = NNBeingTested;
 	#endif
 
-	/*
-	cout << "A3"<< endl;
-	cout << "nn = " << nn << endl;
-	cout << "unit->currentExperience[nn]->classTargetValue = " << unit->currentExperience[nn]->classTargetValue << endl;
-	cout << "unit->currentExperience[nn]->firstExperienceInput->inputValue = " << unit->currentExperience[nn]->firstExperienceInput->inputValue << endl;
-	*/
-
 	if(addOrCompareExperience == ADD_EXPERIENCE)
 	{
 	#ifndef TH_LRRC_LOW_RAM_AVAILABLE
 		if(NNBeingTested == GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN)
 		{
-			this->generateExperienceFromUnitPropertiesDecision(unitReference, unitReferenceOpponent, unitDecision, (unit->currentExperience[nn]), currentPhase);
+			generateExperienceFromUnitPropertiesDecision(unitReference, unitReferenceOpponent, unitDecision, (unit->currentExperience[nn]), currentPhase);
 			ANNexperience* newExperience = new ANNexperience();
 			unit->currentExperience[nn]->next = newExperience;
 			unit->currentExperience[nn] = unit->currentExperience[nn]->next;
 		}
 		else if(NNBeingTested == GAME_INDEX_OF_COMBAT_EXPERIENCE_NN)
 		{
-			this->generateExperienceFromUnitCombatDecision(unitReference, unitReferenceOpponent, unitDecision, (unit->currentExperience[nn]), currentPhase);
+			generateExperienceFromUnitCombatDecision(unitReference, unitReferenceOpponent, unitDecision, (unit->currentExperience[nn]), currentPhase);
 			ANNexperience* newExperience = new ANNexperience();
 			unit->currentExperience[nn]->next = newExperience;
 			unit->currentExperience[nn] = unit->currentExperience[nn]->next;
@@ -663,7 +635,7 @@ double LRRCgameAIClass::addOrCompareExperienceFromUnitDecision(int currentPhase,
 	#ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
 		else if(NNBeingTested == GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN)
 		{
-			this->generateExperienceFromGlobalDecision(currentPlayer->firstUnitInUnitList, initialReferenceInThisPhaseStartScene, unitReference, unitReferenceOpponent, (unit->currentExperience[nn]));
+			generateExperienceFromGlobalDecision(currentPlayer->firstUnitInUnitList, initialReferenceInThisPhaseStartScene, unitReference, unitReferenceOpponent, (unit->currentExperience[nn]));
 			ANNexperience* newExperience = new ANNexperience();
 			unit->currentExperience[nn]->next = newExperience;
 			unit->currentExperience[nn] = unit->currentExperience[nn]->next;
@@ -672,7 +644,7 @@ double LRRCgameAIClass::addOrCompareExperienceFromUnitDecision(int currentPhase,
 	#ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
 		else if(NNBeingTested == GAME_INDEX_OF_OBJECT_EXPERIENCE_NN)
 		{
-			this->generateExperienceFromObjectDecision(unitReference, unitDecision, (currentPlayer->currentExperience[nn]), true);
+			generateExperienceFromObjectDecision(unitReference, unitDecision, (currentPlayer->currentExperience[nn]), true);
 			ANNexperience* newExperience = new ANNexperience();
 			currentPlayer->currentExperience[nn]->next = newExperience;
 			currentPlayer->currentExperience[nn] = currentPlayer->currentExperience[nn]->next;
@@ -685,38 +657,38 @@ double LRRCgameAIClass::addOrCompareExperienceFromUnitDecision(int currentPhase,
 		}
 
 	#else
-					ANNexperience* newExperience = new ANNexperience();
-					if(NNBeingTested == GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN)
-					{
-						this->generateExperienceFromUnitPropertiesDecision(unitReference, unitReferenceOpponent, unitDecision, newExperience, currentPhase);
-					}
-					else if(NNBeingTested == GAME_INDEX_OF_COMBAT_EXPERIENCE_NN)
-					{
-						this->generateExperienceFromUnitCombatDecision(unitReference, unitReferenceOpponent, unitDecision, newExperience, currentPhase);
-					}
-				#ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
-					else if(NNBeingTested == GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN)
-					{
-						this->generateExperienceFromGlobalDecision(currentPlayer->firstUnitInUnitList, initialReferenceInThisPhaseStartScene, unitReference, unitReferenceOpponent, newExperience);
-					}
-				#endif
-				#ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
-					else if(NNBeingTested == GAME_INDEX_OF_OBJECT_EXPERIENCE_NN)
-					{
-						this->generateExperienceFromObjectDecision(unitReference, unitDecision, newExperience, true);
-					}
-				#endif
-					else
-					{
-						cout << "error: addOrCompareExperienceFromUnitDecision{}: illegal NNBeingTested 3" << endl;
-						exit(0);
-					}
-					for(int e=0; e<TH_LRRC_LOW_RAM_NUM_CONSEC_TRAINING_EPOCHS_PER_EXPERIENCE; e++)
-					{
-						ANNalgorithmBackpropagationTraining.resetInputsAndClassTargets((currentPlayer->firstInputNeuronInNetwork[nn]), (currentPlayer->firstOutputNeuronInNetwork[nn]), (currentPlayer->numberOfInputNeurons[nn]), (currentPlayer->numberOfOutputNeurons[nn]), newExperience);
-						double trainingErrorNotUsed = ANNBackPropogationPass(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn]);
-					}
-					delete newExperience;
+		ANNexperience* newExperience = new ANNexperience();
+		if(NNBeingTested == GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN)
+		{
+			generateExperienceFromUnitPropertiesDecision(unitReference, unitReferenceOpponent, unitDecision, newExperience, currentPhase);
+		}
+		else if(NNBeingTested == GAME_INDEX_OF_COMBAT_EXPERIENCE_NN)
+		{
+			generateExperienceFromUnitCombatDecision(unitReference, unitReferenceOpponent, unitDecision, newExperience, currentPhase);
+		}
+	#ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
+		else if(NNBeingTested == GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN)
+		{
+			generateExperienceFromGlobalDecision(currentPlayer->firstUnitInUnitList, initialReferenceInThisPhaseStartScene, unitReference, unitReferenceOpponent, newExperience);
+		}
+	#endif
+	#ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
+		else if(NNBeingTested == GAME_INDEX_OF_OBJECT_EXPERIENCE_NN)
+		{
+			generateExperienceFromObjectDecision(unitReference, unitDecision, newExperience, true);
+		}
+	#endif
+		else
+		{
+			cout << "error: addOrCompareExperienceFromUnitDecision{}: illegal NNBeingTested 3" << endl;
+			exit(0);
+		}
+		for(int e=0; e<TH_LRRC_LOW_RAM_NUM_CONSEC_TRAINING_EPOCHS_PER_EXPERIENCE; e++)
+		{
+			ANNalgorithmBackpropagationTraining.resetInputsAndClassTargets((currentPlayer->firstInputNeuronInNetwork[nn]), (currentPlayer->firstOutputNeuronInNetwork[nn]), (currentPlayer->numberOfInputNeurons[nn]), (currentPlayer->numberOfOutputNeurons[nn]), newExperience);
+			double trainingErrorNotUsed = ANNBackPropogationPass(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn]);
+		}
+		delete newExperience;
 	#endif
 	}
 	else if(addOrCompareExperience == COMPARE_EXPERIENCE)
@@ -727,25 +699,25 @@ double LRRCgameAIClass::addOrCompareExperienceFromUnitDecision(int currentPhase,
 		//generate proposed experience
 		if(NNBeingTested == GAME_INDEX_OF_PROPERTIES_EXPERIENCE_NN)
 		{
-			this->generateExperienceFromUnitPropertiesDecision(unitReference, unitReferenceOpponent, unitHypotheticalDecisionToTest, experienceWithoutKnownOutput, currentPhase);
+			generateExperienceFromUnitPropertiesDecision(unitReference, unitReferenceOpponent, unitHypotheticalDecisionToTest, experienceWithoutKnownOutput, currentPhase);
 		}
 		else if(NNBeingTested == GAME_INDEX_OF_COMBAT_EXPERIENCE_NN)
 		{
-			this->generateExperienceFromUnitCombatDecision(unitReference, unitReferenceOpponent, unitHypotheticalDecisionToTest, experienceWithoutKnownOutput, currentPhase);
+			generateExperienceFromUnitCombatDecision(unitReference, unitReferenceOpponent, unitHypotheticalDecisionToTest, experienceWithoutKnownOutput, currentPhase);
 		}
 	#ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
 		else if(NNBeingTested == GAME_INDEX_OF_GLOBAL_EXPERIENCE_NN)
 		{
-			this->generateExperienceFromGlobalDecision(currentPlayer->firstUnitInUnitList, initialReferenceInThisPhaseStartScene, unitReference, unitReferenceOpponent, experienceWithoutKnownOutput);
+			generateExperienceFromGlobalDecision(currentPlayer->firstUnitInUnitList, initialReferenceInThisPhaseStartScene, unitReference, unitReferenceOpponent, experienceWithoutKnownOutput);
 		}
 	#endif
 	#ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
 		else if(NNBeingTested == GAME_INDEX_OF_OBJECT_EXPERIENCE_NN)
 		{
 		#ifdef ANN_OBJECT_RECOGNITION_EXPERIENCES_RANDOMISE_LIGHTING_CONDITIONS
-			this->generateExperienceFromObjectDecision(unitReference, unitDecision, experienceWithoutKnownOutput, true);
+			generateExperienceFromObjectDecision(unitReference, unitDecision, experienceWithoutKnownOutput, true);
 		#else
-			this->generateExperienceFromObjectDecision(unitReference, unitDecision, experienceWithoutKnownOutput, false);
+			generateExperienceFromObjectDecision(unitReference, unitDecision, experienceWithoutKnownOutput, false);
 		#endif
 		}
 	#endif
@@ -789,8 +761,6 @@ void LRRCgameAIClass::generateExperienceFromUnitPropertiesDecision(LDreference* 
 		do not assume the AI Agent knows the rules of the game; ie do not save high level information Eg attackClass, defenceClass, etc
 	*/
 
-	//cout << "3d1" << endl;
-
 	currentExperience->classTargetValue = unitDecision;
 	ANNexperienceInput* currentExperienceInput = currentExperience->firstExperienceInput;
 
@@ -799,38 +769,24 @@ void LRRCgameAIClass::generateExperienceFromUnitPropertiesDecision(LDreference* 
 
 	RecordClass* currentRecord;
 
-	//cout << "3d2" << endl;
-
 
 	currentRecord = unitDetails->recordOfUnitTypeDetails;
 
-	//cout << "unitReference->name = " << unitReference->name << endl;
-	//cout << "unitReferenceOpponent->name = " << unitReferenceOpponent->name << endl;
-
 	while(currentRecord->next != NULL)
 	{
-		//cout << "3d2a1" << endl;
 		//cout << " currentExperienceInput->inputValue = " << currentExperienceInput->inputValue << endl;		<< ISSUE FOUND HERE!
 		//cout << "currentRecord->numberOfThisPartIDInTheUnit = " << (double)(currentRecord->numberOfThisPartIDInTheUnit) << endl;
 		currentExperienceInput->inputValue = ANNexperienceClass.normaliseExperienceInput((double)(currentRecord->numberOfThisPartIDInTheUnit), COMBAT_EXPERIENCE_NUMBER_OF_A_PART_IN_A_UNIT_MAX);
 
-		//cout << "3d2a2" << endl;
 
 		ANNexperienceInput* newExperienceInput = new ANNexperienceInput();
 
-		//cout << "3d2a2b" << endl;
-
 		currentExperienceInput->next = newExperienceInput;
-
-		//cout << "3d2a2c" << endl;
+;
 		currentExperienceInput = currentExperienceInput->next;
-
-		//cout << "3d2a3" << endl;
 
 		currentRecord = currentRecord->next;
 	}
-
-	//cout << "3d2a" << endl;
 
 	currentRecord = unitDetails->recordOfUnitCombatDetailsDefenceHead;
 	while(currentRecord->next != NULL)
@@ -963,10 +919,6 @@ void LRRCgameAIClass::generateExperienceFromUnitPropertiesDecision(LDreference* 
 		currentRecord = currentRecord->next;
 	}
 
-	//cout << "3d3" << endl;
-
-	//cout << "3d4" << endl;
-
 	/*
 	currentExperienceInput->inputValue = ANNexperienceClass.normaliseExperienceInput((double)combatExperienceResult, COMBAT_EXPERIENCE_INPUT_RESULT_MAX);
 	ANNexperienceInput* newExperienceInput2 = new ANNexperienceInput();
@@ -974,17 +926,14 @@ void LRRCgameAIClass::generateExperienceFromUnitPropertiesDecision(LDreference* 
 	currentExperienceInput = currentExperienceInput->next;
 	*/
 
-		int maximumMovementDistanceForAnyUnit = 0;
-		XMLrulesClass* currentReferenceRulesClass = LRRCrulesUnitTypeCatagories;
-		while(currentReferenceRulesClass->next != NULL)
-		{
-			maximumMovementDistanceForAnyUnit = SHAREDvars.maxInt(maximumMovementDistanceForAnyUnit, currentReferenceRulesClass->attribute4);
+	int maximumMovementDistanceForAnyUnit = 0;
+	XMLrulesClass* currentReferenceRulesClass = LRRCrulesUnitTypeCatagories;
+	while(currentReferenceRulesClass->next != NULL)
+	{
+		maximumMovementDistanceForAnyUnit = SHAREDvars.maxInt(maximumMovementDistanceForAnyUnit, currentReferenceRulesClass->attribute4);
 
-			currentReferenceRulesClass = currentReferenceRulesClass->next;
-		}
-		//cout << "DEBUG: maximumMovementDistanceForAnyUnit = " << maximumMovementDistanceForAnyUnit << endl;
-
-	//cout << "3d5" << endl;
+		currentReferenceRulesClass = currentReferenceRulesClass->next;
+	}
 
 	double distanceBetweenUnits = LRRCcombat.calculateTheDistanceBetweenTwoUnits(&(unitReference->absolutePosition), &(unitReferenceOpponent->absolutePosition));
 	currentExperienceInput->inputValue = ANNexperienceClass.normaliseExperienceInput(distanceBetweenUnits, maximumMovementDistanceForAnyUnit);
@@ -999,14 +948,10 @@ void LRRCgameAIClass::generateExperienceFromUnitPropertiesDecision(LDreference* 
 	ANNexperienceInput* newExperienceInput4 = new ANNexperienceInput();
 	currentExperienceInput->next = newExperienceInput4;
 	currentExperienceInput = currentExperienceInput->next;
-
-
-	//cout << "3d6" << endl;
 }
 
 void LRRCgameAIClass::generateExperienceFromUnitCombatDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, int64_t unitDecision, ANNexperience* currentExperience, int currentPhase)
 {
-
 	/*
 	now store every combat level of the parties as experience inputs:
 
@@ -1025,8 +970,6 @@ void LRRCgameAIClass::generateExperienceFromUnitCombatDecision(LDreference* unit
 		only assume the AI Agent knows the properties of the unit.
 		do not assume the AI Agent knows the rules of the game; ie do not save high level information Eg attackClass, defenceClass, etc
 	*/
-
-
 
 
 	int maximumMovementDistanceForAnyUnit = 0;
@@ -1086,9 +1029,6 @@ void LRRCgameAIClass::generateExperienceFromUnitCombatDecision(LDreference* unit
 	maximumDefenceTotalForAnyUnit = maximumDefenceHeadTotalForAnyUnit + maximumDefenceTorsoTotalForAnyUnit + maximumDefenceShieldTotalForAnyUnit;
 
 
-
-	//cout << "3d1" << endl;
-
 	currentExperience->classTargetValue = unitDecision;
 	ANNexperienceInput* currentExperienceInput = currentExperience->firstExperienceInput;
 
@@ -1138,9 +1078,6 @@ void LRRCgameAIClass::generateExperienceFromUnitCombatDecision(LDreference* unit
 	currentExperienceInput = currentExperienceInput->next;
 
 
-
-	//cout << "3d5" << endl;
-
 	double distanceBetweenUnits = LRRCcombat.calculateTheDistanceBetweenTwoUnits(&(unitReference->absolutePosition), &(unitReferenceOpponent->absolutePosition));
 	currentExperienceInput->inputValue = ANNexperienceClass.normaliseExperienceInput(distanceBetweenUnits, maximumMovementDistanceForAnyUnit);
 	ANNexperienceInput* newExperienceInput9 = new ANNexperienceInput();
@@ -1154,7 +1091,6 @@ void LRRCgameAIClass::generateExperienceFromUnitCombatDecision(LDreference* unit
 	currentExperienceInput->next = newExperienceInput10;
 	currentExperienceInput = currentExperienceInput->next;
 
-	//cout << "3d6" << endl;
 }
 
 
@@ -1178,7 +1114,6 @@ bool LRRCgameAIClass::generateExperienceFromGlobalDecision(const UnitListClass* 
 	currentExperience->classTargetValue = xPosRelToUnitAsTargetValue*GLOBAL_EXPERIENCE_NUMBER_OF_DIFFERENT_OUTPUT_DECISIONS_1D + yPosRelToUnitAsTargetValue;
 
 
-
 	//fill experience input tree with blank input values
 	ANNexperienceInput* currentExperienceInput = currentExperience->firstExperienceInput;
 
@@ -1197,13 +1132,12 @@ bool LRRCgameAIClass::generateExperienceFromGlobalDecision(const UnitListClass* 
 
 	//generate2DMemoryMapExperience of LDAttack, CCattack, defence and movement totals [4 input types] for each unit group centred around unitReference - linear/Euclidian spatial map going from 0 to 100 radius in 10 unit intervals - total inputs = 10x10x4
 
-	if(!this->generate2DMemoryMapExperience(firstUnitInUnitList, initialReferenceInThisPhaseStartScene, unitReference, currentExperience))
+	if(!generate2DMemoryMapExperience(firstUnitInUnitList, initialReferenceInThisPhaseStartScene, unitReference, currentExperience))
 	{
 		result = false;
 	}
+	
 	return result;
-
-	//cout << "3d6" << endl;
 }
 
 
@@ -1270,7 +1204,6 @@ bool LRRCgameAIClass::generate2DMemoryMapExperience(const UnitListClass* firstUn
 	maximumDefenceTotalForAnyUnit = maximumDefenceHeadTotalForAnyUnit + maximumDefenceTorsoTotalForAnyUnit + maximumDefenceShieldTotalForAnyUnit;
 
 
-
 	while(currentUnitInGroup->next != NULL)
 	{
 		if(currentUnitInGroup->status == true)
@@ -1298,7 +1231,7 @@ bool LRRCgameAIClass::generate2DMemoryMapExperience(const UnitListClass* firstUn
 				}
 				if(refIn2DMemoryMap)
 				{
-					ANNexperienceInput* currentReferenceExperienceInput = this->findExperienceInputIn2DMemoryMap(xPosRelToUnit, yPosRelToUnit, 0, currentExperience);
+					ANNexperienceInput* currentReferenceExperienceInput = findExperienceInputIn2DMemoryMap(xPosRelToUnit, yPosRelToUnit, 0, currentExperience);
 
 					//fill experience inputs
 					currentReferenceExperienceInput->inputValue = ANNexperienceClass.normaliseExperienceInput(currentReferenceInGroup->subModelDetails->movementSpeed, maximumMovementDistanceForAnyUnit);
@@ -1316,7 +1249,7 @@ bool LRRCgameAIClass::generate2DMemoryMapExperience(const UnitListClass* firstUn
 
 				if(currentUnitInGroup->isUnitGroup)
 				{
-					this->generate2DMemoryMapExperience(currentUnitInGroup->firstUnitInUnitGroup, initialReferenceInThisPhaseStartScene, unitReference, currentExperience);
+					generate2DMemoryMapExperience(currentUnitInGroup->firstUnitInUnitGroup, initialReferenceInThisPhaseStartScene, unitReference, currentExperience);
 				}
 			}
 
@@ -1448,13 +1381,11 @@ bool LRRCgameAIClass::generateExperienceFromObjectDecision(const LDreference* ob
 		//ray traced image has already been created
 	}
 
-	//cout << "3" << endl;
 	//3. load pixmap into RAM objectImage from generated pixmap
 	pixmap* objectImage;
 	cout << "image file being loaded = " << charstarraytracedImagePPMNNSceneFileName << endl;
 	objectImage = RTppm.loadPPM(charstarraytracedImagePPMNNSceneFileName);
 
-	//cout << "4" << endl;
 	//4. produce contrast map from pixmap image
 	unsigned char* rgbMap = new unsigned char [objectImage->wide* objectImage->high* RGB_NUM];
 	double* luminosityMap = new double[objectImage->wide* objectImage->high];
@@ -1471,7 +1402,6 @@ bool LRRCgameAIClass::generateExperienceFromObjectDecision(const LDreference* ob
 	RTpixelMaps.createContrastMapFromMap(objectImage->wide, objectImage->high, luminosityMap, luminosityContrastMap);
 	RTpixelMaps.createLuminosityContrastBooleanMap(objectImage->wide, objectImage->high, luminosityContrastMap, luminosityContrastBooleanMap);
 
-	//cout << "5" << endl;
 	//5. apply quadratic fit to image [from Java code];
 		//CHECK THIS - accuracy of quadratic fit is not currently required
 
@@ -1492,9 +1422,6 @@ bool LRRCgameAIClass::generateExperienceFromObjectDecision(const LDreference* ob
 	exit(0);
 	#endif
 
-
-
-	//cout << "4g" << endl;
 
 	#ifdef DEBUG_ANN_OBJECT_RECOGNITION_EXPERIENCES_OUTPUT_ALL_MAPS
 	string PPMFileNameLuminosity = (imageFileNameStart) + LUMINOSITY_MAP_PPM_EXTENSION;
@@ -1518,15 +1445,11 @@ bool LRRCgameAIClass::generateExperienceFromObjectDecision(const LDreference* ob
 	RTpixelMaps.generatePixmapFromBooleanMap(PPMFileNameContrastBooleanCharArray, objectImage->wide, objectImage->high, luminosityContrastBooleanMap);
 	#endif
 
-	//cout << "6" << endl;
-
-		//memory clean up
+	//memory clean up
 
 	delete luminosityContrastMap;
 	delete luminosityMap;
-
-
-
+	
 	/*DOESNT WORK FOR SOME REASON;
 	delete objectImage;
 	delete objectImageContrast;
@@ -1538,12 +1461,9 @@ bool LRRCgameAIClass::generateExperienceFromObjectDecision(const LDreference* ob
 	RTppm.freePixmap(objectImage);
 
 	return result;
-
-	//cout << "3d6" << endl;
 }
 
 #endif
-
 
 
 
@@ -1581,31 +1501,6 @@ void generate2DMemoryMapExperience(LDreference* firstReferenceInLayer,  LDrefere
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void LRRCgameAIClass::addAllUnitExperiencesToOFStream(ofstream* experienceDataSetOFStreamObject, UnitListClass* firstUnitInUnitGroup, const int nnIndex)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
@@ -1613,14 +1508,14 @@ void LRRCgameAIClass::addAllUnitExperiencesToOFStream(ofstream* experienceDataSe
 	while(currentUnitInList->next != NULL)
 	{
 		#ifndef DEBUG_DO_NOT_PERFORM_KILL_RATIO_CHECKS_BEFORE_ADDING_UNIT_EXPERIENCES_TO_NN
-		if(this->checkAverageKillRatioForUnitGroup(currentUnitInList) || (currentUnitInList->unitDetails->numPerson == 1))
+		if(checkAverageKillRatioForUnitGroup(currentUnitInList) || (currentUnitInList->unitDetails->numPerson == 1))
 		{
 		#endif
 			ANNexperienceClass.addExperiencesToOFStream(experienceDataSetOFStreamObject, currentUnitInList->firstExperience[nnIndex]);
 
 			if(currentUnitInList->isUnitGroup)
 			{
-				this->addAllUnitExperiencesToOFStream(experienceDataSetOFStreamObject, currentUnitInList->firstUnitInUnitGroup, nnIndex);
+				addAllUnitExperiencesToOFStream(experienceDataSetOFStreamObject, currentUnitInList->firstUnitInUnitGroup, nnIndex);
 			}
 		#ifndef DEBUG_DO_NOT_PERFORM_KILL_RATIO_CHECKS_BEFORE_ADDING_UNIT_EXPERIENCES_TO_NN
 		}
@@ -1637,7 +1532,7 @@ void LRRCgameAIClass::addPlayerUnitExperiencesToOFStream(ofstream* experienceDat
 	while(currentUnitInList->next != NULL)
 	{
 		#ifndef DEBUG_DO_NOT_PERFORM_KILL_RATIO_CHECKS_BEFORE_ADDING_UNIT_EXPERIENCES_TO_NN
-		if(this->checkAverageKillRatioForUnitGroup(currentUnitInList) || (currentUnitInList->unitDetails->numPerson == 1))
+		if(checkAverageKillRatioForUnitGroup(currentUnitInList) || (currentUnitInList->unitDetails->numPerson == 1))
 		{
 		#endif
 			if(currentUnitInList->team == unitGroupTeam)
@@ -1647,7 +1542,7 @@ void LRRCgameAIClass::addPlayerUnitExperiencesToOFStream(ofstream* experienceDat
 
 			if(currentUnitInList->isUnitGroup)
 			{
-				this->addPlayerUnitExperiencesToOFStream(experienceDataSetOFStreamObject, currentUnitInList->firstUnitInUnitGroup, unitGroupTeam, nnIndex);
+				addPlayerUnitExperiencesToOFStream(experienceDataSetOFStreamObject, currentUnitInList->firstUnitInUnitGroup, unitGroupTeam, nnIndex);
 			}
 		#ifndef DEBUG_DO_NOT_PERFORM_KILL_RATIO_CHECKS_BEFORE_ADDING_UNIT_EXPERIENCES_TO_NN
 		}
@@ -1677,12 +1572,8 @@ double LRRCgameAIClass::addOrCompareAllObjectExperiences(Player* currentPlayer, 
 		}
 		else
 		{
-			//cout << "here" << endl;
-			//cout << "\n\n\ncurrentPlayer->currentExperience[NNBeingTested]->firstExperienceInput->inputValue = " << currentPlayer->currentExperience[NNBeingTested]->firstExperienceInput->inputValue << endl;
-
 			unitReference->name = currentReferenceRulesClass->stringValue;
-			//cout << "unitReference->name = " << unitReference->name << "\n\n" << endl;
-			totalError = totalError + this->addOrCompareExperienceFromUnitDecision(NULL, NULL, unitReference, NULL, numberOfExperiences, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);
+			totalError = totalError + addOrCompareExperienceFromUnitDecision(NULL, NULL, unitReference, NULL, numberOfExperiences, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);
 		}
 		numberOfExperiences++;
 		currentReferenceRulesClass = currentReferenceRulesClass -> next;
@@ -1698,7 +1589,7 @@ double LRRCgameAIClass::addOrCompareAllObjectExperiences(Player* currentPlayer, 
 		else
 		{
 			unitReference->name = currentReferenceRulesClass->stringValue;
-			totalError = totalError + this->addOrCompareExperienceFromUnitDecision(NULL, NULL, unitReference, NULL, numberOfExperiences, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);
+			totalError = totalError + addOrCompareExperienceFromUnitDecision(NULL, NULL, unitReference, NULL, numberOfExperiences, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);
 		}
 		numberOfExperiences++;
 		currentReferenceRulesClass = currentReferenceRulesClass -> next;
@@ -1714,7 +1605,7 @@ double LRRCgameAIClass::addOrCompareAllObjectExperiences(Player* currentPlayer, 
 		else
 		{
 			unitReference->name = currentReferenceRulesClass->stringValue;
-			totalError = totalError + this->addOrCompareExperienceFromUnitDecision(NULL, NULL, unitReference, NULL, numberOfExperiences, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);
+			totalError = totalError + addOrCompareExperienceFromUnitDecision(NULL, NULL, unitReference, NULL, numberOfExperiences, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);
 		}
 		numberOfExperiences++;
 		currentReferenceRulesClass = currentReferenceRulesClass -> next;
@@ -1730,7 +1621,7 @@ double LRRCgameAIClass::addOrCompareAllObjectExperiences(Player* currentPlayer, 
 		else
 		{
 			unitReference->name = currentReferenceRulesClass->stringValue;
-			totalError = totalError + this->addOrCompareExperienceFromUnitDecision(NULL, NULL, unitReference, NULL, numberOfExperiences, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);
+			totalError = totalError + addOrCompareExperienceFromUnitDecision(NULL, NULL, unitReference, NULL, numberOfExperiences, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);
 		}
 		numberOfExperiences++;
 		currentReferenceRulesClass = currentReferenceRulesClass -> next;
@@ -1746,7 +1637,7 @@ double LRRCgameAIClass::addOrCompareAllObjectExperiences(Player* currentPlayer, 
 		else
 		{
 			unitReference->name = currentReferenceRulesClass->stringValue;
-			totalError = totalError + this->addOrCompareExperienceFromUnitDecision(NULL, NULL, unitReference, NULL, numberOfExperiences, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);
+			totalError = totalError + addOrCompareExperienceFromUnitDecision(NULL, NULL, unitReference, NULL, numberOfExperiences, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);
 		}
 		numberOfExperiences++;
 		currentReferenceRulesClass = currentReferenceRulesClass -> next;
@@ -1762,7 +1653,7 @@ double LRRCgameAIClass::addOrCompareAllObjectExperiences(Player* currentPlayer, 
 		else
 		{
 			unitReference->name = currentReferenceRulesClass->stringValue;
-			totalError = totalError + this->addOrCompareExperienceFromUnitDecision(NULL, NULL, unitReference, NULL, numberOfExperiences, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);
+			totalError = totalError + addOrCompareExperienceFromUnitDecision(NULL, NULL, unitReference, NULL, numberOfExperiences, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);
 		}
 		numberOfExperiences++;
 		currentReferenceRulesClass = currentReferenceRulesClass -> next;
@@ -1778,15 +1669,11 @@ double LRRCgameAIClass::addOrCompareAllObjectExperiences(Player* currentPlayer, 
 	{
 		return totalError;
 	}
-
-
 }
 
 #endif
 
 /*OLD:
-
-
 void addExperienceToByteArray()
 {
 

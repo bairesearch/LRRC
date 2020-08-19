@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCgameReferenceManipulation.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -81,7 +81,7 @@ LDreference* LRRCgameReferenceManipulationClass::searchReferenceListRemoveRefere
 			}
 			else
 			{
-				this->searchReferenceListRemoveReference(currentReference->firstReferenceWithinSubModel, unitFileName, unitColour, unitIDFound, result);
+				searchReferenceListRemoveReference(currentReference->firstReferenceWithinSubModel, unitFileName, unitColour, unitIDFound, result);
 			}
 		}
 
@@ -101,7 +101,6 @@ LDreference* LRRCgameReferenceManipulationClass::searchReferenceListRemoveRefere
 	return modInitialReferenceInSceneFile;
 
 }
-
 
 /*
 void searchReferenceListAssignHasPerformedCombat(int currentPhase, LDreference* initialReferenceInSceneFile, string unitFileName, int unitColour, bool* unitIDFound, bool* result)
@@ -152,18 +151,13 @@ LDreference* LRRCgameReferenceManipulationClass::searchReferenceListFindReferenc
 				{
 					*unitIDFound = true;
 
-
 					foundReference = currentReference;
-
-					//cout << "currentReference->name = " << currentReference->name << endl;
-					//cout << "foundReference->name = " << foundReference->name << endl;
-
 				}
 			}
 
 			bool tempUnitIDFound = false;
 			LDreference* tempReferenceFound;
-			tempReferenceFound = this->searchReferenceListFindReference(currentReference->firstReferenceWithinSubModel, unitFileName, unitColour, &tempUnitIDFound , result);
+			tempReferenceFound = searchReferenceListFindReference(currentReference->firstReferenceWithinSubModel, unitFileName, unitColour, &tempUnitIDFound , result);
 			if(tempUnitIDFound)
 			{
 				foundReference = tempReferenceFound;
@@ -178,35 +172,6 @@ LDreference* LRRCgameReferenceManipulationClass::searchReferenceListFindReferenc
 }
 
 
-void LRRCgameReferenceManipulationClass::searchReferenceListPrintReferenceDetails(const LDreference* initialReferenceInSceneFile)
-{
-	const LDreference* currentReference = initialReferenceInSceneFile;
-	while(currentReference->next != NULL)
-	{
-
-		if(currentReference->isSubModelReference)
-		{
-			cout << "currentReference->name = " << currentReference->name << endl;
-
-			/*
-			cout << "currentReference->colour = " << currentReference->colour << endl;
-			cout << "x rel = " << currentReference->relativePosition.x << endl;
-			cout << "y rel = " << currentReference->relativePosition.y << endl;
-			cout << "z rel = " << currentReference->relativePosition.z << endl;
-			cout << "x abs = " << currentReference->absolutePosition.x << endl;
-			cout << "y abs = " << currentReference->absolutePosition.y << endl;
-			cout << "z abs = " << currentReference->absolutePosition.z << endl;
-			*/
-			this->searchReferenceListPrintReferenceDetails(currentReference->firstReferenceWithinSubModel);
-		}
-
-		currentReference = currentReference->next;
-	}
-}
-
-
-
-
 bool LRRCgameReferenceManipulationClass::obtainUserInputInt(int* userInputInt)
 {
 	bool result = true;
@@ -217,7 +182,6 @@ bool LRRCgameReferenceManipulationClass::obtainUserInputInt(int* userInputInt)
 
 	while(UIstatus == true)
 	{
-
 		cout << ">> ";
 		cin >> answerAsString;
 		answerAsInt = SHAREDvars.convertStringToInt(answerAsString);
@@ -239,14 +203,6 @@ bool LRRCgameReferenceManipulationClass::obtainUserInputInt(int* userInputInt)
 
 
 
-
-
-
-
-
-
-
-
 bool LRRCgameReferenceManipulationClass::obtainUnitDetailsFromUserWOSceneRef(const int currentPhase, string* unit1FileName, string* unit2FileName, int* unit1ID, int* unit2ID, string sceneFileName)
 {
 	bool result = true;
@@ -260,16 +216,16 @@ bool LRRCgameReferenceManipulationClass::obtainUnitDetailsFromUserWOSceneRef(con
 		result = false;
 	}
 
-	this->obtainUnitDetailsFromUserForCombat(unit1FileName, unit2FileName, unit1ID, unit2ID, initialReferenceInSceneFile);
+	obtainUnitDetailsFromUserForCombat(unit1FileName, unit2FileName, unit1ID, unit2ID, initialReferenceInSceneFile);
 
 #ifdef GAME_USE_COLOUR_AS_UNIQUE_UNIT_IDS
-	if(!this->determineUnitNamesWithColours(currentPhase, unit1FileName, unit2FileName, *unit1ID, *unit2ID, initialReferenceInSceneFile))
+	if(!determineUnitNamesWithColours(currentPhase, unit1FileName, unit2FileName, *unit1ID, *unit2ID, initialReferenceInSceneFile))
 	{
 		result = false;
 	}
 #else
 
-	if(!this->determineIfUnitsExists(currentPhase, *unit1FileName, *unit2FileName, *unit1ID, *unit2ID, initialReferenceInSceneFile))
+	if(!determineIfUnitsExists(currentPhase, *unit1FileName, *unit2FileName, *unit1ID, *unit2ID, initialReferenceInSceneFile))
 	{
 		result = false;
 	}
@@ -280,8 +236,6 @@ bool LRRCgameReferenceManipulationClass::obtainUnitDetailsFromUserWOSceneRef(con
 
 	return result;
 }
-
-
 
 bool LRRCgameReferenceManipulationClass::obtainUnitDetailsFromUserForCombat(string* unit1FileName, string* unit2FileName, int* unit1ID, int* unit2ID, const LDreference* initialReferenceInSceneFile)
 {
@@ -322,14 +276,14 @@ bool LRRCgameReferenceManipulationClass::determineIfUnitsExists(const int curren
 	bool unitIDFound;
 
 	unitIDFound = false;
-	this->parseRefListCheckUnitExists(currentPhase, initialReferenceInSceneFile, unitAttackerFileName, unitAttackerPlayerID, &unitIDFound, &result);
+	parseRefListCheckUnitExists(currentPhase, initialReferenceInSceneFile, unitAttackerFileName, unitAttackerPlayerID, &unitIDFound, &result);
 	if(!unitIDFound)
 	{
 		cout << "Problem: Combat Ready player " << unitAttackerPlayerID << " unit name " << unitAttackerFileName << " cannot be found," << endl;
 		result = false;
 	}
 	unitIDFound = false;
-	this->parseRefListCheckUnitExists(currentPhase, initialReferenceInSceneFile, unitDefenderFileName, unitDefenderPlayerID, &unitIDFound, &result);
+	parseRefListCheckUnitExists(currentPhase, initialReferenceInSceneFile, unitDefenderFileName, unitDefenderPlayerID, &unitIDFound, &result);
 	if(!unitIDFound)
 	{
 		cout << "Problem: Combat Ready player " << unitDefenderPlayerID << " unit name " << unitDefenderFileName << " cannot be found," << endl;
@@ -338,32 +292,6 @@ bool LRRCgameReferenceManipulationClass::determineIfUnitsExists(const int curren
 
 	return result;
 }
-
-
-bool LRRCgameReferenceManipulationClass::determineUnitNamesWithColours(const int currentPhase, string* unit1FileName, string* unit2FileName, const int unit1ID, const int unit2ID, LDreference* initialReferenceInSceneFile)
-{
-	bool result = true;
-
-	bool unitIDFound;
-	unitIDFound = false;
-	this->parseRefListDetRefNames(currentPhase, initialReferenceInSceneFile, unit1FileName, unit1ID, &unitIDFound, &result);
-	if(!unitIDFound)
-	{
-		cout << "Problem: Combat Ready Unit 1 ID " << unit1ID << "not found." << endl;
-		result = false;
-	}
-	unitIDFound = false;
-	this->parseRefListDetRefNames(currentPhase, initialReferenceInSceneFile, unit2FileName, unit2ID, &unitIDFound, &result);
-	if(!unitIDFound)
-	{
-		cout << "Problem: Combat Ready Unit 2 ID " << unit2ID << "not found." << endl;
-		result = false;
-	}
-
-	return result;
-
-}
-
 
 void LRRCgameReferenceManipulationClass::parseRefListCheckUnitExists(const int currentPhase, const LDreference* initialReferenceInSceneFile, const string unitFileName, const int unitColour, bool* unitIDFound, bool* result)
 {
@@ -386,13 +314,36 @@ void LRRCgameReferenceManipulationClass::parseRefListCheckUnitExists(const int c
 				}
 			}
 
-			this->parseRefListCheckUnitExists(currentPhase, currentReference->firstReferenceWithinSubModel, unitFileName, unitColour, unitIDFound, result);
+			parseRefListCheckUnitExists(currentPhase, currentReference->firstReferenceWithinSubModel, unitFileName, unitColour, unitIDFound, result);
 		}
 
 		currentReference = currentReference->next;
 	}
 }
 
+bool LRRCgameReferenceManipulationClass::determineUnitNamesWithColours(const int currentPhase, string* unit1FileName, string* unit2FileName, const int unit1ID, const int unit2ID, LDreference* initialReferenceInSceneFile)
+{
+	bool result = true;
+
+	bool unitIDFound;
+	unitIDFound = false;
+	parseRefListDetRefNames(currentPhase, initialReferenceInSceneFile, unit1FileName, unit1ID, &unitIDFound, &result);
+	if(!unitIDFound)
+	{
+		cout << "Problem: Combat Ready Unit 1 ID " << unit1ID << "not found." << endl;
+		result = false;
+	}
+	unitIDFound = false;
+	parseRefListDetRefNames(currentPhase, initialReferenceInSceneFile, unit2FileName, unit2ID, &unitIDFound, &result);
+	if(!unitIDFound)
+	{
+		cout << "Problem: Combat Ready Unit 2 ID " << unit2ID << "not found." << endl;
+		result = false;
+	}
+
+	return result;
+
+}
 
 void LRRCgameReferenceManipulationClass::parseRefListDetRefNames(const int currentPhase, LDreference* reference, string* referenceName, const int referenceColour, bool* unitIDFound, bool* result)
 {
@@ -415,7 +366,7 @@ void LRRCgameReferenceManipulationClass::parseRefListDetRefNames(const int curre
 				}
 			}
 
-			this->parseRefListDetRefNames(currentPhase, currentReference->firstReferenceWithinSubModel, referenceName, referenceColour, unitIDFound, result);
+			parseRefListDetRefNames(currentPhase, currentReference->firstReferenceWithinSubModel, referenceName, referenceColour, unitIDFound, result);
 		}
 		currentReference = currentReference->next;
 	}
@@ -423,6 +374,29 @@ void LRRCgameReferenceManipulationClass::parseRefListDetRefNames(const int curre
 
 
 
+void LRRCgameReferenceManipulationClass::searchReferenceListPrintReferenceDetails(const LDreference* initialReferenceInSceneFile)
+{
+	const LDreference* currentReference = initialReferenceInSceneFile;
+	while(currentReference->next != NULL)
+	{
+		if(currentReference->isSubModelReference)
+		{
+			cout << "currentReference->name = " << currentReference->name << endl;
+			/*
+			cout << "currentReference->colour = " << currentReference->colour << endl;
+			cout << "x rel = " << currentReference->relativePosition.x << endl;
+			cout << "y rel = " << currentReference->relativePosition.y << endl;
+			cout << "z rel = " << currentReference->relativePosition.z << endl;
+			cout << "x abs = " << currentReference->absolutePosition.x << endl;
+			cout << "y abs = " << currentReference->absolutePosition.y << endl;
+			cout << "z abs = " << currentReference->absolutePosition.z << endl;
+			*/
+			
+			searchReferenceListPrintReferenceDetails(currentReference->firstReferenceWithinSubModel);
+		}
 
+		currentReference = currentReference->next;
+	}
+}
 
 

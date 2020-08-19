@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCmodelClass.hpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -268,9 +268,6 @@ class LRRCmodelClassClass
 	private: SHAREDvarsClass SHAREDvars;
 	public: void fillInModelClassExternVariables();
 
-	//no longer used due to algorithm break down
-	//void copyCombatRelevantInheritedImmediateParentUnitDetailsIntoChildObject(ModelDetails* unitChild, ModelDetails* unitParent);
-
 	public: void copyAllUnitDetails(ModelDetails* u, ModelDetails* unitToCopy);
 	public: void copyEnvironmentRelevantChildUnitDetailsIntoParentObject(ModelDetails* unitChild, ModelDetails* unitParent);
 	public: void addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails* unitChild, ModelDetails* unitParent);
@@ -279,6 +276,9 @@ class LRRCmodelClassClass
 	private: bool calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(ModelDetails* u);
 	private: void copyRecordLists(RecordClass* recordToFill, RecordClass* recordToCopy);
 	private: void addRecordLists(RecordClass* recordToFill, RecordClass* recordToAdd);
+
+	//no longer used due to algorithm break down
+	//void copyCombatRelevantInheritedImmediateParentUnitDetailsIntoChildObject(ModelDetails* unitChild, ModelDetails* unitParent);
 
 	//generic
 	//int maxInt(int a, int b);

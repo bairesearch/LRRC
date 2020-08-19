@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCrules.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -118,9 +118,7 @@ bool LRRCrulesClass::parseLRRCrulesXMLfile()
 	LRRCrulesSprite = new XMLrulesClass();
 
 
-
-
-	if(!this->parseLRRCrulesTag(currentTag))
+	if(!parseLRRCrulesTag(currentTag))
 	{
 		result = false;
 	}
@@ -306,7 +304,7 @@ bool LRRCrulesClass::parseLRRCrulesTag(XMLparserTag* currentTag)
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!this->parseTagUnitCombatDetails(currentTagUpdated))
+		if(!parseTagUnitCombatDetails(currentTagUpdated))
 		{
 			result = false;
 		}
@@ -348,12 +346,12 @@ bool LRRCrulesClass::parseTagUnitCombatDetails(XMLparserTag* currentTag)
 	currentTagUpdated = XMLparserClass.parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_unitCombatDetails, &result);
 	if(result)
 	{
-		if(!this->parseTagArmour(currentTagUpdated))
+		if(!parseTagArmour(currentTagUpdated))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!this->parseTagWeapons(currentTagUpdated))
+		if(!parseTagWeapons(currentTagUpdated))
 		{
 			result = false;
 		}
@@ -370,17 +368,17 @@ bool LRRCrulesClass::parseTagArmour(XMLparserTag* currentTag)
 	currentTagUpdated = XMLparserClass.parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_armour, &result);
 	if(result)
 	{
-		if(!this->parseTagHead(currentTagUpdated))
+		if(!parseTagHead(currentTagUpdated))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!this->parseTagTorso(currentTagUpdated))
+		if(!parseTagTorso(currentTagUpdated))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!this->parseTagShield(currentTagUpdated))
+		if(!parseTagShield(currentTagUpdated))
 		{
 			result = false;
 		}
@@ -424,12 +422,12 @@ bool LRRCrulesClass::parseTagWeapons(XMLparserTag* currentTag)
 	currentTagUpdated = XMLparserClass.parseTagDownALevel(currentTagUpdated, RULES_XML_TAG_weapons, &result);
 	if(result)
 	{
-		if(!this->parseTagCloseCombat(currentTagUpdated))
+		if(!parseTagCloseCombat(currentTagUpdated))
 		{
 			result = false;
 		}
 		currentTagUpdated=currentTagUpdated->nextTag;
-		if(!this->parseTagLongDistanceCombat(currentTagUpdated))
+		if(!parseTagLongDistanceCombat(currentTagUpdated))
 		{
 			result = false;
 		}

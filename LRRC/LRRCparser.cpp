@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCparser.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -60,15 +60,15 @@ void LRRCparserClass::fillInParserExternVariables()
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
 	}
 }
+	
 	//white space removal required for messy dat files from ldraw parts library
-
 
 void LRRCparserClass::updateUnitDetails(string subPartFileName, ModelDetails* u)
 {
-	this->updateUnitDetailsWithTypeDetails(subPartFileName, u);
-	this->updateUnitDetailsWithCombatDetails(subPartFileName, u);
-	this->updateUnitDetailsWithBuildingDetails(subPartFileName, u);		//this is currently not needed here - but could be used in the future for battlment protection rules during combat.
-	this->updateUnitDetailsWithTerrainDefenceDetails(subPartFileName, u);
+	updateUnitDetailsWithTypeDetails(subPartFileName, u);
+	updateUnitDetailsWithCombatDetails(subPartFileName, u);
+	updateUnitDetailsWithBuildingDetails(subPartFileName, u);		//this is currently not needed here - but could be used in the future for battlment protection rules during combat.
+	updateUnitDetailsWithTerrainDefenceDetails(subPartFileName, u);
 }
 
 void LRRCparserClass::updateUnitDetailsWithCombatDetails(string subPartFileName, ModelDetails* u)
@@ -107,7 +107,6 @@ void LRRCparserClass::updateUnitDetailsWithCombatDetails(string subPartFileName,
 	RecordClass* currentReferenceRecordClass;
 
 
-
 	//Helmet Defence
 	currentReferenceRulesClass = LRRCrulesUnitCombatDetailsDefenceHead;
 	currentReferenceRecordClass = u->recordOfUnitCombatDetailsDefenceHead;
@@ -132,25 +131,19 @@ void LRRCparserClass::updateUnitDetailsWithCombatDetails(string subPartFileName,
 	{//Castle Helmet with Neck Protector
 		u->helmetDefenceValue = HEAD_NECK_PROTECTOR_MOD;
 	}
-
 	else if(strncmp(subPartFileName, HEAD_ROBIN, HEAD_ROBIN_LEN) == 0)
 	{
 		u->helmetDefenceValue = HEAD_ROBIN_MOD;
 	}
-
 	else if(strncmp(subPartFileName, HEAD_PLATE, HEAD_PLATE_LEN) == 0)
 	{
 		u->helmetDefenceValue = HEAD_PLATE_MOD;
 	}
-
-
 	else if(strncmp(subPartFileName, HEAD_CROWN, HEAD_CROWN_LEN) == 0)
 	{
 		u->helmetDefenceValue = HEAD_CROWN_MOD;
 	}
 	*/
-
-
 
 
 	//torso Defence
@@ -167,7 +160,6 @@ void LRRCparserClass::updateUnitDetailsWithCombatDetails(string subPartFileName,
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
 	}
-
 
 
 	/*
@@ -243,7 +235,6 @@ void LRRCparserClass::updateUnitDetailsWithCombatDetails(string subPartFileName,
 	*/
 
 
-
 	//shield Defence
 	currentReferenceRulesClass = LRRCrulesUnitCombatDetailsDefenceShield;
 	currentReferenceRecordClass = u->recordOfUnitCombatDetailsDefenceShield;
@@ -260,7 +251,6 @@ void LRRCparserClass::updateUnitDetailsWithCombatDetails(string subPartFileName,
 	}
 
 
-
 	/*
 	if(strncmp(subPartFileName, SHIELD_TRIANGULAR, SHIELD_TRIANGULAR_LEN) == 0)
 		//if(strcmp(subPartFileName, SHIELD_TRIANGULAR) == 0)
@@ -274,10 +264,6 @@ void LRRCparserClass::updateUnitDetailsWithCombatDetails(string subPartFileName,
 		u->numShields++;
 	}
 	*/
-
-
-
-
 
 
 	//////////////////////////////
@@ -353,8 +339,6 @@ void LRRCparserClass::updateUnitDetailsWithCombatDetails(string subPartFileName,
 		u->numSpear++;
 	}
 	*/
-
-
 
 
 	//miscellaneous modifiers

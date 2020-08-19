@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCplayerClass.hpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -111,8 +111,7 @@ public:
 	UnitListClass* firstUnitInUnitList;
 	UnitListClass* currentObjectInUnitList;	//temp variable for UnitListClass* initialisation	//is this used anymore?
 
-
-#ifdef USE_ANN
+	#ifdef USE_ANN
 	double creativity;
 
 	/*
@@ -126,7 +125,7 @@ public:
 	ANNneuron* firstOutputNeuronInNetwork[GAME_NUMBER_OF_EXPERIENCE_NN];
 	int64_t numberOfInputNeurons[GAME_NUMBER_OF_EXPERIENCE_NN];
 	int64_t numberOfOutputNeurons[GAME_NUMBER_OF_EXPERIENCE_NN];
-#endif
+	#endif
 
 	Player* next;
 };

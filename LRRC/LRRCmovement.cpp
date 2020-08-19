@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCmovement.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -51,28 +51,7 @@ ModelDetails* buildingSection;
 
 
 
-
-
-
-
-
-
-
-
-
-
 //preconditions 19-3-06 - unit parts relevant to movement (eg horses, persons, hulls, wheels) must be wrapped by at least one higher level unit. the higher level unit should be moved between scenes and not its child objects (wheel, horse, head etc).
-
-
-/****************************************************************
-/
-/ compareSceneFilesMovementPhase
-/
-/****************************************************************/
-
-
-
-
 bool LRRCmovementClass::compareSceneFilesMovementPhase(string preMovementPhaseSceneFileName, string thisPhaseStartSceneFileName, Player* currentPlayer, string targetSpritesSceneFileName, const bool addSprites)
 {
 	bool result = true;
@@ -99,7 +78,7 @@ bool LRRCmovementClass::compareSceneFilesMovementPhase(string preMovementPhaseSc
 
 	if(result)
 	{
-		result = this->compareScenesMovementPhase(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, initialReferenceInThisPhaseStartScene, currentPlayer, targetSpritesSceneFileName, addSprites);
+		result = compareScenesMovementPhase(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, initialReferenceInThisPhaseStartScene, currentPlayer, targetSpritesSceneFileName, addSprites);
 	}
 
 	delete initialReferenceInThisPhaseStartScene;
@@ -111,10 +90,6 @@ bool LRRCmovementClass::compareSceneFilesMovementPhase(string preMovementPhaseSc
 
 	return result;
 }
-
-
-
-
 
 bool LRRCmovementClass::compareScenesMovementPhase(const string preMovementPhaseSceneFileName, LDreference* initialReferenceInPreMovementPhaseScene, LDreference* initialReferenceInThisPhaseStartScene, Player* currentPlayer, string targetSpritesSceneFileName, const bool addSprites)
 {
@@ -132,14 +107,11 @@ bool LRRCmovementClass::compareScenesMovementPhase(const string preMovementPhase
 	int numTargetSpritesAdded = 0;
 
 	//parsingUnitFileAndCalculatingItsCharacteristics = false; //this is assumed already!
-	#ifdef DEBUG
-	cout << "DEBUG1a " <<  endl;
-	#endif
 	bool isAChildOfAMovingReference = false;		//this, the value of this highest level instance of isAChildOfAMovingReference in the compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList recursive algorithm is not used.
 	int parentUnitSpeed = 0;						//this, the value of this highest level instance of parentUnitSpeed in the compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList recursive algorithm is not used.
-	if(this->searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(initialReferenceInThisPhaseStartScene, initialReferenceInPreMovementPhaseScene, parentUnitSpeed, isAChildOfAMovingReference, currentPlayer, targetSpritesSceneFileName, targetSpriteListInitialReference, &numTargetSpritesAdded))
+	if(searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(initialReferenceInThisPhaseStartScene, initialReferenceInPreMovementPhaseScene, parentUnitSpeed, isAChildOfAMovingReference, currentPlayer, targetSpritesSceneFileName, targetSpriteListInitialReference, &numTargetSpritesAdded))
 	{
-		if(!this->performFinalRoundPointsCalculations(currentPlayer))
+		if(!performFinalRoundPointsCalculations(currentPlayer))
 		{
 			result = false;
 		}
@@ -163,8 +135,6 @@ bool LRRCmovementClass::compareScenesMovementPhase(const string preMovementPhase
 
 	return result;
 }
-
-
 
 bool LRRCmovementClass::searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(LDreference* referenceInThisPhaseStartSceneFile, LDreference* initialReferenceInPreMovementPhaseScene, const int parentUnitSpeed, const bool isAChildOfAMovingReference, const Player* currentPlayer, string targetSpritesSceneFileName, LDreference* spriteListInitialReference, int* numTargetSpritesAdded)
 {
@@ -197,6 +167,7 @@ bool LRRCmovementClass::searchThisPhaseStartSceneReferenceListForReferenceCompar
 				LRRCmodelClass.determineUnitTypeAndMinSpeedOfUnitGroup(topLevelReferenceInUnit1->subModelDetails);
 
 				currentReferenceUnitSpeed = topLevelReferenceInUnit1->subModelDetails->movementSpeed;
+				
 				#ifdef DEBUG_MOVEMENT_CPP
 				cout << "Current reference being compared: " << currentReference->name  << endl;
 				cout << "topLevelReferenceInUnit1.subModelDetails->numPerson = " << topLevelReferenceInUnit1.subModelDetails->numPerson << endl;
@@ -207,15 +178,7 @@ bool LRRCmovementClass::searchThisPhaseStartSceneReferenceListForReferenceCompar
 			}
 		}
 
-
 		bool currentReferenceIsAMovingReference = false;
-
-		/*	"aPartWithSameName" = a part with same name and colour as part being compared
-		aPartWithSameIDMovedAbsoluteSinceLastRound = resultOfComparison[0]
-		aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound = resultOfComparison[1]
-		aPartWithSameIDHasMovedAndIsAMovingPartAndHasMovedIllegally = resultOfComparison[2]
-		aPartWithSameIDMovedRelativeSinceLastRound = resultOfComparison[3]
-		*/
 
 		LDreference* referenceInPreviousSceneRefList;
 		bool searchResult = true;
@@ -225,7 +188,7 @@ bool LRRCmovementClass::searchThisPhaseStartSceneReferenceListForReferenceCompar
 		resultOfComparison[1] = false;
 		resultOfComparison[2] = false;
 		resultOfComparison[3] = false;
-		referenceInPreviousSceneRefList = this->compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(currentReference, initialReferenceInPreMovementPhaseScene, resultOfComparison, currentReferenceUnitSpeed, &unitIDFound, &searchResult);
+		referenceInPreviousSceneRefList = compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(currentReference, initialReferenceInPreMovementPhaseScene, resultOfComparison, currentReferenceUnitSpeed, &unitIDFound, &searchResult);
 
 		if(unitIDFound == true)
 		{
@@ -244,7 +207,7 @@ bool LRRCmovementClass::searchThisPhaseStartSceneReferenceListForReferenceCompar
 				cout << "d:currentReference->firstReferenceWithinSubModel->name = " << currentReference->firstReferenceWithinSubModel->name << endl;
 				playerMoveStatus = false;
 			}
-			else if(!this->dealWithResultsOfComparison(currentReference, resultOfComparison, currentPlayer, spriteListInitialReference, referenceInPreviousSceneRefList, numTargetSpritesAdded, targetSpritesSceneFileName, unitIDFound, isAChildOfAMovingReference))
+			else if(!dealWithResultsOfComparison(currentReference, resultOfComparison, currentPlayer, spriteListInitialReference, referenceInPreviousSceneRefList, numTargetSpritesAdded, targetSpritesSceneFileName, unitIDFound, isAChildOfAMovingReference))
 			{
 				playerMoveStatus = false;
 				//currentReferenceMoveAccepted = false;
@@ -262,16 +225,15 @@ bool LRRCmovementClass::searchThisPhaseStartSceneReferenceListForReferenceCompar
 
 		if((currentReference->isSubModelReference))
 		{
-			if(!this->searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(currentReference->firstReferenceWithinSubModel, initialReferenceInPreMovementPhaseScene, currentReferenceUnitSpeed, currentReferenceIsAMovingReference|isAChildOfAMovingReference, currentPlayer, targetSpritesSceneFileName, spriteListInitialReference, numTargetSpritesAdded))
+			if(!searchThisPhaseStartSceneReferenceListForReferenceComparisonInitiation(currentReference->firstReferenceWithinSubModel, initialReferenceInPreMovementPhaseScene, currentReferenceUnitSpeed, currentReferenceIsAMovingReference|isAChildOfAMovingReference, currentPlayer, targetSpritesSceneFileName, spriteListInitialReference, numTargetSpritesAdded))
 			{
 				playerMoveStatus = false;
 			}
 		}
 
-
-
 		currentReference = currentReference->next;
 	}
+	
 	return playerMoveStatus;
 }
 
@@ -282,7 +244,7 @@ LDreference* LRRCmovementClass::compareReferenceCharacteristicsToThoseInPreMovem
 
 	while(currentReference->next != NULL)
 	{
-		if(this->compareSubmodelNamesAndIfSameCheckIfValidMove(referenceInThisPhaseStartSceneFileBeingLocated, currentReference, resultOfComparison, parentUnitSpeed))
+		if(compareSubmodelNamesAndIfSameCheckIfValidMove(referenceInThisPhaseStartSceneFileBeingLocated, currentReference, resultOfComparison, parentUnitSpeed))
 		{//unitIDFoundInThisComparison
 
 			if(*unitIDFound == true)
@@ -303,7 +265,7 @@ LDreference* LRRCmovementClass::compareReferenceCharacteristicsToThoseInPreMovem
 		{
 			bool unitIDFoundInChild = false;
 			LDreference* referenceOfUnitIDFoundInChild;
-			referenceOfUnitIDFoundInChild = this->compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(referenceInThisPhaseStartSceneFileBeingLocated, currentReference->firstReferenceWithinSubModel, resultOfComparison, parentUnitSpeed, &unitIDFoundInChild, result);
+			referenceOfUnitIDFoundInChild = compareReferenceCharacteristicsToThoseInPreMovementPhaseSceneReferenceList(referenceInThisPhaseStartSceneFileBeingLocated, currentReference->firstReferenceWithinSubModel, resultOfComparison, parentUnitSpeed, &unitIDFoundInChild, result);
 			if(unitIDFoundInChild == true)
 			{
 				if(*unitIDFound == true)
@@ -325,19 +287,9 @@ LDreference* LRRCmovementClass::compareReferenceCharacteristicsToThoseInPreMovem
 	return referenceInPreviousSceneFile;
 }
 
-
 bool LRRCmovementClass::compareSubmodelNamesAndIfSameCheckIfValidMove(const LDreference* referenceInThisPhaseStartSceneSearchedFor, const LDreference* referenceInPreMovementPhaseSceneFoundDuringSearch, bool resultOfComparison[], const int parentUnitSpeed)
 {
-	//cout << "DEBUG: here4" << endl;
-
 	bool unitIDFoundInThisComparison = false;
-
-	/*	"aPartWithSameName" = a part with same name and colour as part being compared
-	aPartWithSameIDMovedAbsoluteSinceLastRound = resultOfComparison[0]
-	aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound = resultOfComparison[1]
-	aPartWithSameIDHasMovedAndIsAMovingPartAndHasMovedIllegally = resultOfComparison[2]
-	aPartWithSameIDMovedRelativeSinceLastRound = resultOfComparison[3]
-	*/
 
 	bool aPartWithSameIDMovedAbsoluteSinceLastRound = false;
 	bool aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound = false;
@@ -351,7 +303,6 @@ bool LRRCmovementClass::compareSubmodelNamesAndIfSameCheckIfValidMove(const LDre
 
 	if((referenceInPreMovementPhaseSceneFoundDuringSearch->name == referenceInThisPhaseStartSceneSearchedFor->name) && (referenceInPreMovementPhaseSceneFoundDuringSearch->colour == referenceInThisPhaseStartSceneSearchedFor->colour))
 	{
-
 		if(referenceInPreMovementPhaseSceneFoundDuringSearch->isSubModelReference)
 		{
 			unitIDFoundInThisComparison = true;
@@ -381,7 +332,6 @@ bool LRRCmovementClass::compareSubmodelNamesAndIfSameCheckIfValidMove(const LDre
 
 			#ifdef DEBUG_MOVEMENT_CPP
 			cout << "D: aPartWithSameIDMovedRelativeSinceLastRound = true;" << endl;
-			#endif
 			/*
 			cout << "\nD:referenceInThisPhaseStartSceneSearchedFor->name = " << referenceInThisPhaseStartSceneSearchedFor->name << endl;
 			cout << "D:parentUnitSpeed = " << parentUnitSpeed << endl;
@@ -393,6 +343,7 @@ bool LRRCmovementClass::compareSubmodelNamesAndIfSameCheckIfValidMove(const LDre
 			cout << "D:thisPhaseStartSceneFileRelativeY = " << thisPhaseStartSceneFileRelativeY << endl;
 			cout << "D:thisPhaseStartSceneFileRelativeZ = " << thisPhaseStartSceneFileRelativeZ << endl;
 			*/
+			#endif
 		}
 
 		int preMovementPhaseSceneFileAbsoluteX = (int)referenceInPreMovementPhaseSceneFoundDuringSearch->absolutePosition.x;
@@ -407,21 +358,22 @@ bool LRRCmovementClass::compareSubmodelNamesAndIfSameCheckIfValidMove(const LDre
 		if((thisPhaseStartSceneFileAbsoluteX == preMovementPhaseSceneFileAbsoluteX) && (thisPhaseStartSceneFileAbsoluteY == preMovementPhaseSceneFileAbsoluteY) && (thisPhaseStartSceneFileAbsoluteZ == preMovementPhaseSceneFileAbsoluteZ))
 		{
 			aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound = true;
-			//cout << "D: aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound = true; (abs. positions are the same)" << endl;
-			//cout << "referenceInThisPhaseStartSceneSearchedFor->name" << referenceInThisPhaseStartSceneSearchedFor->name << endl;
-			//cout << referenceInThisPhaseStartSceneSearchedFor->name << endl;
+			
 			#ifdef DEBUG_MOVEMENT_CPP
+			//cout << "D: aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound = true; (abs. positions are the same)" << endl;
+			//cout << "D: referenceInThisPhaseStartSceneSearchedFor->name" << referenceInThisPhaseStartSceneSearchedFor->name << endl;
+			//cout << referenceInThisPhaseStartSceneSearchedFor->name << endl;
 			cout << "D: aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound = true; (abs. positions are the same)" << endl;
-			#endif
 			//cout << "D:the following aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound: " <<  referenceInThisPhaseStartSceneSearchedFor->name << endl;
+			#endif
 		}
 		else
 		{
 			aPartWithSameIDMovedAbsoluteSinceLastRound = true;
+			
 			#ifdef DEBUG_MOVEMENT_CPP
 			cout << "D: aPartWithSameIDMovedAbsoluteSinceLastRound = true;" << endl;
 			#endif
-
 
 			int maxTravelDistance;
 
@@ -439,30 +391,32 @@ bool LRRCmovementClass::compareSubmodelNamesAndIfSameCheckIfValidMove(const LDre
 				if((XYZDisplacementFromOriginalToPartPotentiallyFound) <= maxTravelDistance)
 				{
 					aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound = true;
+
+					#ifdef DEBUG_MOVEMENT_CPP
 					//cout << "D: aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound = true; (abs. positions are different but move is in range)" << endl;
 					//cout << "referenceInThisPhaseStartSceneSearchedFor->name" << referenceInThisPhaseStartSceneSearchedFor->name << endl;
 					//cout << referenceInThisPhaseStartSceneSearchedFor->name << endl;
-
-					#ifdef DEBUG_MOVEMENT_CPP
 					cout << "D: aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound = true; (abs. positions are different but move is in range)" << endl;
 					#endif
 					#ifdef DEBUG_MOVEMENT_CPP_DISPLACEMENT
 					cout << "D: XYZDisplacementFromOriginalToPartPotentiallyFound = " << XYZDisplacementFromOriginalToPartPotentiallyFound << endl;
-					#endif
 					//cout << "d:2 the following aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound: " <<  referenceInThisPhaseStartSceneSearchedFor->name << endl;
+					#endif
 				}
 				else
 				{
 
 					aPartWithSameIDHasMovedAndIsAMovingPartAndHasMovedIllegally = true;
+					
 					#ifdef DEBUG_MOVEMENT_CPP
 					cout << "D: aPartWithSameIDHasMovedAndIsAMovingPartAndHasMovedIllegally = true;" << endl;
-					#endif
 					/*
 					cout << "D: Error: an invalid move occured. " << referenceInThisPhaseStartSceneSearchedFor->name << " was moved beyond its maximum distance allowed)" << endl;
 					cout << "D: Error: Distance moved = " << XYZDisplacementFromOriginalToPartPotentiallyFound << ". Distance allowed = " << maxTravelDistance << endl;
 					cout << "D: [this error may be wrong if there are more than reference to a same unit in a scene]" << endl;
 					*/
+					#endif
+
 				}
 			}
 			else
@@ -493,22 +447,8 @@ bool LRRCmovementClass::compareSubmodelNamesAndIfSameCheckIfValidMove(const LDre
 }
 
 
-
-
-
-
-
-
 bool LRRCmovementClass::dealWithResultsOfComparison(LDreference* referenceInThisPhaseStartSceneFile, const bool resultOfComparison[], const Player* currentPlayer, LDreference* spriteListInitialReference, LDreference* referenceInPreMovementPhaseSceneFile, int* numTargetSpritesAdded, string targetSpritesSceneFileName, const bool unitIDFound, const bool isChildOfMovingReference)
 {
-
-	/*	"aPartWithSameName" = a part with same name and colour as part being compared
-	aPartWithSameIDMovedAbsoluteSinceLastRound = resultOfComparison[0]
-	aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound = resultOfComparison[1]
-	//aPartWithSameIDHasMovedAndIsAMovingPartAndHasMovedIllegally = resultOfComparison[2]
-	//aPartWithSameIDMovedRelativeSinceLastRound = resultOfComparison[3]
-	*/
-
 	bool aPartWithSameIDMovedAbsoluteSinceLastRound = resultOfComparison[0];
 	bool aPartWithSameIDHasNotMovedOrMovedLegallySinceLastRound = resultOfComparison[1];
 	bool aPartWithSameIDHasMovedAndIsAMovingPartAndHasMovedIllegally = resultOfComparison[2];
@@ -520,7 +460,6 @@ bool LRRCmovementClass::dealWithResultsOfComparison(LDreference* referenceInThis
 
 		if(aPartWithSameIDMovedAbsoluteSinceLastRound)
 		{
-
 			//if(partIfMovedHasMovedWithinItsMaximumDistanceAllowed)		//this is implied
 			//{
 				if(referenceInThisPhaseStartSceneFile->isSubModelReference)
@@ -529,11 +468,10 @@ bool LRRCmovementClass::dealWithResultsOfComparison(LDreference* referenceInThis
 					//{
 						if(LDreferenceClass.obtainReferencePlayerID(referenceInThisPhaseStartSceneFile) == (currentPlayer->id))
 						{
-
 							cout << referenceInThisPhaseStartSceneFile->name << " was found to have moved between scenes and has had its move accepted" << endl;
 
-						//#define TEMP_NO_MOVEMENTSPRITES
-						#ifndef TEMP_NO_MOVEMENTSPRITES
+							//#define TEMP_NO_MOVEMENTSPRITES
+							#ifndef TEMP_NO_MOVEMENTSPRITES
 							//add target sprite info
 							bool result = true;
 							bool addTextualSpriteInfo = false;
@@ -544,14 +482,6 @@ bool LRRCmovementClass::dealWithResultsOfComparison(LDreference* referenceInThis
 							eyeCoords.y = 0.0;
 							eyeCoords.z = 0.0;
 
-							/*
-							cout << "cc1" << endl;
-							cout << "(unitReference->name) = " << (referenceInPreMovementPhaseSceneFile->name) << endl;
-							//cout << "spriteReferenceFileName = " << spriteReferenceFileName << endl;
-							//cout << "spriteListInitialReference->name = " << spriteListInitialReference->name << endl;
-							cout << "(unitReference->absolutePosition.x) = " << (referenceInPreMovementPhaseSceneFile->absolutePosition.x) << endl;
-							cout << "cc2" << endl;
-							*/
 							if(isChildOfMovingReference == false)
 							{
 								if(!LRRCsprite.LRRCdetermineSpriteInfoAndAddSpriteToSpriteRefList(referenceInPreMovementPhaseSceneFile, referenceInThisPhaseStartSceneFile, spriteListInitialReference, &eyeCoords, numTargetSpritesAdded, targetSpritesSceneFileName, addTextualSpriteInfo, addRangeSpriteInfo, addTargetSpriteInfo, currentPlayer->currentPhase, currentPlayer->id))
@@ -559,7 +489,7 @@ bool LRRCmovementClass::dealWithResultsOfComparison(LDreference* referenceInThis
 									result = false;
 								}
 							}
-						#endif
+							#endif
 
 						}
 						else
@@ -622,8 +552,6 @@ bool LRRCmovementClass::dealWithResultsOfComparison(LDreference* referenceInThis
 
 				if(referenceInThisPhaseStartSceneFile->isSubModelReference)
 				{
-					//cout << "referenceInThisPhaseStartSceneFile->name" << referenceInThisPhaseStartSceneFile->name << endl;
-
 					//Building Calculations	- During parsing these are calculated now on a per part basis and a finalisation basis (instead of a per unit parsed basis). At this stage the user is just notified if a new building has been added to the scene
 					int referencedSubmodelTotalDefinateBuildingSpecificPoints = 0;
 
@@ -651,7 +579,6 @@ bool LRRCmovementClass::dealWithResultsOfComparison(LDreference* referenceInThis
 					//numberOfBuildingPointsUsedByPlayerSoFarDuringRound = numberOfBuildingPointsUsedByPlayerSoFarDuringRound + referencedSubmodelTotalBuildingPoints;
 
 
-
 					/*Combat Calculations*/	/*NB scene comparison unit cost calculations are performed without inherited values (equipment,speed etc) so as not to double count*/
 					int combatBaseUnitModifer;
 					int referencedSubmodelTotalCombatPoints;
@@ -672,7 +599,6 @@ bool LRRCmovementClass::dealWithResultsOfComparison(LDreference* referenceInThis
 				{
 					cout << "New LDreference detected in scene " << referenceInThisPhaseStartSceneFile->name << endl;
 					//cout << "\td:Relative Positions: X = " << referenceInThisPhaseStartSceneFile->relativePosition.x << ", Y = " << referenceInThisPhaseStartSceneFile->relativePosition.y << ", Z = " << referenceInThisPhaseStartSceneFile->relativePosition.z << endl;
-
 
 					const char* constantCharStarString = referenceInThisPhaseStartSceneFile->name.c_str();
 					char* charStarString = new char[referenceInThisPhaseStartSceneFile->name.size()+1];
@@ -698,12 +624,6 @@ bool LRRCmovementClass::dealWithResultsOfComparison(LDreference* referenceInThis
 
 	return playerMoveStatus;
 }
-
-
-
-
-
-
 
 
 //Building Options
@@ -738,7 +658,7 @@ bool LRRCmovementClass::performFinalRoundPointsCalculations(Player* currentPlaye
 	numberOfBuildingPointsUsedByPlayerSoFarDuringRound = referencedSubmodelTotalBuildingPoints;
 
 
-/*
+	/*
 	int referencedSubmodelTotalBuildingPoints;
 	int referencedSubmodelTotalDefinateBuildingSpecificPoints;
 	int pointsUsedByBuildingWalls;
@@ -759,8 +679,7 @@ bool LRRCmovementClass::performFinalRoundPointsCalculations(Player* currentPlaye
 	referencedSubmodelTotalDefinateBuildingSpecificPoints = referencedSubmodelTotalBuildingPoints - pointsUsedByBuildingOthers;
 
 	numberOfBuildingPointsUsedByPlayerSoFarDuringRound = referencedSubmodelTotalBuildingPoints;
-
-*/
+	*/
 
 
 	if(numberOfBuildingPointsUsedByPlayerSoFarDuringRound > maxNumBuildingRitualPointsAllowedDuringRound)
@@ -786,7 +705,7 @@ bool LRRCmovementClass::performFinalRoundPointsCalculations(Player* currentPlaye
 		result = false;
 	}
 
-#ifdef GAME_MOVEMENT_PHASE_DISPLAY_RESULT
+	#ifdef GAME_MOVEMENT_PHASE_DISPLAY_RESULT
 	if(result)
 	{
 
@@ -801,7 +720,7 @@ bool LRRCmovementClass::performFinalRoundPointsCalculations(Player* currentPlaye
 		cout << "\t\troundsSpareBuildingRitualPoints= " << (maxNumBuildingRitualPointsAllowedDuringRound - numberOfBuildingPointsUsedByPlayerSoFarDuringRound) << endl;
 		cout << "\t\troundsSpareCombatRitualPoints = " << (maxNumCombatRitualPointsAllowedDuringRound -  numberOfCombatPointsUsedByPlayerSoFarDuringRound) << endl;
 	}
-#endif
+	#endif
 
 	return result;
 }

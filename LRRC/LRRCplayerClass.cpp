@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCplayerClass.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -46,6 +46,94 @@ int64_t PLAYER_ROUND_RITUAL_COMBAT_POINTS_ALLOCATED;
 int64_t PLAYER_ROUND_RITUAL_BUILDING_POINTS_ALLOCATED;
 double PLAYER_MAXIMUM_BUILD_DISTANCE_FROM_STARTING_POST;
 int BUILDING_DEFAULT_MOD;
+
+
+Player::Player(void)
+{
+	//Define default values for Player
+
+	name = "";
+	id = 0;			//player ID - Eg colour
+	credits = PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT;
+	startPosition.x = 0.0;
+	startPosition.y = 0.0;
+	startPosition.z = 0.0;
+	currentPhase = GAME_PHASE_GENERIC;
+	playerIsAI = false;
+	status = true;
+
+	firstUnitInUnitList = NULL;
+	currentObjectInUnitList = NULL;
+
+	#ifdef USE_ANN
+	creativity = DEFAULT_AI_PLAYER_CREATIVITY;		//a large degree of creativity is assigned to player for now...
+
+	/*
+	firstExperience = new ANNexperience();
+	currentExperience = firstExperience;
+	*/
+	for(int nn = 0; nn < GAME_NUMBER_OF_EXPERIENCE_NN; nn++)
+	{
+		firstExperience[nn] = new ANNexperience();
+		currentExperience[nn] = firstExperience[nn];
+	}
+
+	for(int i=0; i<GAME_NUMBER_OF_EXPERIENCE_NN; i++)
+	{
+		firstInputNeuronInNetwork[i] = NULL;
+		firstOutputNeuronInNetwork[i] = NULL;
+		numberOfInputNeurons[i] = 0;
+		numberOfOutputNeurons[i] = 0;
+	}
+	#endif
+
+	next = NULL;
+}
+
+Player::~Player()
+{
+
+	#ifdef USE_ANN
+	for(int i = 0; i< GAME_NUMBER_OF_EXPERIENCE_NN; i++)
+	{
+		if(firstExperience[i] != NULL)
+		{
+			delete firstExperience[i];
+		}
+	}
+
+	/*
+	if(firstExperience != NULL)
+	{
+		delete firstExperience;
+	}
+	*/
+	#endif
+
+	#ifdef USE_SEPARATE_UNIT_LISTS_PER_PLAYER
+	if(firstUnitInUnitList != NULL)
+	{
+		delete firstUnitInUnitList;
+	}
+	#endif
+
+	#ifdef USE_SEPARATE_AI_PER_PLAYER
+	for(int i = 0; i< GAME_NUMBER_OF_EXPERIENCE_NN; i++)
+	{
+		if(firstInputNeuronInNetwork[i] != NULL)
+		{
+			delete firstInputNeuronInNetwork[i];
+		}
+	}
+	#endif
+
+	if(next != NULL)
+	{
+		delete next;
+	}
+
+
+}
 
 
 void LRRCplayerClassClass::fillInPlayerClassExternVariables()
@@ -84,95 +172,6 @@ void LRRCplayerClassClass::fillInPlayerClassExternVariables()
 }
 
 
-
-Player::Player(void)
-{
-	//Define default values for Player
-
-	name = "";
-	id = 0;			//player ID - Eg colour
-	credits = PLAYER_BANK_ACCOUNT_INITIAL_DEFAULT;
-	startPosition.x = 0.0;
-	startPosition.y = 0.0;
-	startPosition.z = 0.0;
-	currentPhase = GAME_PHASE_GENERIC;
-	playerIsAI = false;
-	status = true;
-
-	firstUnitInUnitList = NULL;
-	currentObjectInUnitList = NULL;
-
-#ifdef USE_ANN
-	creativity = DEFAULT_AI_PLAYER_CREATIVITY;		//a large degree of creativity is assigned to player for now...
-
-	/*
-	firstExperience = new ANNexperience();
-	currentExperience = firstExperience;
-	*/
-	for(int nn = 0; nn < GAME_NUMBER_OF_EXPERIENCE_NN; nn++)
-	{
-		firstExperience[nn] = new ANNexperience();
-		currentExperience[nn] = firstExperience[nn];
-	}
-
-	for(int i=0; i<GAME_NUMBER_OF_EXPERIENCE_NN; i++)
-	{
-		firstInputNeuronInNetwork[i] = NULL;
-		firstOutputNeuronInNetwork[i] = NULL;
-		numberOfInputNeurons[i] = 0;
-		numberOfOutputNeurons[i] = 0;
-	}
-#endif
-
-	next = NULL;
-}
-
-
-Player::~Player()
-{
-
-#ifdef USE_ANN
-	for(int i = 0; i< GAME_NUMBER_OF_EXPERIENCE_NN; i++)
-	{
-		if(firstExperience[i] != NULL)
-		{
-			delete firstExperience[i];
-		}
-	}
-
-	/*
-	if(firstExperience != NULL)
-	{
-		delete firstExperience;
-	}
-	*/
-#endif
-
-#ifdef USE_SEPARATE_UNIT_LISTS_PER_PLAYER
-	if(firstUnitInUnitList != NULL)
-	{
-		delete firstUnitInUnitList;
-	}
-#endif
-
-#ifdef USE_SEPARATE_AI_PER_PLAYER
-	for(int i = 0; i< GAME_NUMBER_OF_EXPERIENCE_NN; i++)
-	{
-		if(firstInputNeuronInNetwork[i] != NULL)
-		{
-			delete firstInputNeuronInNetwork[i];
-		}
-	}
-#endif
-
-	if(next != NULL)
-	{
-		delete next;
-	}
-
-
-}
-
 void LRRCplayerClassClass::fillPlayerDetails(Player* p, string playerName, int playerID, int playerInitialCredits)
 {
 	p->name = playerName;
@@ -187,7 +186,6 @@ void LRRCplayerClassClass::fillPlayerDetails(Player* p, string playerName, int p
 	p->credits = playerInitialCredits;
 	SHAREDvector.copyVectors(&(p->startPosition), playerStartPosition);
 }
-
 
 Player* LRRCplayerClassClass::findPlayer(Player* initialPlayerInList, const int playerID)
 {

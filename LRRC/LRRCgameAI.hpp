@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCgameAI.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -182,28 +182,27 @@ class LRRCgameAIClass
 			private: void updateUnitListWithDeadUnits(LDreference* initialReferenceInSceneFile, UnitListClass* firstUnitInUnitGroup, int currentRound);
 
 
-
 	public: bool determineIfUnitGroupHasAliveUnits(const UnitListClass* firstUnitInUnitGroup);
 	public: bool checkAverageKillRatioForUnitGroup(UnitListClass* firstUnitInUnitGroup);
 		private: void determineAverageKillRatioForUnitGroup(UnitListClass* firstUnitInUnitGroup, int* killPoints, int* deathPoints);
 
 
-#ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
+	#ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
 	public: double addOrCompareAllObjectExperiences(Player* currentPlayer, const int NNBeingTested, const bool addOrCompareExperience, const bool justCountNumberOfExperiences);
-#endif
+	#endif
 
 	public: double addExperiencesFromUnitDecision(UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, int64_t unitDecision, LDreference* initialReferenceInThisPhaseStartScene, int NNcurrentPhase, Player* currentPlayer);
 		public: double addOrCompareExperienceFromUnitDecision(int currentPhase, UnitListClass* unit, LDreference* unitReference, LDreference* unitReferenceOpponent, int64_t unitDecision, Player* currentPlayer, const int NNBeingTested, const bool addOrCompareExperience, LDreference* initialReferenceInThisPhaseStartScene);
 			private: void generateExperienceFromUnitPropertiesDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, int64_t unitDecision, ANNexperience* currentExperience, int currentPhase);
 			private: void generateExperienceFromUnitCombatDecision(LDreference* unitReference, LDreference* unitReferenceOpponent, int64_t unitDecision, ANNexperience* currentExperience, int currentPhase);
-		#ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
+			#ifndef DEBUG_DO_NOT_USE_GLOBAL_EXPERIENCES
 			public: bool generateExperienceFromGlobalDecision(const UnitListClass* firstUnitInUnitList, LDreference* initialReferenceInThisPhaseStartScene, const LDreference* unitReference, const LDreference* unitReferenceOpponent, ANNexperience* currentExperience);
 				private: bool generate2DMemoryMapExperience(const UnitListClass* firstUnitInGroup, LDreference* initialReferenceInThisPhaseStartScene, const LDreference* unitReference, ANNexperience* currentExperience);
 					private: ANNexperienceInput* findExperienceInputIn2DMemoryMap(const int xPos, const int yPos, const int tPos, ANNexperience* currentExperience);
-		#endif
-		#ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
+			#endif
+			#ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
 			private: bool generateExperienceFromObjectDecision(const LDreference* objectReference, int64_t objectDecision, ANNexperience* currentExperience, const bool createNewRayTracedImage);
-		#endif
+			#endif
 
 
 	private: void addAllUnitExperiencesToOFStream(ofstream* experienceDataSetOFStreamObject, UnitListClass* firstUnitInUnitGroup, const int nnIndex);

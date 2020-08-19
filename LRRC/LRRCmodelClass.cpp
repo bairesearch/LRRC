@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCmodelClass.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -210,9 +210,6 @@ ModelDetails::ModelDetails(void)
 	//terrain/structure details (child object values of these are currently passed to their parents immediatly during initial parse of scene file - this is required to calculate the defence bonuses of units efficiently during combat.
 	numBush = 0;
 	numBattlement = 0;
-
-
-
 }
 
 ModelDetails::~ModelDetails()
@@ -248,7 +245,7 @@ ModelDetails::~ModelDetails()
 	}
 
 
-	/*OLD:
+	/*//OLD:
 	RecordClass* currentReferenceRulesClass;
 
 	currentReferenceRulesClass = recordOfUnitTypeDetails;
@@ -309,6 +306,139 @@ ModelDetails::~ModelDetails()
 	*/
 }
 
+
+
+void LRRCmodelClassClass::copyAllUnitDetails(ModelDetails* u, ModelDetails* unitToCopy)
+{
+
+	u->unitType = unitToCopy->unitType;
+	u->movementSpeed = unitToCopy->movementSpeed;
+
+	copyRecordLists(u->recordOfUnitTypeDetails, unitToCopy->recordOfUnitTypeDetails);
+
+	u->numPerson = unitToCopy->numPerson;			//these are derivable
+	u->numHorse = unitToCopy->numHorse;			//these are derivable
+
+	u->numShields = unitToCopy->numShields;			//these are derivable
+
+	copyRecordLists(u->recordOfUnitCombatDetailsAttackCloseCombat, unitToCopy->recordOfUnitCombatDetailsAttackCloseCombat);
+	copyRecordLists(u->recordOfUnitCombatDetailsAttackLongDistance, unitToCopy->recordOfUnitCombatDetailsAttackLongDistance);
+
+	copyRecordLists(u->recordOfUnitCombatDetailsDefenceShield, unitToCopy->recordOfUnitCombatDetailsDefenceShield);
+	copyRecordLists(u->recordOfUnitCombatDetailsDefenceTorso, unitToCopy->recordOfUnitCombatDetailsDefenceTorso);
+	copyRecordLists(u->recordOfUnitCombatDetailsDefenceHead, unitToCopy->recordOfUnitCombatDetailsDefenceHead);
+
+	u->breastDefenceValue = unitToCopy->breastDefenceValue;	//these are derivable
+	u->helmetDefenceValue = unitToCopy->helmetDefenceValue;	//these are derivable
+	u->shieldDefenceValue = unitToCopy->shieldDefenceValue;	//these are derivable
+	u->armourDefenceValue = unitToCopy->armourDefenceValue;	//these are derivable
+
+	u->numLongBow = unitToCopy->numLongBow;			//these are derivable
+	u->numQuiver = unitToCopy->numQuiver;			//these are derivable
+
+	u->closeCombatAttackValue = unitToCopy->closeCombatAttackValue;			//these are derivable
+	u->longDistanceAttackValue = unitToCopy->longDistanceAttackValue;		//these are derivable
+	u->defenceTotal = unitToCopy->defenceTotal;					//these are derivable
+	u->attackTotal = unitToCopy->attackTotal;					//these are derivable
+	u->closeCombatAttackTotal = unitToCopy->closeCombatAttackTotal;			//these are derivable
+	u->longDistanceAttackTotal = unitToCopy->longDistanceAttackTotal;		//these are derivable
+	u->longDistanceAttackBaseRange = unitToCopy->longDistanceAttackBaseRange;	//these are derivable
+
+	u->defenceBonus = unitToCopy->defenceBonus;					//these are derivable
+	u->longDistanceAttackBonus = unitToCopy->longDistanceAttackBonus;		//these are derivable
+	u->closeCombatAttackBonus = unitToCopy->closeCombatAttackBonus;			//these are derivable
+
+	u->hasLongDistanceCombatWeapon = unitToCopy->hasLongDistanceCombatWeapon;	//these are derivable
+
+
+			//ADDED IN 2007 - this may not be required
+	//u->numBuildingOther = unitToCopy->numBuildingOther;
+	//copyRecordLists(u->recordOfBuildingDetails, unitToCopy->recordOfBuildingDetails);
+
+	//money details
+	u->numGem = unitToCopy->numGem;
+	u->numGold = unitToCopy->numGold;
+	u->numGoblet = unitToCopy->numGoblet;
+
+	//terrain/structure details
+	u->numBush = unitToCopy->numBush;
+	u->numBattlement = unitToCopy->numBattlement;
+}
+
+//This is an example of a generic function that does not need to be defined within unitClass.cpp
+void LRRCmodelClassClass::copyEnvironmentRelevantChildUnitDetailsIntoParentObject(ModelDetails* unitChild, ModelDetails* unitParent)
+{
+	//terrain/structure details
+	unitParent->numBattlement = unitParent->numBattlement + unitChild->numBattlement; //BEFORE 2007: + unitChild->numBuildingBricks;	//used to potentially hide behind
+	unitParent->numBush = unitParent->numBush + unitChild->numBush;																//used to potentially hide behind
+}
+
+//This is an example of a generic function that does not need to be defined within unitClass.cpp
+void LRRCmodelClassClass::addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails* unitChild, ModelDetails* unitParent)
+{
+	addRecordLists(unitParent->recordOfUnitTypeDetails, unitChild->recordOfUnitTypeDetails);
+
+	unitParent->numPerson = unitParent->numPerson + unitChild->numPerson;
+	unitParent->numHorse = unitParent->numHorse + unitChild->numHorse;
+
+		/*
+		unitParent->numSaddle = unitParent->numSaddle + unitChild->numSaddle;
+		unitParent->numSmallHull = unitParent->numSmallHull + unitChild->numSmallHull;
+		unitParent->numLargeHull = unitParent->numLargeHull + unitChild->numLargeHull;
+		unitParent->numSmallWheel = unitParent->numSmallWheel + unitChild->numSmallWheel;
+		unitParent->numLargeWheel = unitParent->numLargeWheel + unitChild->numLargeWheel;
+		unitParent->numWheelHolder = unitParent->numWheelHolder + unitChild->numWheelHolder;
+		unitParent->numWheelHolderDual = unitParent->numWheelHolderDual + unitChild->numWheelHolderDual;
+		unitParent->numHorseHitch = unitParent->numHorseHitch + unitChild->numHorseHitch;
+		unitParent->numHorseHitchWithHinge = unitParent->numHorseHitchWithHinge + unitChild->numHorseHitchWithHinge;
+		unitParent->numHorseHitchHingeRotatable = unitParent->numHorseHitchHingeRotatable + unitChild->numHorseHitchHingeRotatable;
+		unitParent->numCatapultBucket = unitParent->numCatapultBucket + unitChild->numCatapultBucket;
+		unitParent->numCatapultAxel = unitParent->numCatapultAxel + unitChild->numCatapultAxel;
+
+		unitParent->numSkeleton = unitParent->numSkeleton + unitChild->numSkeleton;
+		unitParent->numGhost = unitParent->numGhost + unitChild->numGhost;
+		*/
+
+	unitParent->numShields = unitParent->numShields + unitChild->numShields;
+
+	addRecordLists(unitParent->recordOfUnitCombatDetailsAttackCloseCombat, unitChild->recordOfUnitCombatDetailsAttackCloseCombat);
+	addRecordLists(unitParent->recordOfUnitCombatDetailsAttackLongDistance, unitChild->recordOfUnitCombatDetailsAttackLongDistance);
+
+		/*
+		unitParent->numHandAxe = unitParent->numHandAxe + unitChild->numHandAxe;
+		unitParent->numLance = unitParent->numLance + unitChild->numLance;
+		unitParent->numSpear = unitParent->numSpear + unitChild->numSpear;
+		unitParent->numPlateNeck = unitParent->numPlateNeck + unitChild->numPlateNeck;
+		unitParent->numLongBow = unitParent->numLongBow + unitChild->numLongBow;
+		unitParent->numQuiver = unitParent->numQuiver + unitChild->numQuiver;
+		unitParent->numCrossBow = unitParent->numCrossBow + unitChild->numCrossBow;
+		unitParent->numSword = unitParent->numSword + unitChild->numSword;
+		unitParent->numAxe = unitParent->numAxe + unitChild->numAxe;
+		unitParent->numLargeAxe = unitParent->numLargeAxe + unitChild->numLargeAxe;
+		unitParent->numLargeSword = unitParent->numLargeSword + unitChild->numLargeSword;
+		*/
+
+	addRecordLists(unitParent->recordOfUnitCombatDetailsDefenceShield, unitChild->recordOfUnitCombatDetailsDefenceShield);
+	addRecordLists(unitParent->recordOfUnitCombatDetailsDefenceTorso, unitChild->recordOfUnitCombatDetailsDefenceTorso);
+	addRecordLists(unitParent->recordOfUnitCombatDetailsDefenceHead, unitChild->recordOfUnitCombatDetailsDefenceHead);
+
+	/*
+	unitParent->breastDefenceValue = maxInt(unitParent->breastDefenceValue, unitChild->breastDefenceValue);		//Check this: is this required?
+	unitParent->helmetDefenceValue = maxInt(unitParent->helmetDefenceValue, unitChild->helmetDefenceValue);		//Check this: is this required?
+	unitParent->shieldDefenceValue = maxInt(unitParent->shieldDefenceValue, unitChild->shieldDefenceValue);		//Check this: is this required?
+	unitParent->armourDefenceValue = maxInt(unitParent->armourDefenceValue, unitChild->armourDefenceValue);		//Check this: is this required?
+	*/
+
+	//money details		//Check if this needs to be inherited - does it serve a purpose wrt to the purpose of the addAllCombatRelevantChildModelDetailsIntoAParentUnit() function
+	unitParent->numGem = unitParent->numGem + unitChild->numGem;
+	unitParent->numGold = unitParent->numGold + unitChild->numGold;
+	unitParent->numGoblet = unitParent->numGoblet + unitChild->numGoblet;
+
+	//terrain/structure details	//this may not be required as combat unit files might be defined not include building bricks (catapults could be the exception)
+	unitParent->numBush  = unitParent->numBush + unitChild->numBush;
+	unitParent->numBattlement  = unitParent->numBattlement + unitChild->numBattlement;
+
+}
 
 /*
 preconditions:
@@ -519,8 +649,9 @@ void LRRCmodelClassClass::determineUnitTypeAndMinSpeedOfUnitGroup(ModelDetails* 
 	u->numPerson = numPerson;
 	u->numHorse = numHorse;
 
-	this->calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(u);
+	calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(u);
 }
+
 
 
 bool LRRCmodelClassClass::calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRulesList(ModelDetails* u)
@@ -541,9 +672,6 @@ bool LRRCmodelClassClass::calculateMovementSpeedAndDefenceTotalOfUnitTypeFromRul
 	return result;
 }
 
-
-
-
 void LRRCmodelClassClass::copyRecordLists(RecordClass* recordToFill, RecordClass* recordToCopy)
 {
 	RecordClass* currentReferenceRecordToFill = recordToFill;
@@ -557,7 +685,6 @@ void LRRCmodelClassClass::copyRecordLists(RecordClass* recordToFill, RecordClass
 		currentReferenceRecordToCopy = currentReferenceRecordToCopy->next;
 	}
 }
-
 
 void LRRCmodelClassClass::addRecordLists(RecordClass* recordToFill, RecordClass* recordToAdd)
 {
@@ -573,142 +700,6 @@ void LRRCmodelClassClass::addRecordLists(RecordClass* recordToFill, RecordClass*
 	}
 }
 
-
-
-
-void LRRCmodelClassClass::copyAllUnitDetails(ModelDetails* u, ModelDetails* unitToCopy)
-{
-
-	u->unitType = unitToCopy->unitType;
-	u->movementSpeed = unitToCopy->movementSpeed;
-
-	this->copyRecordLists(u->recordOfUnitTypeDetails, unitToCopy->recordOfUnitTypeDetails);
-
-	u->numPerson = unitToCopy->numPerson;			//these are derivable
-	u->numHorse = unitToCopy->numHorse;			//these are derivable
-
-	u->numShields = unitToCopy->numShields;			//these are derivable
-
-	this->copyRecordLists(u->recordOfUnitCombatDetailsAttackCloseCombat, unitToCopy->recordOfUnitCombatDetailsAttackCloseCombat);
-	this->copyRecordLists(u->recordOfUnitCombatDetailsAttackLongDistance, unitToCopy->recordOfUnitCombatDetailsAttackLongDistance);
-
-	this->copyRecordLists(u->recordOfUnitCombatDetailsDefenceShield, unitToCopy->recordOfUnitCombatDetailsDefenceShield);
-	this->copyRecordLists(u->recordOfUnitCombatDetailsDefenceTorso, unitToCopy->recordOfUnitCombatDetailsDefenceTorso);
-	this->copyRecordLists(u->recordOfUnitCombatDetailsDefenceHead, unitToCopy->recordOfUnitCombatDetailsDefenceHead);
-
-	u->breastDefenceValue = unitToCopy->breastDefenceValue;	//these are derivable
-	u->helmetDefenceValue = unitToCopy->helmetDefenceValue;	//these are derivable
-	u->shieldDefenceValue = unitToCopy->shieldDefenceValue;	//these are derivable
-	u->armourDefenceValue = unitToCopy->armourDefenceValue;	//these are derivable
-
-	u->numLongBow = unitToCopy->numLongBow;			//these are derivable
-	u->numQuiver = unitToCopy->numQuiver;			//these are derivable
-
-	u->closeCombatAttackValue = unitToCopy->closeCombatAttackValue;			//these are derivable
-	u->longDistanceAttackValue = unitToCopy->longDistanceAttackValue;		//these are derivable
-	u->defenceTotal = unitToCopy->defenceTotal;					//these are derivable
-	u->attackTotal = unitToCopy->attackTotal;					//these are derivable
-	u->closeCombatAttackTotal = unitToCopy->closeCombatAttackTotal;			//these are derivable
-	u->longDistanceAttackTotal = unitToCopy->longDistanceAttackTotal;		//these are derivable
-	u->longDistanceAttackBaseRange = unitToCopy->longDistanceAttackBaseRange;	//these are derivable
-
-	u->defenceBonus = unitToCopy->defenceBonus;					//these are derivable
-	u->longDistanceAttackBonus = unitToCopy->longDistanceAttackBonus;		//these are derivable
-	u->closeCombatAttackBonus = unitToCopy->closeCombatAttackBonus;			//these are derivable
-
-	u->hasLongDistanceCombatWeapon = unitToCopy->hasLongDistanceCombatWeapon;	//these are derivable
-
-
-			//ADDED IN 2007 - this may not be required
-	//u->numBuildingOther = unitToCopy->numBuildingOther;
-	//this->copyRecordLists(u->recordOfBuildingDetails, unitToCopy->recordOfBuildingDetails);
-
-	//money details
-	u->numGem = unitToCopy->numGem;
-	u->numGold = unitToCopy->numGold;
-	u->numGoblet = unitToCopy->numGoblet;
-
-	//terrain/structure details
-	u->numBush = unitToCopy->numBush;
-	u->numBattlement = unitToCopy->numBattlement;
-}
-
-
-//This is an example of a generic function that does not need to be defined within unitClass.cpp
-void LRRCmodelClassClass::copyEnvironmentRelevantChildUnitDetailsIntoParentObject(ModelDetails* unitChild, ModelDetails* unitParent)
-{
-	//terrain/structure details
-	unitParent->numBattlement = unitParent->numBattlement + unitChild->numBattlement; //BEFORE 2007: + unitChild->numBuildingBricks;	//used to potentially hide behind
-	unitParent->numBush = unitParent->numBush + unitChild->numBush;																//used to potentially hide behind
-}
-
-
-//This is an example of a generic function that does not need to be defined within unitClass.cpp
-void LRRCmodelClassClass::addAllCombatRelevantChildModelDetailsIntoAParentUnit(ModelDetails* unitChild, ModelDetails* unitParent)
-{
-	this->addRecordLists(unitParent->recordOfUnitTypeDetails, unitChild->recordOfUnitTypeDetails);
-
-	unitParent->numPerson = unitParent->numPerson + unitChild->numPerson;
-	unitParent->numHorse = unitParent->numHorse + unitChild->numHorse;
-
-		/*
-		unitParent->numSaddle = unitParent->numSaddle + unitChild->numSaddle;
-		unitParent->numSmallHull = unitParent->numSmallHull + unitChild->numSmallHull;
-		unitParent->numLargeHull = unitParent->numLargeHull + unitChild->numLargeHull;
-		unitParent->numSmallWheel = unitParent->numSmallWheel + unitChild->numSmallWheel;
-		unitParent->numLargeWheel = unitParent->numLargeWheel + unitChild->numLargeWheel;
-		unitParent->numWheelHolder = unitParent->numWheelHolder + unitChild->numWheelHolder;
-		unitParent->numWheelHolderDual = unitParent->numWheelHolderDual + unitChild->numWheelHolderDual;
-		unitParent->numHorseHitch = unitParent->numHorseHitch + unitChild->numHorseHitch;
-		unitParent->numHorseHitchWithHinge = unitParent->numHorseHitchWithHinge + unitChild->numHorseHitchWithHinge;
-		unitParent->numHorseHitchHingeRotatable = unitParent->numHorseHitchHingeRotatable + unitChild->numHorseHitchHingeRotatable;
-		unitParent->numCatapultBucket = unitParent->numCatapultBucket + unitChild->numCatapultBucket;
-		unitParent->numCatapultAxel = unitParent->numCatapultAxel + unitChild->numCatapultAxel;
-
-		unitParent->numSkeleton = unitParent->numSkeleton + unitChild->numSkeleton;
-		unitParent->numGhost = unitParent->numGhost + unitChild->numGhost;
-		*/
-
-	unitParent->numShields = unitParent->numShields + unitChild->numShields;
-
-	this->addRecordLists(unitParent->recordOfUnitCombatDetailsAttackCloseCombat, unitChild->recordOfUnitCombatDetailsAttackCloseCombat);
-	this->addRecordLists(unitParent->recordOfUnitCombatDetailsAttackLongDistance, unitChild->recordOfUnitCombatDetailsAttackLongDistance);
-
-		/*
-		unitParent->numHandAxe = unitParent->numHandAxe + unitChild->numHandAxe;
-		unitParent->numLance = unitParent->numLance + unitChild->numLance;
-		unitParent->numSpear = unitParent->numSpear + unitChild->numSpear;
-		unitParent->numPlateNeck = unitParent->numPlateNeck + unitChild->numPlateNeck;
-		unitParent->numLongBow = unitParent->numLongBow + unitChild->numLongBow;
-		unitParent->numQuiver = unitParent->numQuiver + unitChild->numQuiver;
-		unitParent->numCrossBow = unitParent->numCrossBow + unitChild->numCrossBow;
-		unitParent->numSword = unitParent->numSword + unitChild->numSword;
-		unitParent->numAxe = unitParent->numAxe + unitChild->numAxe;
-		unitParent->numLargeAxe = unitParent->numLargeAxe + unitChild->numLargeAxe;
-		unitParent->numLargeSword = unitParent->numLargeSword + unitChild->numLargeSword;
-		*/
-
-	this->addRecordLists(unitParent->recordOfUnitCombatDetailsDefenceShield, unitChild->recordOfUnitCombatDetailsDefenceShield);
-	this->addRecordLists(unitParent->recordOfUnitCombatDetailsDefenceTorso, unitChild->recordOfUnitCombatDetailsDefenceTorso);
-	this->addRecordLists(unitParent->recordOfUnitCombatDetailsDefenceHead, unitChild->recordOfUnitCombatDetailsDefenceHead);
-
-	/*
-	unitParent->breastDefenceValue = maxInt(unitParent->breastDefenceValue, unitChild->breastDefenceValue);		//Check this: is this required?
-	unitParent->helmetDefenceValue = maxInt(unitParent->helmetDefenceValue, unitChild->helmetDefenceValue);		//Check this: is this required?
-	unitParent->shieldDefenceValue = maxInt(unitParent->shieldDefenceValue, unitChild->shieldDefenceValue);		//Check this: is this required?
-	unitParent->armourDefenceValue = maxInt(unitParent->armourDefenceValue, unitChild->armourDefenceValue);		//Check this: is this required?
-	*/
-
-	//money details		//Check if this needs to be inherited - does it serve a purpose wrt to the purpose of the addAllCombatRelevantChildModelDetailsIntoAParentUnit() function
-	unitParent->numGem = unitParent->numGem + unitChild->numGem;
-	unitParent->numGold = unitParent->numGold + unitChild->numGold;
-	unitParent->numGoblet = unitParent->numGoblet + unitChild->numGoblet;
-
-	//terrain/structure details	//this may not be required as combat unit files might be defined not include building bricks (catapults could be the exception)
-	unitParent->numBush  = unitParent->numBush + unitChild->numBush;
-	unitParent->numBattlement  = unitParent->numBattlement + unitChild->numBattlement;
-
-}
 
 
 //no longer used due to algorithm break down
@@ -743,6 +734,7 @@ void copyCombatRelevantInheritedImmediateParentUnitDetailsIntoChildObject(ModelD
 	//unitChild->shieldDefenceValue = maxInt(unitChild->shieldDefenceValue, unitParent->shieldDefenceValue);		//not inherited (armour must be placed on child unit)
 }
 */
+
 
 
 //generic functions

@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCunitClass.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -66,7 +66,7 @@ UnitListClass::UnitListClass(void)
 	isUnitGroup = false;
 	firstUnitInUnitGroup = NULL;
 
-#ifdef USE_ANN
+	#ifdef USE_ANN
 	for(int nn = 0; nn < GAME_NUMBER_OF_EXPERIENCE_NN; nn++)
 	{
 		firstExperience[nn] = new ANNexperience();
@@ -79,7 +79,7 @@ UnitListClass::UnitListClass(void)
 	}
 	selfLearningTempVarUnitHasBeenTried = false;
 	selfLearningTempVarUnitPrefersLongDistanceCombatToMovement = false;
-#endif
+	#endif
 
 	next = NULL;
 }
@@ -92,7 +92,7 @@ UnitListClass::~UnitListClass()
 		delete unitDetails;
 	}
 
-#ifdef USE_ANN
+	#ifdef USE_ANN
 	for(int i = 0; i< GAME_NUMBER_OF_EXPERIENCE_NN; i++)
 	{
 		if(firstExperience[i] != NULL)
@@ -100,7 +100,7 @@ UnitListClass::~UnitListClass()
 			delete firstExperience[i];
 		}
 	}
-#endif
+	#endif
 
 	if(firstUnitInUnitGroup != NULL)
 	{
@@ -111,7 +111,6 @@ UnitListClass::~UnitListClass()
 	{
 		delete next;
 	}
-
 }
 
 
@@ -123,22 +122,17 @@ UnitListClass* LRRCunitClassClass::searchUnitListFindUnit(UnitListClass* firstUn
 
 	while((currentUnitInList->next != NULL) && (*unitIDFound == false))
 	{
-		//cout << "h1" << endl;
-
 		if((currentUnitInList->name == unitName) && (currentUnitInList->team == unitColour))
 		{
-			//cout << "h2" << endl;
 			*unitIDFound = true;
 			unitFound = currentUnitInList;
 		}
 		else
 		{
-			//cout << "h3" << endl;
 			if(currentUnitInList->isUnitGroup)
 			{
-				//cout << "h1" << endl;
 				UnitListClass* tempUnit;
-				tempUnit = this->searchUnitListFindUnit(currentUnitInList->firstUnitInUnitGroup, unitName, unitColour, unitIDFound);
+				tempUnit = searchUnitListFindUnit(currentUnitInList->firstUnitInUnitGroup, unitName, unitColour, unitIDFound);
 				if(*unitIDFound)
 				{
 					unitFound = tempUnit;
@@ -152,10 +146,6 @@ UnitListClass* LRRCunitClassClass::searchUnitListFindUnit(UnitListClass* firstUn
 	return unitFound;
 
 }
-
-
-
-
 
 void LRRCunitClassClass::addUnitToList(UnitListClass* firstUnitInUnitList, string unitName, int unitColour, ModelDetails* unitDetails, int currentRound)
 {
@@ -179,12 +169,9 @@ void LRRCunitClassClass::addUnitToList(UnitListClass* firstUnitInUnitList, strin
 
 		currentUnitInList = currentUnitInList->next;
 	}
-
-
 }
 
 #ifdef USE_ANN
-
 UnitListClass* LRRCunitClassClass::searchUnitListFindOpponentWithLowestError(const int currentPlayerTurn, const int nn, UnitListClass* firstUnitInUnitGroup, double* currentLowestError, bool* foundOpponent, const int NNcurrentPhase)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
@@ -201,8 +188,6 @@ UnitListClass* LRRCunitClassClass::searchUnitListFindOpponentWithLowestError(con
 					bool passedErrorRequirements = false;
 					if(nn == GAME_INDEX_OF_ALL_EXPERIENCES_NN)
 					{//use average error across all neural net types
-
-
 
 						int totalError = 0;
 						for(int i=0; i < GAME_NUMBER_OF_EXPERIENCE_NN_UTILISED; i++)	//or should this only be properties and combat experiences (not global experiences?)
@@ -283,7 +268,7 @@ UnitListClass* LRRCunitClassClass::searchUnitListFindOpponentWithLowestError(con
 		{
 			UnitListClass* tempUnit;
 			bool tempFoundUnit = false;
-			tempUnit = this->searchUnitListFindOpponentWithLowestError(currentPlayerTurn, nn, currentUnitInList->firstUnitInUnitGroup, currentLowestError, &tempFoundUnit, NNcurrentPhase);
+			tempUnit = searchUnitListFindOpponentWithLowestError(currentPlayerTurn, nn, currentUnitInList->firstUnitInUnitGroup, currentLowestError, &tempFoundUnit, NNcurrentPhase);
 			if(tempFoundUnit)
 			{
 				*foundOpponent = true;
@@ -333,7 +318,7 @@ bool LRRCunitClassClass::splitUnitGroup(UnitListClass* firstUnitInUnitList, cons
 
 		if(currentUnitInList->isUnitGroup == true)
 		{
-			if(!this->splitUnitGroup(currentUnitInList->firstUnitInUnitGroup, unitGroupName, unitGroupColour, currentRound))
+			if(!splitUnitGroup(currentUnitInList->firstUnitInUnitGroup, unitGroupName, unitGroupColour, currentRound))
 			{
 				result = false;
 			}
@@ -350,7 +335,6 @@ bool LRRCunitClassClass::splitUnitGroup(UnitListClass* firstUnitInUnitList, cons
 	return result;
 }
 
-
 void LRRCunitClassClass::searchUnitListAssignHasNotPerformedAction(UnitListClass* firstUnitInUnitGroup)
 {
 	UnitListClass* currentUnitInList = firstUnitInUnitGroup;
@@ -365,7 +349,7 @@ void LRRCunitClassClass::searchUnitListAssignHasNotPerformedAction(UnitListClass
 
 		if(currentUnitInList->isUnitGroup)
 		{
-			this->searchUnitListAssignHasNotPerformedAction(currentUnitInList->firstUnitInUnitGroup);
+			searchUnitListAssignHasNotPerformedAction(currentUnitInList->firstUnitInUnitGroup);
 		}
 
 		currentUnitInList = currentUnitInList->next;

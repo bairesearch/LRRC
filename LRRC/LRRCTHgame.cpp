@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCTHgame.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -65,33 +65,14 @@ bool LRRCTHgameClass::randomiseUnitList(UnitListClass* firstUnitInNonRandomisedU
 	int64_t currentNumberOfUnitsInRandomisedUnitList = numberOfUnits;
 	double randomNumberBetween0And1 = ((double(abs((short)rand())))/(ABS_OF_SHORT));
 	int64_t randomUnitSelected = (int64_t)(randomNumberBetween0And1*(double)currentNumberOfUnitsInRandomisedUnitList);
-	//cout << "randomUnitSelected = " << randomUnitSelected << endl;
 
 	while(currentNumberOfUnitsInRandomisedUnitList != 0)		//(currentNumberOfUnitsInRandomisedUnitList != 0) or currentUnitInNonRandomisedUnitList->next != NULL)	//or (currentNumberOfUnitsInRandomisedUnitList != 0)
 	{
-		/*
-		if(currentUnitInNonRandomisedUnitList->next == NULL)
-		{
-			cout << "(currentUnitInNonRandomisedUnitList->next == NULL)" << endl;
-		}
-		*/
-
-		//cout << "0" << endl;
 		randomNumberBetween0And1 = ((double(abs((short)rand())))/(ABS_OF_SHORT));
 		randomUnitSelected = (int64_t)(randomNumberBetween0And1*(double)currentNumberOfUnitsInRandomisedUnitList);
-		//cout << "randomUnitSelected = " << randomUnitSelected << endl;
-
-		/*
-		if(randomUnitSelected == (currentNumberOfUnitsInRandomisedUnitList-1))
-		{
-			exit(0);
-		}
-		*/
 
 		if(indexOfCurrentUnitInNonRandomisedUnitList == randomUnitSelected)
 		{
-			//cout << "1" << endl;
-
 			UnitListClass* newUnit = new UnitListClass();
 			newUnit->number = currentUnitInNonRandomisedUnitList->number;
 			ModelDetails* newUnitDetails = new ModelDetails();
@@ -109,8 +90,6 @@ bool LRRCTHgameClass::randomiseUnitList(UnitListClass* firstUnitInNonRandomisedU
 			}
 
 			currentNumberOfUnitsInRandomisedUnitList--;
-
-			//cout << "2" << endl;
 		}
 		else
 		{
@@ -118,17 +97,13 @@ bool LRRCTHgameClass::randomiseUnitList(UnitListClass* firstUnitInNonRandomisedU
 		}
 		currentUnitInNonRandomisedUnitList = currentUnitInNonRandomisedUnitList->next;
 		indexOfCurrentUnitInNonRandomisedUnitList++;
-		//cout << "indexOfCurrentUnitInNonRandomisedUnitList = " << indexOfCurrentUnitInNonRandomisedUnitList << endl;
 
 		if(currentUnitInNonRandomisedUnitList->next == NULL)	//indexOfCurrentUnitInNonRandomisedUnitList == currentNumberOfUnits
 		{//go back to start of loop...
-			//cout << "here" << endl;
 			indexOfCurrentUnitInNonRandomisedUnitList = 0;
 			currentUnitInNonRandomisedUnitList = firstUnitInNonRandomisedUnitList->next;
 			previousUnitInNonRandomisedUnitList = firstUnitInNonRandomisedUnitList;
 		}
-		//cout << "4" << endl;
-
 	}
 	currentUnitInUnitList->next = NULL;
 
@@ -218,24 +193,12 @@ int LRRCTHgameClass::THtestANNusingCombatExperiences()
 
 	/*
 	//temp - print out unit list
-	//int uin = 0;
 	UnitListClass* currentUnitInList = firstUnitInUnitList;
 	while(currentUnitInList->next != NULL)
 	{
-		//uin++;
-
 		cout << "currentUnitInList->number = " << currentUnitInList->number << endl;
-
-		//cout << "currentUnitInList->closeCombatAttackValue = " << currentUnitInList->unitDetails->closeCombatAttackValue << endl;
-		//cout << "currentUnitInList->longDistanceAttackValue = " << currentUnitInList->unitDetails->longDistanceAttackValue << endl;
-		//cout << "currentUnitInList->closeCombatAttackTotal = " << currentUnitInList->unitDetails->closeCombatAttackTotal << endl;
-		//cout << "currentUnitInList->longDistanceAttackTotal = " << currentUnitInList->unitDetails->longDistanceAttackTotal << endl;
-		//cout << "currentUnitInList->defenceTotal = " << currentUnitInList->unitDetails->defenceTotal << endl;
-
-
 		currentUnitInList = currentUnitInList->next;
 	}
-	//cout << "uin = " << uin << endl;
 	*/
 
 	//************************
@@ -297,7 +260,6 @@ int LRRCTHgameClass::THtestANNusingCombatExperiences()
 
 #ifdef TH_GAME_USE_OBJECT_RECOGNITION_EXPERIENCES
 	NNBeingTested = GAME_INDEX_OF_OBJECT_EXPERIENCE_NN;
-	//cout << "here1"
 	LRRCgameAI.addOrCompareAllObjectExperiences(currentPlayer, NNBeingTested, ADD_EXPERIENCE, false);
 #endif
 
@@ -567,16 +529,6 @@ int64_t LRRCTHgameClass::THgenerateUnitListwithAllUnitProperties(UnitListClass* 
 		}
 	//}
 
-		/*
-		cout << "numberOfUnits = " << numberOfUnits << endl;
-		cout << "NOT USED: numberUnitTypeCatagories = " << numberUnitTypeCatagories << endl;
-		cout << "numberUnitCombatDetailsAttackCloseCombat = " << numberUnitCombatDetailsAttackCloseCombat << endl;
-		cout << "numberUnitCombatDetailsAttackLongDistance = " << numberUnitCombatDetailsAttackLongDistance << endl;
-		cout << "numberUnitCombatDetailsDefenceHead = " << numberUnitCombatDetailsDefenceHead << endl;
-		cout << "numberUnitCombatDetailsDefenceTorso = " << numberUnitCombatDetailsDefenceTorso << endl;
-		cout << "numberUnitCombatDetailsDefenceShield = " << numberUnitCombatDetailsDefenceShield << endl;
-		*/
-
 	return numberOfUnits;
 }
 
@@ -700,13 +652,6 @@ double LRRCTHgameClass::THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCom
 	LDreference* unitDefenderReference = new LDreference();
 	unitAttackerReference->subModelDetails = unitAttacker->unitDetails;
 	unitDefenderReference->subModelDetails = unitDefender->unitDetails;
-
-	//cout << "unitAttacker->unitDetails->recordOfUnitTypeDetails->numberOfThisPartIDInTheUnit = " << unitAttacker->unitDetails->recordOfUnitTypeDetails->numberOfThisPartIDInTheUnit << endl;
-
-	//cout << "unitReference->name = " << unitReference->name << endl;
-	//cout << "unitReferenceOpponent->name = " << unitReferenceOpponent->name << endl;
-
-
 
 	//by default, use ideal distances between units to train networks...
 	if(currentPhase == GAME_PHASE_LONGDISTANCECOMBAT)
@@ -852,8 +797,6 @@ double LRRCTHgameClass::THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCom
 		}
 
 
-		//cout << "a1" << endl;
-
 		//add experience info for units
 
 		int combatExperienceResult;
@@ -871,26 +814,24 @@ double LRRCTHgameClass::THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCom
 
 			//cout << "SCENARIO C" << endl;
 
-				/*
-			 	cout << "ATTACK_UNIT1_STRIKES" << endl;
-				cout << "unitAttacker->unitDetails->numLongBow = " << unitAttacker->unitDetails->numLongBow << endl;
-				cout << "unitAttacker->unitDetails->numQuiver = " << unitAttacker->unitDetails->numQuiver << endl;
-				cout << "unitAttacker->unitDetails->defenceTotal = " << unitAttacker->unitDetails->defenceTotal << endl;
-				cout << "unitAttacker->unitDetails->longDistanceAttackTotal = " << unitAttacker->unitDetails->longDistanceAttackTotal << endl;
-				cout << "unitAttacker->unitDetails->longDistanceAttackBaseRange = " << unitAttacker->unitDetails->longDistanceAttackBaseRange << endl;
-			 	cout << "unitDefender->unitDetails->numLongBow = " << unitDefender->unitDetails->numLongBow << endl;
-				cout << "unitDefender->unitDetails->numQuiver = " << unitDefender->unitDetails->numQuiver << endl;
-				cout << "unitDefender->unitDetails->defenceTotal = " << unitDefender->unitDetails->defenceTotal << endl;
-				cout << "unitDefender->unitDetails->longDistanceAttackTotal = " << unitDefender->unitDetails->longDistanceAttackTotal << endl;
-				cout << "unitDefender->unitDetails->longDistanceAttackBaseRange = " << unitDefender->unitDetails->longDistanceAttackBaseRange << endl;
-				*/
+			/*
+			cout << "ATTACK_UNIT1_STRIKES" << endl;
+			cout << "unitAttacker->unitDetails->numLongBow = " << unitAttacker->unitDetails->numLongBow << endl;
+			cout << "unitAttacker->unitDetails->numQuiver = " << unitAttacker->unitDetails->numQuiver << endl;
+			cout << "unitAttacker->unitDetails->defenceTotal = " << unitAttacker->unitDetails->defenceTotal << endl;
+			cout << "unitAttacker->unitDetails->longDistanceAttackTotal = " << unitAttacker->unitDetails->longDistanceAttackTotal << endl;
+			cout << "unitAttacker->unitDetails->longDistanceAttackBaseRange = " << unitAttacker->unitDetails->longDistanceAttackBaseRange << endl;
+			cout << "unitDefender->unitDetails->numLongBow = " << unitDefender->unitDetails->numLongBow << endl;
+			cout << "unitDefender->unitDetails->numQuiver = " << unitDefender->unitDetails->numQuiver << endl;
+			cout << "unitDefender->unitDetails->defenceTotal = " << unitDefender->unitDetails->defenceTotal << endl;
+			cout << "unitDefender->unitDetails->longDistanceAttackTotal = " << unitDefender->unitDetails->longDistanceAttackTotal << endl;
+			cout << "unitDefender->unitDetails->longDistanceAttackBaseRange = " << unitDefender->unitDetails->longDistanceAttackBaseRange << endl;
+			*/
 
 			unitTheoreticalBestDecisionToCompare = attackDecision;
 			totalError = totalError + LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitAttacker, unitAttackerReference, unitDefenderReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
 
-
 			//cout << "\terror = " << LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitAttacker, unitAttackerReference, unitDefenderReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL) << endl;
-
 
 			unitTheoreticalBestDecisionToCompare = evadeDecision;
 		#ifndef TH_LRRC_GAME_DO_NOT_CHECK_EVASION_IN_NN_ERROR
@@ -904,19 +845,19 @@ double LRRCTHgameClass::THperformGenericCombatWithTwoCombatReadyUnitsAndAddOrCom
 		{
 			//cout << "SCENARIO D" << endl;
 
-				/*
-			 	cout << "ATTACK_UNIT2_STRIKES" << endl;
-			 	cout << "unitDefender->unitDetails->numLongBow = " << unitDefender->unitDetails->numLongBow << endl;
-				cout << "unitDefender->unitDetails->numQuiver = " << unitDefender->unitDetails->numQuiver << endl;
-				cout << "unitDefender->unitDetails->defenceTotal = " << unitDefender->unitDetails->defenceTotal << endl;
-				cout << "unitDefender->unitDetails->longDistanceAttackTotal = " << unitDefender->unitDetails->longDistanceAttackTotal << endl;
-				cout << "unitDefender->unitDetails->longDistanceAttackBaseRange = " << unitDefender->unitDetails->longDistanceAttackBaseRange << endl;
-				cout << "unitAttacker->unitDetails->numLongBow = " << unitAttacker->unitDetails->numLongBow << endl;
-				cout << "unitAttacker->unitDetails->numQuiver = " << unitAttacker->unitDetails->numQuiver << endl;
-				cout << "unitAttacker->unitDetails->defenceTotal = " << unitAttacker->unitDetails->defenceTotal << endl;
-				cout << "unitAttacker->unitDetails->longDistanceAttackTotal = " << unitAttacker->unitDetails->longDistanceAttackTotal << endl;
-				cout << "unitAttacker->unitDetails->longDistanceAttackBaseRange = " << unitAttacker->unitDetails->longDistanceAttackBaseRange << endl;
-			 	*/
+			/*
+			cout << "ATTACK_UNIT2_STRIKES" << endl;
+			cout << "unitDefender->unitDetails->numLongBow = " << unitDefender->unitDetails->numLongBow << endl;
+			cout << "unitDefender->unitDetails->numQuiver = " << unitDefender->unitDetails->numQuiver << endl;
+			cout << "unitDefender->unitDetails->defenceTotal = " << unitDefender->unitDetails->defenceTotal << endl;
+			cout << "unitDefender->unitDetails->longDistanceAttackTotal = " << unitDefender->unitDetails->longDistanceAttackTotal << endl;
+			cout << "unitDefender->unitDetails->longDistanceAttackBaseRange = " << unitDefender->unitDetails->longDistanceAttackBaseRange << endl;
+			cout << "unitAttacker->unitDetails->numLongBow = " << unitAttacker->unitDetails->numLongBow << endl;
+			cout << "unitAttacker->unitDetails->numQuiver = " << unitAttacker->unitDetails->numQuiver << endl;
+			cout << "unitAttacker->unitDetails->defenceTotal = " << unitAttacker->unitDetails->defenceTotal << endl;
+			cout << "unitAttacker->unitDetails->longDistanceAttackTotal = " << unitAttacker->unitDetails->longDistanceAttackTotal << endl;
+			cout << "unitAttacker->unitDetails->longDistanceAttackBaseRange = " << unitAttacker->unitDetails->longDistanceAttackBaseRange << endl;
+			*/
 
 			unitTheoreticalBestDecisionToCompare = attackDecision;
 			totalError = totalError + LRRCgameAI.addOrCompareExperienceFromUnitDecision(currentPhase, unitDefender, unitDefenderReference, unitAttackerReference, unitTheoreticalBestDecisionToCompare, currentPlayer, NNBeingTested, addOrCompareExperience, NULL);		//arbitrary player, OLD=attackerPlayer
@@ -997,12 +938,10 @@ int LRRCTHgameClass::repeatCombatAndFindMostSuccessfulContendor(int currentPhase
 		}
 		else if((combatResult == ATTACK_UNIT1_STRIKES_BOTH_CAN_STRIKE) || (combatResult == ATTACK_UNIT1_STRIKES_UNIT1_CAN_STRIKE))
 		{
-			//cout << "\t\th3" << endl;
 			numberOfUnit1Wins++;
 		}
 		else if((combatResult == ATTACK_UNIT2_STRIKES_BOTH_CAN_STRIKE) || (combatResult == ATTACK_UNIT2_STRIKES_UNIT2_CAN_STRIKE))
 		{
-			//cout << "\t\th4" << endl;
 			numberOfUnit2Wins++;
 		}
 	}
@@ -1028,7 +967,6 @@ int LRRCTHgameClass::repeatCombatAndFindMostSuccessfulContendor(int currentPhase
 
 	if(numberOfUnit1Wins > (numberOfUnit2Wins + (int)((double)numberOfCombatSequences*combatOutcomesGainRequired/100.0)))		//must have > x% chance of winning
 	{
-		//cout << "h1" << endl;
 		if(numberOfUnit2Wins > 0)
 		{
 			result = ATTACK_UNIT1_STRIKES_BOTH_CAN_STRIKE;
@@ -1041,7 +979,6 @@ int LRRCTHgameClass::repeatCombatAndFindMostSuccessfulContendor(int currentPhase
 	}
 	else if(numberOfUnit2Wins > (numberOfUnit1Wins + (int)((double)numberOfCombatSequences*combatOutcomesGainRequired/100.0)))	//must have > x% chance of winning
 	{
-		//cout << "h2" << endl;
 		if(numberOfUnit1Wins > 0)
 		{
 			result = ATTACK_UNIT2_STRIKES_BOTH_CAN_STRIKE;

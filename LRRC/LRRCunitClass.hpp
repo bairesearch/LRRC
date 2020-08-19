@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCunitClass.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -118,16 +118,14 @@ public:
 	bool isUnitGroup;
 	UnitListClass* firstUnitInUnitGroup;
 
-#ifdef USE_ANN
-
+	#ifdef USE_ANN
 	ANNexperience* firstExperience[GAME_NUMBER_OF_EXPERIENCE_NN];
 	ANNexperience* currentExperience[GAME_NUMBER_OF_EXPERIENCE_NN];		//temp variable for experience linked list creation
 
 	double selfLearningTempVarBackPropagationPassError[GAME_NUMBER_OF_EXPERIENCE_NN];	//temp variable used for determination of whether to use this unit for a certain game action (Eg Combat)
 	bool selfLearningTempVarUnitHasBeenTried;
 	bool selfLearningTempVarUnitPrefersLongDistanceCombatToMovement;
-
-#endif
+	#endif
 
 	UnitListClass* next;
 
@@ -136,15 +134,14 @@ public:
 class LRRCunitClassClass
 {
 	private: SHAREDvarsClass SHAREDvars;
-	public: UnitListClass* searchUnitListFindOpponentWithLowestError(const int currentPlayerTurn, const int nn, UnitListClass* firstUnitInUnitGroup, double* currentLowestError, bool* foundOpponent, const int NNcurrentPhase);
-
+	
 	public: UnitListClass* searchUnitListFindUnit(UnitListClass* firstUnitInUnitGroup, const string unitName, const int unitColour, bool* unitIDFound);
-
 	private: void addUnitToList(UnitListClass* firstUnitInUnitList, string unitName, int unitColour, ModelDetails* unitDetails, int currentRound);
+	#ifdef USE_ANN
+	public: UnitListClass* searchUnitListFindOpponentWithLowestError(const int currentPlayerTurn, const int nn, UnitListClass* firstUnitInUnitGroup, double* currentLowestError, bool* foundOpponent, const int NNcurrentPhase);
+	#endif
 	private: bool splitUnitGroup(UnitListClass* firstUnitInUnitList, const string unitGroupName, const int unitGroupColour, int currentRound);
-
 	public: void searchUnitListAssignHasNotPerformedAction(UnitListClass* firstUnitInUnitGroup);
-
 	public: int determineUnitWorthInPoints(const ModelDetails* unitDetails);
 };
 

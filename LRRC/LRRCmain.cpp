@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCmain.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -47,10 +47,10 @@ int main()
 
 	srand((unsigned)time(NULL));	//seeds randomness
 
-//#define TESTXMLPARSER
-#ifdef TESTXMLPARSER
+	//#define TESTXMLPARSER
+	#ifdef TESTXMLPARSER
 	LRRCindependantClass().executeLRRCfunctionsIndependantly();
-#else
+	#else
 	while(UIstatus == true)
 	{
 		cout << "\n ---\n";
@@ -98,7 +98,7 @@ int main()
 			cout << "\nInvalid answerAsInt, please try another command\n" << endl;
 		}
 	}
-#endif
+	#endif
 }
 
 

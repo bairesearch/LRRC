@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCcombat.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2017 Baxter AI (baxterai.com)
- * Project: Lego Rules CG Rounds Checker
- * Project Version: 3n7d 17-August-2020
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Project: LD Rules Rounds Checker
+ * Project Version: 3n7e 17-August-2020
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -68,93 +68,6 @@ void LRRCcombatClass::fillInCombatExternVariables()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*Basic: This method does not work with embedded units, and assumes the unit does not contain submodels relevant to its class*/
 bool LRRCcombatClass::calculateUnitClassBasic(string unitFileName)
 {
@@ -169,8 +82,8 @@ bool LRRCcombatClass::calculateUnitClassBasic(string unitFileName)
 	}
 	else
 	{
-		this->performFinalUnitClassCalculations(u);
-		if(!this->performUnitOrdinatesCheck(u))
+		performFinalUnitClassCalculations(u);
+		if(!performUnitOrdinatesCheck(u))
 		{
 			return false;
 		}
@@ -198,11 +111,11 @@ bool LRRCcombatClass::calculateUnitClassNormal(string unitFileName)
 	topLevelReferenceInUnit1->name = unitFileName;
 
 	//determing the current position of Unit 1
-	this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit1, initialReferenceInUnit1, NULL, true);
+	searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit1, initialReferenceInUnit1, NULL, true);
 
 			//the third parameter is not used, as the forth parameter is set true.
-	this->performFinalUnitClassCalculations(topLevelReferenceInUnit1->subModelDetails);
-	if(!this->performUnitOrdinatesCheck(topLevelReferenceInUnit1->subModelDetails))
+	performFinalUnitClassCalculations(topLevelReferenceInUnit1->subModelDetails);
+	if(!performUnitOrdinatesCheck(topLevelReferenceInUnit1->subModelDetails))
 	{
 		return false;
 	}
@@ -218,155 +131,183 @@ bool LRRCcombatClass::calculateUnitClassNormal(string unitFileName)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//preconditions: units are assumed to have moved in their previous round (ie they both take the initative)
+//returns 1 if both strike, 2 if unit1 wins, 3 if unit2 wins, 4 if neither strike. Return 5 if close combat could not occur (neither could strike).
+	//							6 if unit1 wins and only Unit 1 can strike, 7 if unit1 does not strike, and only Unit 1 can strike, 8 if  3 if unit2 wins, 4 if neither strike
+	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
+	//							0/10 if error in finding required files.
+int LRRCcombatClass::performCloseCombatWithSceneFile(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, string thisPhaseStartSceneFileName)
+{
+
+	//declare initial scene references
+	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
+	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);	//the modelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+
+	//parse the scene files and build LDreference linked lists
+	if(!LDparser.parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
+	{//file does not exist
+		cout << "The file thisPhaseStartSceneFileName " << thisPhaseStartSceneFileName << " does not exist in the directory" << endl;
+		return false;
+	}
+
+	int result = performCloseCombatWithScene(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformCloseCombatAttack, unit2intendsToPerformCloseCombatAttack, initialReferenceInThisPhaseStartScene);
+
+	delete initialReferenceInThisPhaseStartScene;
+	delete topLevelReferenceInThisPhaseStartScene;	//the modelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+
+	return result;
+}
+
+int LRRCcombatClass::performCloseCombatWithScene(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene)
+{
+	//initialise unit1/unit2 references		[NB in the future an appropriate constructor should be created for the LDreference class that accepts a name, and automatically creates a subModelDetails ModelDetails*/
+	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
+	LDreference* unit2ReferenceInThisPhaseStartSceneFile = new LDreference(unit2FileName, unit2ID, true);
+
+	//determing the current position of Unit 1
+	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
+	{
+		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the given scene" << endl;
+		return ATTACK_ERROR_FILE_IO;
+	}
+
+	//determing the current position of Unit 2
+	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit2ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
+	{
+		cout << "The unit unit2FileName=" << unit2FileName << " unit2ID=" << unit2ID << " does not exist in the given scene" << endl;
+		return ATTACK_ERROR_FILE_IO;
+	}
+
+	bool unit1TakesTheInitative = true;
+	bool unit2TakesTheInitative = true;
+
+	int result;
+
+	result = performCloseCombatWithReferences(unit1ReferenceInThisPhaseStartSceneFile, unit2ReferenceInThisPhaseStartSceneFile, unit1intendsToPerformCloseCombatAttack, unit2intendsToPerformCloseCombatAttack, unit1TakesTheInitative, unit2TakesTheInitative);
+
+	delete unit1ReferenceInThisPhaseStartSceneFile;
+	delete unit2ReferenceInThisPhaseStartSceneFile;
+
+	return result;
+}
+
+//postconditions: the validity of the movement of the units(') between scene files is not checked - this should be done in the round's movement checker routine
+//returns 1 if both strike, 2 if unit1 wins, 3 if unit2 wins, 4 if neither strike. Return 5 if close combat could not occur (neither could strike).
+	//							6 if unit1 wins and only Unit 1 can strike, 7 if unit1 does not strike, and only Unit 1 can strike, 8 if  3 if unit2 wins, 4 if neither strike
+	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
+	//							0/10 if error in finding required files.
+int LRRCcombatClass::performCloseCombatWithConsecutiveSceneFiles(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, string thisPhaseStartSceneFileName, string preMovementPhaseSceneFileName)
+{
+
+	//declare initial scene references
+	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
+	LDreference* initialReferenceInPreMovementPhaseScene = new LDreference();
+	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);	//the smodelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+	LDreference* topLevelReferenceInPreMovementPhaseScene = new LDreference(true);	//the modelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+
+	//parse the scene files and build LDreference linked lists
+	if(!LDparser.parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
+	{//file does not exist
+		cout << "The file: " << thisPhaseStartSceneFileName << " does not exist in the directory" << endl;
+		return false;
+	}
+
+	if(!LDparser.parseFile(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
+	{//file does not exist
+		cout << "The file: " << preMovementPhaseSceneFileName << " does not exist in the directory" << endl;
+		return false;
+	}
+
+	int result = performCloseCombatWithConsecutiveScenes(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformCloseCombatAttack, unit2intendsToPerformCloseCombatAttack, initialReferenceInThisPhaseStartScene, initialReferenceInPreMovementPhaseScene);
+
+	delete initialReferenceInThisPhaseStartScene;
+	delete initialReferenceInPreMovementPhaseScene;
+	delete topLevelReferenceInThisPhaseStartScene;	//the smodelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+	delete topLevelReferenceInPreMovementPhaseScene;	//the modelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+
+	return result;
+}
+
+int LRRCcombatClass::performCloseCombatWithConsecutiveScenes(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
+{
+	//initialise unit1/unit2 references		[NB in the future an appropriate constructor should be created for the LDreference class that accepts a name, and automatically creates a subModelDetails ModelDetails*/
+
+	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
+	LDreference* unit2ReferenceInThisPhaseStartSceneFile = new LDreference(unit2FileName, unit2ID, true);
+	LDreference* unit1ReferenceInPreMovementPhaseSceneFile = new LDreference(unit1FileName, unit1ID, true);
+	LDreference* unit2ReferenceInPreMovementPhaseSceneFile = new LDreference(unit2FileName, unit2ID, true);
+
+	//determing the current position of Unit 1
+	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
+	{
+		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the given scene" << endl;
+		cout << "unit1ReferenceInThisPhaseStartSceneFile->colour = " << unit1ReferenceInThisPhaseStartSceneFile->colour << endl;
+		cout << "unit1ReferenceInThisPhaseStartSceneFile->name = " << unit1ReferenceInThisPhaseStartSceneFile->name << endl;
+		return ATTACK_ERROR_FILE_IO;
+	}
+
+	//determing the previous  position of Unit 1
+	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInPreMovementPhaseSceneFile, initialReferenceInPreMovementPhaseScene, NULL, false))
+	{
+		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the given" << endl;
+		return ATTACK_ERROR_FILE_IO;
+	}
+
+	//determing the current position of Unit 2
+	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit2ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
+	{
+		cout << "The unit unit2FileName=" << unit1FileName << " unit2ID=" << unit2ID << " does not exist in the given scene" << endl;
+		return ATTACK_ERROR_FILE_IO;
+	}
+
+	//determing the previous position of Unit 2
+	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit2ReferenceInPreMovementPhaseSceneFile, initialReferenceInPreMovementPhaseScene, NULL, false))
+	{
+		cout << "The unit unit2FileName=" << unit1FileName << " unit2ID=" << unit2ID << " does not exist in the given scene" << endl;
+		return ATTACK_ERROR_FILE_IO;
+	}
+
+	//check whether a ModelDetails has advanced into combat, and therefore takes the initative to strike first.
+
+	bool unit1HasMovedInPreviousRound = false;
+	bool unit2HasMovedInPreviousRound = false;
+
+		//26-3-06 'absolute' changed to 'relative' reasoning: /*"A movement turn does not only count for the individual " ...change rules to accomodate long distance attack if an absolute movement has occured but a relative has not for any given unit.*/
+	double distanceMovedByUnit1DuringRound = calculateTheDistanceBetweenTwoUnits(unit1ReferenceInThisPhaseStartSceneFile->relativePosition.x, unit1ReferenceInPreMovementPhaseSceneFile->relativePosition.x, unit1ReferenceInThisPhaseStartSceneFile->relativePosition.y, unit1ReferenceInPreMovementPhaseSceneFile->relativePosition.y, unit1ReferenceInThisPhaseStartSceneFile->relativePosition.z, unit1ReferenceInPreMovementPhaseSceneFile->relativePosition.z);
+	double distanceMovedByUnit2DuringRound = calculateTheDistanceBetweenTwoUnits(unit2ReferenceInThisPhaseStartSceneFile->relativePosition.x, unit2ReferenceInPreMovementPhaseSceneFile->relativePosition.x, unit2ReferenceInThisPhaseStartSceneFile->relativePosition.y, unit2ReferenceInPreMovementPhaseSceneFile->relativePosition.y, unit2ReferenceInThisPhaseStartSceneFile->relativePosition.z, unit2ReferenceInPreMovementPhaseSceneFile->relativePosition.z);
+
+	if(int(distanceMovedByUnit1DuringRound) != 0)
+	{
+		unit1HasMovedInPreviousRound = true;
+	}
+	if(int(distanceMovedByUnit2DuringRound) != 0)
+	{
+		unit2HasMovedInPreviousRound = true;
+	}
+
+	bool unit1TakesTheInitative = false;
+	bool unit2TakesTheInitative = false;
+
+	if(unit1HasMovedInPreviousRound)		/*before 26-3-06: if(unit1HasMovedInPreviousRound && !unit2HasMovedInPreviousRound)*/
+	{
+		unit1TakesTheInitative = true;
+	}
+	else if(unit2HasMovedInPreviousRound)	/*before 26-3-06: else if(unit2HasMovedInPreviousRound && !unit1HasMovedInPreviousRound)*/
+	{
+		unit2TakesTheInitative = true;
+	}
+
+	int result;
+
+	result = performCloseCombatWithReferences(unit1ReferenceInThisPhaseStartSceneFile, unit2ReferenceInThisPhaseStartSceneFile, unit1intendsToPerformCloseCombatAttack, unit2intendsToPerformCloseCombatAttack, unit1TakesTheInitative, unit2TakesTheInitative);
+
+	delete unit1ReferenceInThisPhaseStartSceneFile;
+	delete  unit2ReferenceInThisPhaseStartSceneFile;
+	delete  unit1ReferenceInPreMovementPhaseSceneFile;
+	delete  unit2ReferenceInPreMovementPhaseSceneFile;
+
+	return result;
+}
 
 /*
 //preconditions: Assumes particular ModelDetails files exist and are available. Assumes ModelDetails files are fully self contained ModelDetails files - ie each ModelDetails file must contain all information including that about relevant horses etc
@@ -397,19 +338,19 @@ int LRRCcombatClass::performCloseCombatBasic(string unit1FileName, string unit2F
 		return false;
 	}
 
-	this->performFinalUnitClassCalculations(topLevelReferenceInUnit1->subModelDetails);
-	this->performFinalUnitClassCalculations(topLevelReferenceInUnit2->subModelDetails);
+	performFinalUnitClassCalculations(topLevelReferenceInUnit1->subModelDetails);
+	performFinalUnitClassCalculations(topLevelReferenceInUnit2->subModelDetails);
 
-	if(!this->performUnitOrdinatesCheck(topLevelReferenceInUnit2->subModelDetails))
+	if(!performUnitOrdinatesCheck(topLevelReferenceInUnit2->subModelDetails))
 	{
 		return false;
 	}
-	if(!this->performUnitOrdinatesCheck(topLevelReferenceInUnit2->subModelDetails))
+	if(!performUnitOrdinatesCheck(topLevelReferenceInUnit2->subModelDetails))
 	{
 		return false;
 	}
 
-	int result = this->performCloseCombat(topLevelReferenceInUnit1->subModelDetails, topLevelReferenceInUnit2->subModelDetails, unit1performsCloseCombatAttack, unit2performsCloseCombatAttack, unit1TakesTheInitative, unit2TakesTheInitative);
+	int result = performCloseCombat(topLevelReferenceInUnit1->subModelDetails, topLevelReferenceInUnit2->subModelDetails, unit1performsCloseCombatAttack, unit2performsCloseCombatAttack, unit1TakesTheInitative, unit2TakesTheInitative);
 
 	delete initialReferenceInUnit1;
 	delete initialReferenceInUnit2;
@@ -418,8 +359,6 @@ int LRRCcombatClass::performCloseCombatBasic(string unit1FileName, string unit2F
 
 	return result;
 }
-
-
 
 //returns 1 if both strike, 2 if unit1 wins, 3 if unit2 wins, 4 if neither strike. Return 5 if close combat could not occur (neither could strike).
 	//							6 if unit1 wins and only Unit 1 can strike, 7 if unit1 does not strike, and only Unit 1 can strike, 8 if  3 if unit2 wins, 4 if neither strike
@@ -456,20 +395,20 @@ int LRRCcombatClass::performCloseCombatNormal(string unit1FileName, string unit2
 
 
 	//determing the current position of Unit 1
-	this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit1, initialReferenceInUnit1, NULL, true);
+	searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit1, initialReferenceInUnit1, NULL, true);
 
-	this->performFinalUnitClassCalculations(topLevelReferenceInUnit1->subModelDetails);
+	performFinalUnitClassCalculations(topLevelReferenceInUnit1->subModelDetails);
 
-	if(!this->performUnitOrdinatesCheck(topLevelReferenceInUnit1->subModelDetails))
+	if(!performUnitOrdinatesCheck(topLevelReferenceInUnit1->subModelDetails))
 	{
 		return false;
 	}
 
 	//determing the current position of Unit 2
-	this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit2, initialReferenceInUnit2, NULL, true);
+	searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit2, initialReferenceInUnit2, NULL, true);
 
-	this->performFinalUnitClassCalculations(topLevelReferenceInUnit2->subModelDetails);
-	if(!this->performUnitOrdinatesCheck(topLevelReferenceInUnit2->subModelDetails))
+	performFinalUnitClassCalculations(topLevelReferenceInUnit2->subModelDetails);
+	if(!performUnitOrdinatesCheck(topLevelReferenceInUnit2->subModelDetails))
 	{
 		return false;
 	}
@@ -478,7 +417,7 @@ int LRRCcombatClass::performCloseCombatNormal(string unit1FileName, string unit2
 	bool unit2TakesTheInitative = true;
 
 
-	int result = this->performCloseCombat(topLevelReferenceInUnit1->subModelDetails, topLevelReferenceInUnit2->subModelDetails,  unit1performsCloseCombatAttack,  unit2performsCloseCombatAttack, unit1TakesTheInitative, unit2TakesTheInitative);
+	int result = performCloseCombat(topLevelReferenceInUnit1->subModelDetails, topLevelReferenceInUnit2->subModelDetails,  unit1performsCloseCombatAttack,  unit2performsCloseCombatAttack, unit1TakesTheInitative, unit2TakesTheInitative);
 			//in the future, before performCloseCombat is invoked, must check in current scene file, and previous scene file whether both units could strike during close combat
 			//Eg the knight charge first strike policy will prevent at some times some units from being able to strike first
 
@@ -490,226 +429,25 @@ int LRRCcombatClass::performCloseCombatNormal(string unit1FileName, string unit2
 	return result;
 }
 
-//preconditions: units are assumed to have moved in their previous round (ie they both take the initative)
-//returns 1 if both strike, 2 if unit1 wins, 3 if unit2 wins, 4 if neither strike. Return 5 if close combat could not occur (neither could strike).
-	//							6 if unit1 wins and only Unit 1 can strike, 7 if unit1 does not strike, and only Unit 1 can strike, 8 if  3 if unit2 wins, 4 if neither strike
-	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
-	//							0/10 if error in finding required files.
-int LRRCcombatClass::performCloseCombatWithSceneFile(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, string thisPhaseStartSceneFileName)
-{
-
-	//declare initial scene references
-	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
-	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);	//the modelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
-
-	//parse the scene files and build LDreference linked lists
-	if(!LDparser.parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
-	{//file does not exist
-		cout << "The file thisPhaseStartSceneFileName " << thisPhaseStartSceneFileName << " does not exist in the directory" << endl;
-		return false;
-	}
-	//cout << "DEBUG: b1" << endl;
-
-	int result = this->performCloseCombatWithScene(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformCloseCombatAttack, unit2intendsToPerformCloseCombatAttack, initialReferenceInThisPhaseStartScene);
-
-	delete initialReferenceInThisPhaseStartScene;
-	delete topLevelReferenceInThisPhaseStartScene;	//the modelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
-
-	return result;
-}
-
-int LRRCcombatClass::performCloseCombatWithScene(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene)
-{
-	//initialise unit1/unit2 references		[NB in the future an appropriate constructor should be created for the LDreference class that accepts a name, and automatically creates a subModelDetails ModelDetails*/
-	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
-	LDreference* unit2ReferenceInThisPhaseStartSceneFile = new LDreference(unit2FileName, unit2ID, true);
-
-	//determing the current position of Unit 1
-	if(!this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
-	{
-		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the given scene" << endl;
-		//cout << "DEBUG: b3" << endl;
-		return ATTACK_ERROR_FILE_IO;
-	}
-
-	//determing the current position of Unit 2
-	if(!this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit2ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
-	{
-		cout << "The unit unit2FileName=" << unit2FileName << " unit2ID=" << unit2ID << " does not exist in the given scene" << endl;
-		//cout << "DEBUG: b7" << endl;
-		return ATTACK_ERROR_FILE_IO;
-	}
-
-	bool unit1TakesTheInitative = true;
-	bool unit2TakesTheInitative = true;
-
-	int result;
-
-	result = this->performCloseCombatWithReferences(unit1ReferenceInThisPhaseStartSceneFile, unit2ReferenceInThisPhaseStartSceneFile, unit1intendsToPerformCloseCombatAttack, unit2intendsToPerformCloseCombatAttack, unit1TakesTheInitative, unit2TakesTheInitative);
-
-	delete unit1ReferenceInThisPhaseStartSceneFile;
-	delete unit2ReferenceInThisPhaseStartSceneFile;
-
-	return result;
-}
-
-
-
-
-//postconditions: the validity of the movement of the units(') between scene files is not checked - this should be done in the round's movement checker routine
-//returns 1 if both strike, 2 if unit1 wins, 3 if unit2 wins, 4 if neither strike. Return 5 if close combat could not occur (neither could strike).
-	//							6 if unit1 wins and only Unit 1 can strike, 7 if unit1 does not strike, and only Unit 1 can strike, 8 if  3 if unit2 wins, 4 if neither strike
-	//							8 if unit2 wins and only Unit 2 can strike, 9 if unit2 does not strike, and only Unit 2 can strike.
-	//							0/10 if error in finding required files.
-int LRRCcombatClass::performCloseCombatWithConsecutiveSceneFiles(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, string thisPhaseStartSceneFileName, string preMovementPhaseSceneFileName)
-{
-
-	//declare initial scene references
-	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
-	LDreference* initialReferenceInPreMovementPhaseScene = new LDreference();
-	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);	//the smodelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
-	LDreference* topLevelReferenceInPreMovementPhaseScene = new LDreference(true);	//the modelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
-
-	//parse the scene files and build LDreference linked lists
-	if(!LDparser.parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
-	{//file does not exist
-		cout << "The file: " << thisPhaseStartSceneFileName << " does not exist in the directory" << endl;
-		return false;
-	}
-	//cout << "DEBUG: b1" << endl;
-
-	if(!LDparser.parseFile(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
-	{//file does not exist
-		cout << "The file: " << preMovementPhaseSceneFileName << " does not exist in the directory" << endl;
-		return false;
-	}
-	//cout << "DEBUG: b2" << endl;
-
-
-	int result = this->performCloseCombatWithConsecutiveScenes(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformCloseCombatAttack, unit2intendsToPerformCloseCombatAttack, initialReferenceInThisPhaseStartScene, initialReferenceInPreMovementPhaseScene);
-
-	delete initialReferenceInThisPhaseStartScene;
-	delete initialReferenceInPreMovementPhaseScene;
-	delete topLevelReferenceInThisPhaseStartScene;	//the smodelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
-	delete topLevelReferenceInPreMovementPhaseScene;	//the modelDetails information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
-
-	return result;
-}
-
-
-
-int LRRCcombatClass::performCloseCombatWithConsecutiveScenes(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
-{
-	//initialise unit1/unit2 references		[NB in the future an appropriate constructor should be created for the LDreference class that accepts a name, and automatically creates a subModelDetails ModelDetails*/
-
-	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
-	LDreference* unit2ReferenceInThisPhaseStartSceneFile = new LDreference(unit2FileName, unit2ID, true);
-	LDreference* unit1ReferenceInPreMovementPhaseSceneFile = new LDreference(unit1FileName, unit1ID, true);
-	LDreference* unit2ReferenceInPreMovementPhaseSceneFile = new LDreference(unit2FileName, unit2ID, true);
-
-	//determing the current position of Unit 1
-	if(!this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
-	{
-		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the given scene" << endl;
-		cout << "unit1ReferenceInThisPhaseStartSceneFile->colour = " << unit1ReferenceInThisPhaseStartSceneFile->colour << endl;
-		cout << "unit1ReferenceInThisPhaseStartSceneFile->name = " << unit1ReferenceInThisPhaseStartSceneFile->name << endl;
-		cout << "DEBUG: b3" << endl;
-		return ATTACK_ERROR_FILE_IO;
-	}
-
-	//determing the previous  position of Unit 1
-	if(!this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInPreMovementPhaseSceneFile, initialReferenceInPreMovementPhaseScene, NULL, false))
-	{
-		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the given" << endl;
-		cout << "DEBUG: b5" << endl;
-		return ATTACK_ERROR_FILE_IO;
-	}
-
-	//determing the current position of Unit 2
-	if(!this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit2ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
-	{
-		cout << "The unit unit2FileName=" << unit1FileName << " unit2ID=" << unit2ID << " does not exist in the given scene" << endl;
-		cout << "DEBUG: b7" << endl;
-		return ATTACK_ERROR_FILE_IO;
-	}
-
-	//determing the previous position of Unit 2
-	if(!this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit2ReferenceInPreMovementPhaseSceneFile, initialReferenceInPreMovementPhaseScene, NULL, false))
-	{
-		cout << "The unit unit2FileName=" << unit1FileName << " unit2ID=" << unit2ID << " does not exist in the given scene" << endl;
-		return ATTACK_ERROR_FILE_IO;
-	}
-
-	//check whether a ModelDetails has advanced into combat, and therefore takes the initative to strike first.
-
-	bool unit1HasMovedInPreviousRound = false;
-	bool unit2HasMovedInPreviousRound = false;
-
-		//26-3-06 'absolute' changed to 'relative' reasoning: /*"A movement turn does not only count for the individual " ...change rules to accomodate long distance attack if an absolute movement has occured but a relative has not for any given unit.*/
-	double distanceMovedByUnit1DuringRound = this->calculateTheDistanceBetweenTwoUnits(unit1ReferenceInThisPhaseStartSceneFile->relativePosition.x, unit1ReferenceInPreMovementPhaseSceneFile->relativePosition.x, unit1ReferenceInThisPhaseStartSceneFile->relativePosition.y, unit1ReferenceInPreMovementPhaseSceneFile->relativePosition.y, unit1ReferenceInThisPhaseStartSceneFile->relativePosition.z, unit1ReferenceInPreMovementPhaseSceneFile->relativePosition.z);
-	double distanceMovedByUnit2DuringRound = this->calculateTheDistanceBetweenTwoUnits(unit2ReferenceInThisPhaseStartSceneFile->relativePosition.x, unit2ReferenceInPreMovementPhaseSceneFile->relativePosition.x, unit2ReferenceInThisPhaseStartSceneFile->relativePosition.y, unit2ReferenceInPreMovementPhaseSceneFile->relativePosition.y, unit2ReferenceInThisPhaseStartSceneFile->relativePosition.z, unit2ReferenceInPreMovementPhaseSceneFile->relativePosition.z);
-
-	if(int(distanceMovedByUnit1DuringRound) != 0)
-	{
-		unit1HasMovedInPreviousRound = true;
-	}
-	if(int(distanceMovedByUnit2DuringRound) != 0)
-	{
-		unit2HasMovedInPreviousRound = true;
-	}
-
-	bool unit1TakesTheInitative = false;
-	bool unit2TakesTheInitative = false;
-
-	if(unit1HasMovedInPreviousRound)		/*before 26-3-06: if(unit1HasMovedInPreviousRound && !unit2HasMovedInPreviousRound)*/
-	{
-		unit1TakesTheInitative = true;
-	}
-	else if(unit2HasMovedInPreviousRound)	/*before 26-3-06: else if(unit2HasMovedInPreviousRound && !unit1HasMovedInPreviousRound)*/
-	{
-		unit2TakesTheInitative = true;
-	}
-
-	//cout << "DEBUG: b5" << endl;
-
-	int result;
-
-	result = this->performCloseCombatWithReferences(unit1ReferenceInThisPhaseStartSceneFile, unit2ReferenceInThisPhaseStartSceneFile, unit1intendsToPerformCloseCombatAttack, unit2intendsToPerformCloseCombatAttack, unit1TakesTheInitative, unit2TakesTheInitative);
-
-	delete unit1ReferenceInThisPhaseStartSceneFile;
-	delete  unit2ReferenceInThisPhaseStartSceneFile;
-	delete  unit1ReferenceInPreMovementPhaseSceneFile;
-	delete  unit2ReferenceInPreMovementPhaseSceneFile;
-
-	return result;
-}
-
-
-
-
-
-
 int LRRCcombatClass::performCloseCombatWithReferences(LDreference* unit1ReferenceInThisPhaseStartSceneFile, LDreference* unit2ReferenceInThisPhaseStartSceneFile, const bool unit1intendsToPerformCloseCombatAttack, const bool unit2intendsToPerformCloseCombatAttack, const bool unit1TakesTheInitative, const bool unit2TakesTheInitative)
 {
-	//cout << "DEBUG: b5" << endl;
-
 	int result;
 
 	bool unit1PassesOrdinatesCheck = true;
-	this->performFinalUnitClassCalculations(unit1ReferenceInThisPhaseStartSceneFile->subModelDetails);
-	if(!this->performUnitOrdinatesCheck(unit1ReferenceInThisPhaseStartSceneFile->subModelDetails))
+	performFinalUnitClassCalculations(unit1ReferenceInThisPhaseStartSceneFile->subModelDetails);
+	if(!performUnitOrdinatesCheck(unit1ReferenceInThisPhaseStartSceneFile->subModelDetails))
 	{
 		unit1PassesOrdinatesCheck = false;
 	}
 	bool unit2PassesOrdinatesCheck = true;
-	this->performFinalUnitClassCalculations(unit2ReferenceInThisPhaseStartSceneFile->subModelDetails);
-	if(!this->performUnitOrdinatesCheck(unit2ReferenceInThisPhaseStartSceneFile->subModelDetails))
+	performFinalUnitClassCalculations(unit2ReferenceInThisPhaseStartSceneFile->subModelDetails);
+	if(!performUnitOrdinatesCheck(unit2ReferenceInThisPhaseStartSceneFile->subModelDetails))
 	{
 		unit2PassesOrdinatesCheck = false;
 	}
 
 	//check whether current units are within Close Combat Range
-	double distanceBetweenTheTwoUnits = this->calculateTheDistanceBetweenTwoUnits(unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.x, unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.x, unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.y, unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.y, unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.z, unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.z);
+	double distanceBetweenTheTwoUnits = calculateTheDistanceBetweenTwoUnits(unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.x, unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.x, unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.y, unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.y, unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.z, unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.z);
 	if(distanceBetweenTheTwoUnits <= CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY)
 	{
 	#ifndef DEBUG_DO_NOT_DISPLAY_COMBAT_RESULTS
@@ -717,7 +455,7 @@ int LRRCcombatClass::performCloseCombatWithReferences(LDreference* unit1Referenc
 		cout << "unit 2: " << unit2ReferenceInThisPhaseStartSceneFile->name << endl;
 	#endif
 		//perform close combat
-		result = this->performCloseCombat(unit1ReferenceInThisPhaseStartSceneFile->subModelDetails, unit2ReferenceInThisPhaseStartSceneFile->subModelDetails,  unit1intendsToPerformCloseCombatAttack&unit1PassesOrdinatesCheck,  unit2intendsToPerformCloseCombatAttack&unit2PassesOrdinatesCheck, unit1TakesTheInitative, unit2TakesTheInitative);
+		result = performCloseCombat(unit1ReferenceInThisPhaseStartSceneFile->subModelDetails, unit2ReferenceInThisPhaseStartSceneFile->subModelDetails,  unit1intendsToPerformCloseCombatAttack&unit1PassesOrdinatesCheck,  unit2intendsToPerformCloseCombatAttack&unit2PassesOrdinatesCheck, unit1TakesTheInitative, unit2TakesTheInitative);
 			//in the future, before performCloseCombat is invoked, must check in current scene file, and previous scene file whether both units could strike during close combat
 			//Eg the knight charge first strike policy will prevent at some times some units from being able to strike first
 	}
@@ -733,10 +471,6 @@ int LRRCcombatClass::performCloseCombatWithReferences(LDreference* unit1Referenc
 
 	return result;
 }
-
-
-
-
 
 /*
 //preconditions: Assumes particular ModelDetails objects (unit1 and unit2) are fully self contained - ie they contain all information including that about horses etc
@@ -754,12 +488,12 @@ int LRRCcombatClass::performCloseCombat(ModelDetails* unit1, ModelDetails* unit2
 	int unit1Attack;
 	int unit1Defence;
 	unit1Defence = unit1->defenceTotal;
-	unit1Attack = this->calculateCloseCombatAttackBonus(unit1, (bool)(unit2->numHorse), unit1TakesTheInitative);
+	unit1Attack = calculateCloseCombatAttackBonus(unit1, (bool)(unit2->numHorse), unit1TakesTheInitative);
 
 	int unit2Attack;
 	int unit2Defence;
 	unit2Defence = unit2->defenceTotal;
-	unit2Attack = this->calculateCloseCombatAttackBonus(unit2, (bool)(unit1->numHorse), unit2TakesTheInitative);
+	unit2Attack = calculateCloseCombatAttackBonus(unit2, (bool)(unit1->numHorse), unit2TakesTheInitative);
 
 #ifdef GAME_OUTPUT_COMBAT_ENTRY_STATISTICS
 	cout << "\nUnit 1 Combat Entry:" << endl;
@@ -926,56 +660,164 @@ int LRRCcombatClass::performCloseCombat(ModelDetails* unit1, ModelDetails* unit2
 
 
 
+//preconditions: units are assumed not to have moved in their previous round (ie they both are allowed to perform long distance combat in their current turn)
+int LRRCcombatClass::performLongDistanceCombatWithSceneFile(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, string thisPhaseStartSceneFileName)
+{
+	//declare initial scene references
+	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
+	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);			//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+
+	//parse the scene files and build LDreference linked lists
+	if(!LDparser.parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
+	{//file does not exist
+		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the directory" << endl;
+		return false;
+	}
+
+	int result = performLongDistanceCombatWithScene(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformLongDistanceAttack, unit2intendsToPerformLongDistanceAttack, initialReferenceInThisPhaseStartScene);
+
+	delete initialReferenceInThisPhaseStartScene;
+	delete topLevelReferenceInThisPhaseStartScene;			//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
+
+	return result;
+}
+
+int LRRCcombatClass::performLongDistanceCombatWithScene(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene)
+{
+	int result;
+
+	//initialise unit1/unit2 references
+	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
+	LDreference* unit2ReferenceInThisPhaseStartSceneFile = new LDreference(unit2FileName, unit2ID, true);
+
+	//determing the current position of Unit 1
+	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
+	{
+		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the given scene" << endl;
+		return ATTACK_ERROR_FILE_IO;
+	}
+
+	//determing the current position of Unit 2
+	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit2ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
+	{
+		cout << "The unit unit2FileName=" << unit2FileName << " unit2ID=" << unit2ID << " does not exist in the given scene" << endl;
+		return ATTACK_ERROR_FILE_IO;
+	}
+
+	performLongDistanceCombatWithReferences(unit1ReferenceInThisPhaseStartSceneFile, unit2ReferenceInThisPhaseStartSceneFile, unit1intendsToPerformLongDistanceAttack, unit2intendsToPerformLongDistanceAttack);
+
+	delete unit1ReferenceInThisPhaseStartSceneFile;
+	delete unit2ReferenceInThisPhaseStartSceneFile;
+
+	return result;
+}
+
+//postconditions: the validity of the movement of the units(') between scene files is not checked - this should be done in the round's movement checker routine
+int LRRCcombatClass::performLongDistanceCombatWithConsecutiveSceneFiles(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformLongDistanceAttack, const bool unit2intendsToPerformLongDistanceAttack, string thisPhaseStartSceneFileName, string preMovementPhaseSceneFileName)
+{
+	//declare initial scene references
+	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
+	LDreference* initialReferenceInPreMovementPhaseScene = new LDreference();
+	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);
+	LDreference* topLevelReferenceInPreMovementPhaseScene = new LDreference(true);
+
+	//parse the scene files and build LDreference linked lists
+	if(!LDparser.parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
+	{//file does not exist
+		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the directory" << endl;
+		return false;
+	}
+
+	if(!LDparser.parseFile(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
+	{//file does not exist
+		cout << "The unit unit2FileName=" << unit2FileName << " unit2ID=" << unit2ID << " does not exist in the directory" << endl;
+		return false;
+	}
+
+	int result = performLongDistanceCombatWithConsecutiveScenes(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformLongDistanceAttack, unit2intendsToPerformLongDistanceAttack, initialReferenceInThisPhaseStartScene, initialReferenceInPreMovementPhaseScene);
+
+	delete initialReferenceInThisPhaseStartScene;
+	delete initialReferenceInPreMovementPhaseScene;
+	delete topLevelReferenceInThisPhaseStartScene;
+	delete topLevelReferenceInPreMovementPhaseScene;
+
+	return result;
+}
+
+int LRRCcombatClass::performLongDistanceCombatWithConsecutiveScenes(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformLongDistanceAttack, const bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
+{
+	//initialise unit1/unit2 references
+	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
+	LDreference* unit2ReferenceInThisPhaseStartSceneFile = new LDreference(unit2FileName, unit2ID, true);
+	LDreference* unit1ReferenceInPreMovementPhaseSceneFile = new LDreference(unit1FileName, unit1ID, true);
+	LDreference* unit2ReferenceInPreMovementPhaseSceneFile = new LDreference(unit2FileName, unit2ID, true);
+
+	//determing the current position of Unit 1
+	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
+	{
+		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the given scene" << endl;
+		return ATTACK_ERROR_FILE_IO;
+	}
+
+	//determing the previous  position of Unit 1
+	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInPreMovementPhaseSceneFile, initialReferenceInPreMovementPhaseScene, NULL, false))
+	{
+		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the given scene" << endl;
+		return ATTACK_ERROR_FILE_IO;
+	}
+
+	//determing the current position of Unit 2
+	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit2ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
+	{
+		cout << "The unit unit2FileName=" << unit2FileName << " unit2ID=" << unit2ID << " does not exist in the given scene" << endl;
+		return ATTACK_ERROR_FILE_IO;
+	}
+
+	//determing the previous position of Unit 2
+	if(!searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit2ReferenceInPreMovementPhaseSceneFile, initialReferenceInPreMovementPhaseScene, NULL, false))
+	{
+		cout << "The unit unit2FileName=" << unit2FileName << " unit2ID=" << unit2ID << " does not exist in the given scene" << endl;
+		return ATTACK_ERROR_FILE_IO;
+	}
+
+	//check whether chosen ModelDetails(s) can perform long distance attack during their turn based on whether or not they have moved during the round,
+	/******************************************************/
+
+	bool unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack = false;
+	bool unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack = false;
+
+		//26-3-06 'absolute' changed to 'relative' reasoning: /*"A movement turn does not only count for the individual " ...change rules to accomodate long distance attack if an absolute movement has occured but a relative has not for any given unit.*/
+	double distanceMovedByUnit1DuringRound = calculateTheDistanceBetweenTwoUnits(unit1ReferenceInThisPhaseStartSceneFile->relativePosition.x, unit1ReferenceInPreMovementPhaseSceneFile->relativePosition.x, unit1ReferenceInThisPhaseStartSceneFile->relativePosition.y, unit1ReferenceInPreMovementPhaseSceneFile->relativePosition.y, unit1ReferenceInThisPhaseStartSceneFile->relativePosition.z, unit1ReferenceInPreMovementPhaseSceneFile->relativePosition.z);
+	double distanceMovedByUnit2DuringRound = calculateTheDistanceBetweenTwoUnits(unit2ReferenceInThisPhaseStartSceneFile->relativePosition.x, unit2ReferenceInPreMovementPhaseSceneFile->relativePosition.x, unit2ReferenceInThisPhaseStartSceneFile->relativePosition.y, unit2ReferenceInPreMovementPhaseSceneFile->relativePosition.y, unit2ReferenceInThisPhaseStartSceneFile->relativePosition.z, unit2ReferenceInPreMovementPhaseSceneFile->relativePosition.z);
 
 
+	if((int(distanceMovedByUnit1DuringRound) == 0) && unit1intendsToPerformLongDistanceAttack)
+	{
+		unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack = true;
+	}
+	else if(unit1intendsToPerformLongDistanceAttack)
+	{
+		cout << "unit 1 cannot perform long distance attack as it has moved in the current round" << endl;
+	}
 
+	if((int(distanceMovedByUnit2DuringRound) == 0) && unit2intendsToPerformLongDistanceAttack)
+	{
+		unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack = true;
+	}
+	else if(unit2intendsToPerformLongDistanceAttack)
+	{
+		cout << "unit 2 cannot perform long distance attack as it has moved in the current round" << endl;
+	}
 
+	int result = performLongDistanceCombatWithReferences(unit1ReferenceInThisPhaseStartSceneFile, unit2ReferenceInThisPhaseStartSceneFile, unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack);
 
+	delete unit1ReferenceInThisPhaseStartSceneFile;
+	delete unit2ReferenceInThisPhaseStartSceneFile;
+	delete unit1ReferenceInPreMovementPhaseSceneFile;
+	delete unit2ReferenceInPreMovementPhaseSceneFile;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	return result;
+}
 
 //preconditions: Assumes particular ModelDetails files exist and are available. Assumes ModelDetails files are fully self contained ModelDetails files - ie each ModelDetails file must contain all information including that about relevant horses etc
 //
@@ -1005,17 +847,17 @@ int LRRCcombatClass::performLongDistanceCombatBasic(string unit1FileName, string
 		return false;
 	}
 
-	this->performFinalUnitClassCalculations(topLevelReferenceInUnit1->subModelDetails);
-	this->performFinalUnitClassCalculations(topLevelReferenceInUnit2->subModelDetails);
-	if(!this->performUnitOrdinatesCheck(topLevelReferenceInUnit1->subModelDetails))
+	performFinalUnitClassCalculations(topLevelReferenceInUnit1->subModelDetails);
+	performFinalUnitClassCalculations(topLevelReferenceInUnit2->subModelDetails);
+	if(!performUnitOrdinatesCheck(topLevelReferenceInUnit1->subModelDetails))
 	{
 		return false;
 	}
-	if(!this->performUnitOrdinatesCheck(topLevelReferenceInUnit2->subModelDetails))
+	if(!performUnitOrdinatesCheck(topLevelReferenceInUnit2->subModelDetails))
 	{
 		return false;
 	}
-	int result = this->performLongDistanceCombat(topLevelReferenceInUnit1->subModelDetails, topLevelReferenceInUnit2->subModelDetails, unit1performsLongDistanceAttack, unit2performsLongDistanceAttack);
+	int result = performLongDistanceCombat(topLevelReferenceInUnit1->subModelDetails, topLevelReferenceInUnit2->subModelDetails, unit1performsLongDistanceAttack, unit2performsLongDistanceAttack);
 
 	delete initialReferenceInUnit1;
 	delete initialReferenceInUnit2;
@@ -1024,7 +866,6 @@ int LRRCcombatClass::performLongDistanceCombatBasic(string unit1FileName, string
 
 	return result;
 }
-
 
 int LRRCcombatClass::performLongDistanceCombatNormal(string unit1FileName, string unit2FileName, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack)
 {
@@ -1056,25 +897,25 @@ int LRRCcombatClass::performLongDistanceCombatNormal(string unit1FileName, strin
 
 
 	//determing the current position of Unit 1
-	this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit1, initialReferenceInUnit1, NULL, true);
+	searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit1, initialReferenceInUnit1, NULL, true);
 
-	this->performFinalUnitClassCalculations(topLevelReferenceInUnit1->subModelDetails);
-	if(!this->performUnitOrdinatesCheck(topLevelReferenceInUnit1->subModelDetails))
+	performFinalUnitClassCalculations(topLevelReferenceInUnit1->subModelDetails);
+	if(!performUnitOrdinatesCheck(topLevelReferenceInUnit1->subModelDetails))
 	{
 		return false;
 	}
 
 	//determing the current position of Unit 2
-	this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit2, initialReferenceInUnit2, NULL, true);
+	searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(topLevelReferenceInUnit2, initialReferenceInUnit2, NULL, true);
 
-	this->performFinalUnitClassCalculations(topLevelReferenceInUnit2->subModelDetails);
-	if(!this->performUnitOrdinatesCheck(topLevelReferenceInUnit2->subModelDetails))
+	performFinalUnitClassCalculations(topLevelReferenceInUnit2->subModelDetails);
+	if(!performUnitOrdinatesCheck(topLevelReferenceInUnit2->subModelDetails))
 	{
 		return false;
 	}
 
 	//perform long distance combat
-	int result = this->performLongDistanceCombat(topLevelReferenceInUnit1->subModelDetails, topLevelReferenceInUnit2->subModelDetails, unit1performsLongDistanceAttack,  unit2performsLongDistanceAttack);
+	int result = performLongDistanceCombat(topLevelReferenceInUnit1->subModelDetails, topLevelReferenceInUnit2->subModelDetails, unit1performsLongDistanceAttack,  unit2performsLongDistanceAttack);
 
 	delete initialReferenceInUnit1;
 	delete initialReferenceInUnit2;
@@ -1084,191 +925,20 @@ int LRRCcombatClass::performLongDistanceCombatNormal(string unit1FileName, strin
 	return result;
 }
 
-
-
-//preconditions: units are assumed not to have moved in their previous round (ie they both are allowed to perform long distance combat in their current turn)
-int LRRCcombatClass::performLongDistanceCombatWithSceneFile(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, string thisPhaseStartSceneFileName)
-{
-	//declare initial scene references
-	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
-	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);			//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
-
-	//parse the scene files and build LDreference linked lists
-	if(!LDparser.parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
-	{//file does not exist
-		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the directory" << endl;
-		return false;
-	}
-
-	int result = this->performLongDistanceCombatWithScene(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformLongDistanceAttack, unit2intendsToPerformLongDistanceAttack, initialReferenceInThisPhaseStartScene);
-
-	delete initialReferenceInThisPhaseStartScene;
-	delete topLevelReferenceInThisPhaseStartScene;			//The information in this object is not required or meaningful, but needs to be passed into the parseFile/parseReferenceList recursive function
-
-	return result;
-}
-
-
-
-
-int LRRCcombatClass::performLongDistanceCombatWithScene(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, bool unit1intendsToPerformLongDistanceAttack, bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene)
-{
-	int result;
-
-	//initialise unit1/unit2 references
-	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
-	LDreference* unit2ReferenceInThisPhaseStartSceneFile = new LDreference(unit2FileName, unit2ID, true);
-
-	//determing the current position of Unit 1
-	if(!this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
-	{
-		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the given scene" << endl;
-		return ATTACK_ERROR_FILE_IO;
-	}
-
-	//determing the current position of Unit 2
-	if(!this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit2ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
-	{
-		cout << "The unit unit2FileName=" << unit2FileName << " unit2ID=" << unit2ID << " does not exist in the given scene" << endl;
-		return ATTACK_ERROR_FILE_IO;
-	}
-
-	this->performLongDistanceCombatWithReferences(unit1ReferenceInThisPhaseStartSceneFile, unit2ReferenceInThisPhaseStartSceneFile, unit1intendsToPerformLongDistanceAttack, unit2intendsToPerformLongDistanceAttack);
-
-	delete unit1ReferenceInThisPhaseStartSceneFile;
-	delete unit2ReferenceInThisPhaseStartSceneFile;
-
-	return result;
-}
-
-
-
-
-
-//postconditions: the validity of the movement of the units(') between scene files is not checked - this should be done in the round's movement checker routine
-int LRRCcombatClass::performLongDistanceCombatWithConsecutiveSceneFiles(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformLongDistanceAttack, const bool unit2intendsToPerformLongDistanceAttack, string thisPhaseStartSceneFileName, string preMovementPhaseSceneFileName)
-{
-	//declare initial scene references
-	LDreference* initialReferenceInThisPhaseStartScene = new LDreference();
-	LDreference* initialReferenceInPreMovementPhaseScene = new LDreference();
-	LDreference* topLevelReferenceInThisPhaseStartScene = new LDreference(true);
-	LDreference* topLevelReferenceInPreMovementPhaseScene = new LDreference(true);
-
-	//parse the scene files and build LDreference linked lists
-	if(!LDparser.parseFile(thisPhaseStartSceneFileName, initialReferenceInThisPhaseStartScene, topLevelReferenceInThisPhaseStartScene, false))
-	{//file does not exist
-		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the directory" << endl;
-		return false;
-	}
-
-	if(!LDparser.parseFile(preMovementPhaseSceneFileName, initialReferenceInPreMovementPhaseScene, topLevelReferenceInPreMovementPhaseScene, false))
-	{//file does not exist
-		cout << "The unit unit2FileName=" << unit2FileName << " unit2ID=" << unit2ID << " does not exist in the directory" << endl;
-		return false;
-	}
-
-	int result = this->performLongDistanceCombatWithConsecutiveScenes(unit1FileName, unit2FileName, unit1ID, unit2ID, unit1intendsToPerformLongDistanceAttack, unit2intendsToPerformLongDistanceAttack, initialReferenceInThisPhaseStartScene, initialReferenceInPreMovementPhaseScene);
-
-	delete initialReferenceInThisPhaseStartScene;
-	delete initialReferenceInPreMovementPhaseScene;
-	delete topLevelReferenceInThisPhaseStartScene;
-	delete topLevelReferenceInPreMovementPhaseScene;
-
-	return result;
-}
-
-
-int LRRCcombatClass::performLongDistanceCombatWithConsecutiveScenes(const string unit1FileName, const string unit2FileName, const int unit1ID, const int unit2ID, const bool unit1intendsToPerformLongDistanceAttack, const bool unit2intendsToPerformLongDistanceAttack, LDreference* initialReferenceInThisPhaseStartScene, LDreference* initialReferenceInPreMovementPhaseScene)
-{
-	//initialise unit1/unit2 references
-	LDreference* unit1ReferenceInThisPhaseStartSceneFile = new LDreference(unit1FileName, unit1ID, true);
-	LDreference* unit2ReferenceInThisPhaseStartSceneFile = new LDreference(unit2FileName, unit2ID, true);
-	LDreference* unit1ReferenceInPreMovementPhaseSceneFile = new LDreference(unit1FileName, unit1ID, true);
-	LDreference* unit2ReferenceInPreMovementPhaseSceneFile = new LDreference(unit2FileName, unit2ID, true);
-
-	//determing the current position of Unit 1
-	if(!this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
-	{
-		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the given scene" << endl;
-		return ATTACK_ERROR_FILE_IO;
-	}
-
-	//determing the previous  position of Unit 1
-	if(!this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit1ReferenceInPreMovementPhaseSceneFile, initialReferenceInPreMovementPhaseScene, NULL, false))
-	{
-		cout << "The unit unit1FileName=" << unit1FileName << " unit1ID=" << unit1ID << " does not exist in the given scene" << endl;
-		return ATTACK_ERROR_FILE_IO;
-	}
-
-	//determing the current position of Unit 2
-	if(!this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit2ReferenceInThisPhaseStartSceneFile, initialReferenceInThisPhaseStartScene, NULL, false))
-	{
-		cout << "The unit unit2FileName=" << unit2FileName << " unit2ID=" << unit2ID << " does not exist in the given scene" << endl;
-		return ATTACK_ERROR_FILE_IO;
-	}
-
-	//determing the previous position of Unit 2
-	if(!this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(unit2ReferenceInPreMovementPhaseSceneFile, initialReferenceInPreMovementPhaseScene, NULL, false))
-	{
-		cout << "The unit unit2FileName=" << unit2FileName << " unit2ID=" << unit2ID << " does not exist in the given scene" << endl;
-		return ATTACK_ERROR_FILE_IO;
-	}
-
-	//check whether chosen ModelDetails(s) can perform long distance attack during their turn based on whether or not they have moved during the round,
-	/******************************************************/
-
-	bool unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack = false;
-	bool unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack = false;
-
-		//26-3-06 'absolute' changed to 'relative' reasoning: /*"A movement turn does not only count for the individual " ...change rules to accomodate long distance attack if an absolute movement has occured but a relative has not for any given unit.*/
-	double distanceMovedByUnit1DuringRound = this->calculateTheDistanceBetweenTwoUnits(unit1ReferenceInThisPhaseStartSceneFile->relativePosition.x, unit1ReferenceInPreMovementPhaseSceneFile->relativePosition.x, unit1ReferenceInThisPhaseStartSceneFile->relativePosition.y, unit1ReferenceInPreMovementPhaseSceneFile->relativePosition.y, unit1ReferenceInThisPhaseStartSceneFile->relativePosition.z, unit1ReferenceInPreMovementPhaseSceneFile->relativePosition.z);
-	double distanceMovedByUnit2DuringRound = this->calculateTheDistanceBetweenTwoUnits(unit2ReferenceInThisPhaseStartSceneFile->relativePosition.x, unit2ReferenceInPreMovementPhaseSceneFile->relativePosition.x, unit2ReferenceInThisPhaseStartSceneFile->relativePosition.y, unit2ReferenceInPreMovementPhaseSceneFile->relativePosition.y, unit2ReferenceInThisPhaseStartSceneFile->relativePosition.z, unit2ReferenceInPreMovementPhaseSceneFile->relativePosition.z);
-
-
-	if((int(distanceMovedByUnit1DuringRound) == 0) && unit1intendsToPerformLongDistanceAttack)
-	{
-		unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack = true;
-	}
-	else if(unit1intendsToPerformLongDistanceAttack)
-	{
-		cout << "unit 1 cannot perform long distance attack as it has moved in the current round" << endl;
-	}
-
-	if((int(distanceMovedByUnit2DuringRound) == 0) && unit2intendsToPerformLongDistanceAttack)
-	{
-		unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack = true;
-	}
-	else if(unit2intendsToPerformLongDistanceAttack)
-	{
-		cout << "unit 2 cannot perform long distance attack as it has moved in the current round" << endl;
-	}
-
-	int result = this->performLongDistanceCombatWithReferences(unit1ReferenceInThisPhaseStartSceneFile, unit2ReferenceInThisPhaseStartSceneFile, unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack);
-
-	delete unit1ReferenceInThisPhaseStartSceneFile;
-	delete unit2ReferenceInThisPhaseStartSceneFile;
-	delete unit1ReferenceInPreMovementPhaseSceneFile;
-	delete unit2ReferenceInPreMovementPhaseSceneFile;
-
-	return result;
-}
-
-
-
 int LRRCcombatClass::performLongDistanceCombatWithReferences(LDreference* unit1ReferenceInThisPhaseStartSceneFile, LDreference* unit2ReferenceInThisPhaseStartSceneFile, bool unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, bool unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack)
 {
 	int result;
 
 	bool unit1PassesOrdinatesCheck = true;
-	this->performFinalUnitClassCalculations(unit1ReferenceInThisPhaseStartSceneFile->subModelDetails);
-	if(!this->performUnitOrdinatesCheck(unit1ReferenceInThisPhaseStartSceneFile->subModelDetails))
+	performFinalUnitClassCalculations(unit1ReferenceInThisPhaseStartSceneFile->subModelDetails);
+	if(!performUnitOrdinatesCheck(unit1ReferenceInThisPhaseStartSceneFile->subModelDetails))
 	{
 		unit1PassesOrdinatesCheck = false;
 	}
 
 	bool unit2PassesOrdinatesCheck = true;
-	this->performFinalUnitClassCalculations(unit2ReferenceInThisPhaseStartSceneFile->subModelDetails);
-	if(!this->performUnitOrdinatesCheck(unit2ReferenceInThisPhaseStartSceneFile->subModelDetails))
+	performFinalUnitClassCalculations(unit2ReferenceInThisPhaseStartSceneFile->subModelDetails);
+	if(!performUnitOrdinatesCheck(unit2ReferenceInThisPhaseStartSceneFile->subModelDetails))
 	{
 		unit2PassesOrdinatesCheck = false;
 	}
@@ -1276,8 +946,8 @@ int LRRCcombatClass::performLongDistanceCombatWithReferences(LDreference* unit1R
 	//calculate whether a ModelDetails can perform long distance attack based on their range and the positions between units:
 	bool unit1CanPerformLongDistanceAttack = false;
 	bool unit2CanPerformLongDistanceAttack = false;
-	double longRangeDistanceBetweenTheTwoUnits = this->calculateTheDistanceBetweenTwoUnits(unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.x, unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.x, unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.y, unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.y, unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.z, unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.z);
-	this->calculateLongDistanceAttackBonus(unit1ReferenceInThisPhaseStartSceneFile, unit2ReferenceInThisPhaseStartSceneFile, unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, &unit1CanPerformLongDistanceAttack, &unit2CanPerformLongDistanceAttack, longRangeDistanceBetweenTheTwoUnits);
+	double longRangeDistanceBetweenTheTwoUnits = calculateTheDistanceBetweenTwoUnits(unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.x, unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.x, unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.y, unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.y, unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.z, unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.z);
+	calculateLongDistanceAttackBonus(unit1ReferenceInThisPhaseStartSceneFile, unit2ReferenceInThisPhaseStartSceneFile, unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, &unit1CanPerformLongDistanceAttack, &unit2CanPerformLongDistanceAttack, longRangeDistanceBetweenTheTwoUnits);
 
 	if(!unit1CanPerformLongDistanceAttack && !unit2CanPerformLongDistanceAttack)
 	{
@@ -1291,15 +961,11 @@ int LRRCcombatClass::performLongDistanceCombatWithReferences(LDreference* unit1R
 		cout << "unit 2: " << unit2ReferenceInThisPhaseStartSceneFile->name << endl;
 	#endif
 		//perform long distance combat
-		result = this->performLongDistanceCombat(unit1ReferenceInThisPhaseStartSceneFile->subModelDetails, unit2ReferenceInThisPhaseStartSceneFile->subModelDetails, unit1CanPerformLongDistanceAttack&unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack&unit1PassesOrdinatesCheck,  unit2CanPerformLongDistanceAttack&unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack&unit2PassesOrdinatesCheck);
+		result = performLongDistanceCombat(unit1ReferenceInThisPhaseStartSceneFile->subModelDetails, unit2ReferenceInThisPhaseStartSceneFile->subModelDetails, unit1CanPerformLongDistanceAttack&unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack&unit1PassesOrdinatesCheck,  unit2CanPerformLongDistanceAttack&unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack&unit2PassesOrdinatesCheck);
 	}
 
 	return result;
 }
-
-
-
-
 
 //preconditions: Assumes particular ModelDetails objects (unit1 and unit2) are fully self contained - ie they contain all information including that about horses etc
 //		(even though a knights respective horse may have been found in a higher level file during initial parse)
@@ -1310,8 +976,6 @@ int LRRCcombatClass::performLongDistanceCombatWithReferences(LDreference* unit1R
 	//	10 if error
 int LRRCcombatClass::performLongDistanceCombat(const ModelDetails* unit1, const ModelDetails* unit2, bool unit1performsLongDistanceAttack, bool unit2performsLongDistanceAttack)
 {
-	//cout << "\n\nDEBUG: unit1FileName = " << unit1FileName << endl;
-	//cout << "\n\nDEBUG: unit2FileName = " << unit2FileName << endl;
 	int result;
 
 	int unit1Attack = unit1->longDistanceAttackValue;
@@ -1493,74 +1157,19 @@ int LRRCcombatClass::performLongDistanceCombat(const ModelDetails* unit1, const 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //combat unit properties post parser (reference list searching)
-
-/****************************************************************
-/
-/ searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel
-/
-/****************************************************************/
 
 bool LRRCcombatClass::searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(LDreference* referenceBeingSearchedFor, LDreference* initialReference, const LDreference* parentReference, const bool isFillingParentUnitWithAllCombatRelevantChildModelDetails)
 {
 	bool particularSubModelFoundDuringSearch = false;
 	LDreference* currentReference = initialReference;
 
-	//cout << "DEBUG: c1" << endl;
-
 	while(currentReference->next != NULL)
 	{
-
-		//cout << "\nDEBUG: c2" << endl;
-		//cout << "currentReference->name = " << currentReference->name << endl;
-		//cout << "referenceBeingSearchedFor->name = " << referenceBeingSearchedFor->name << endl;
-
 		if(currentReference->isSubModelReference)
 		{
 			bool currentReferenceFoundIsTheParticularSubmodelBeingLookedFor = false;
-
-
-
+			
 			if(isFillingParentUnitWithAllCombatRelevantChildModelDetails)
 			{
 				LRRCmodelClass.addAllCombatRelevantChildModelDetailsIntoAParentUnit(currentReference->subModelDetails, referenceBeingSearchedFor->subModelDetails);
@@ -1585,32 +1194,28 @@ bool LRRCcombatClass::searchSceneReferenceListAndDetermineTheDetailsOfAParticula
 				{
 					if(currentReferenceRecordClass->name == PERSON_HEAD_NAME)
 					{
-
 						cout << "referenceBeingSearchedFor->name = " << referenceBeingSearchedFor->name << endl;
 						cout << "\t PERSON_HEAD_NAME referenceBeingSearchedFor->numberOfThisPartIDInTheUnit = " << currentReferenceRecordClass->numberOfThisPartIDInTheUnit << endl;
 					}
 
 					currentReferenceRecordClass = currentReferenceRecordClass->next;
 				}
-				*/
 
-
-				//cout << "\nDEBUG: c4" << endl;
 				//cout << "currentReference->name = " << currentReference->name << endl;
 				//cout << "referenceBeingSearchedFor->name = " << referenceBeingSearchedFor->name << endl;
-
+				*/
 			}
 
 			if(!isFillingParentUnitWithAllCombatRelevantChildModelDetails)
 			{
-				if(this->compareSubmodelNamesAndIfSameCopySubmodelReference(referenceBeingSearchedFor, currentReference))
+				if(compareSubmodelNamesAndIfSameCopySubmodelReference(referenceBeingSearchedFor, currentReference))
 				{
 					particularSubModelFoundDuringSearch = true;
 					currentReferenceFoundIsTheParticularSubmodelBeingLookedFor = true;
 				}
 			}
 
-			if(this->searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(referenceBeingSearchedFor, currentReference->firstReferenceWithinSubModel, currentReference, (currentReferenceFoundIsTheParticularSubmodelBeingLookedFor|isFillingParentUnitWithAllCombatRelevantChildModelDetails)))
+			if(searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel(referenceBeingSearchedFor, currentReference->firstReferenceWithinSubModel, currentReference, (currentReferenceFoundIsTheParticularSubmodelBeingLookedFor|isFillingParentUnitWithAllCombatRelevantChildModelDetails)))
 			{
 				if(!isFillingParentUnitWithAllCombatRelevantChildModelDetails) //always TRUE	//(!isFillingParentUnitWithAllCombatRelevantChildModelDetails) is implied true as searchSceneReferenceListAndDetermineTheDetailsOfAParticularUnitSubmodel has returned true.
 				{
@@ -1622,9 +1227,7 @@ bool LRRCcombatClass::searchSceneReferenceListAndDetermineTheDetailsOfAParticula
 			}
 		}
 
-		//cout << "DEBUG: c6 currentReference->next = " << currentReference->next << endl;
 		currentReference = currentReference->next;
-		//cout << "DEBUG: c7 currentReference->next = " << currentReference->next << endl;
 	}
 
 	return particularSubModelFoundDuringSearch;
@@ -1633,13 +1236,9 @@ bool LRRCcombatClass::searchSceneReferenceListAndDetermineTheDetailsOfAParticula
 bool LRRCcombatClass::compareSubmodelNamesAndIfSameCopySubmodelReference(LDreference* referenceBeingSearchedFor, LDreference* referenceCurrentlyFoundDuringSearch)
 {
 	bool particularSubModelFoundDuringSearch = false;
-	//cout << "DEBUG: d1" << endl;
-	//cout << "DEBUG: d1 referenceBeingSearchedFor->name =" << referenceBeingSearchedFor->name << endl;
-	//cout << "DEBUG: d1 referenceCurrentlyFoundDuringSearch->name =" << referenceCurrentlyFoundDuringSearch->name << endl;
+
 	if(referenceBeingSearchedFor->name == referenceCurrentlyFoundDuringSearch->name)
 	{
-		//cout << "DEBUG: d2 referenceBeingSearchedFor->colour =" << referenceBeingSearchedFor->colour << endl;
-		//cout << "DEBUG: d2 referenceCurrentlyFoundDuringSearch->colour =" << referenceCurrentlyFoundDuringSearch->colour << endl;
 		if(referenceBeingSearchedFor->colour == referenceCurrentlyFoundDuringSearch->colour)
 		{
 			LDreferenceClass.copyReferencePosition(referenceBeingSearchedFor, referenceCurrentlyFoundDuringSearch);
@@ -1647,7 +1246,6 @@ bool LRRCcombatClass::compareSubmodelNamesAndIfSameCopySubmodelReference(LDrefer
 			LRRCmodelClass.copyAllUnitDetails(referenceBeingSearchedFor->subModelDetails, referenceCurrentlyFoundDuringSearch->subModelDetails);
 
 			particularSubModelFoundDuringSearch = true;
-			//cout << "DEBUG: d5" << endl;
 		}
 		else
 		{
@@ -1663,142 +1261,7 @@ bool LRRCcombatClass::compareSubmodelNamesAndIfSameCopySubmodelReference(LDrefer
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //yet to update these and many other functions with XML rules classes.... 29/12/07
-
 
 bool LRRCcombatClass::performUnitOrdinatesCheck(const ModelDetails* u)
 {
@@ -1832,7 +1295,6 @@ bool LRRCcombatClass::performUnitOrdinatesCheck(const ModelDetails* u)
 
 	return result;
 }
-
 
 void LRRCcombatClass::performFinalUnitClassCalculations(ModelDetails* u)
 {
@@ -1881,7 +1343,6 @@ void LRRCcombatClass::performFinalUnitClassCalculations(ModelDetails* u)
 		if(currentReferenceRecordClass->numberOfThisPartIDInTheUnit > 0)
 		{
 			u->helmetDefenceValue = SHAREDvars.maxInt(u->helmetDefenceValue, currentReferenceRulesClass->attribute4);
-			//cout << "e1 u->helmetDefenceValue = " << u->helmetDefenceValue << endl;
 		}
 
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
@@ -1896,7 +1357,6 @@ void LRRCcombatClass::performFinalUnitClassCalculations(ModelDetails* u)
 		if(currentReferenceRecordClass->numberOfThisPartIDInTheUnit > 0)
 		{
 			u->breastDefenceValue = SHAREDvars.maxInt(u->breastDefenceValue, currentReferenceRulesClass->attribute4);
-			//cout << "e2 u->breastDefenceValue = " << u->breastDefenceValue << endl;
 		}
 
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
@@ -1910,7 +1370,6 @@ void LRRCcombatClass::performFinalUnitClassCalculations(ModelDetails* u)
 		if(currentReferenceRecordClass->numberOfThisPartIDInTheUnit > 0)
 		{
 			u->shieldDefenceValue = SHAREDvars.maxInt(u->shieldDefenceValue, currentReferenceRulesClass->attribute4);
-			//cout << "e3 u->shieldDefenceValue = " << u->shieldDefenceValue << endl;
 			u->numShields++;
 		}
 
@@ -1965,14 +1424,13 @@ void LRRCcombatClass::performFinalUnitClassCalculations(ModelDetails* u)
 		currentReferenceRulesClass = currentReferenceRulesClass->next;
 	}
 
-
 	/*peform summary calculations here*/
 
 		//calculate default bonuses - these calculations here are only used for sprite display (these are recalculated during combat) once the circumstances for bonus calculations are known
 	u->closeCombatAttackBonus = 0;
-	this->calculateCloseCombatAttackBonus(u, false, true);		//this->calculateCloseCombatAttackBonus() cannot be peformed at this stage (without knowledge of opponents) - do this later
+	calculateCloseCombatAttackBonus(u, false, true);		//calculateCloseCombatAttackBonus() cannot be peformed at this stage (without knowledge of opponents) - do this later
 										//calculate close combat attack bonus here assuming the opponent does not have a horse (ie is a foot soldier)
-										//this->calculateCloseCombatAttackBonus() is calculated here only for sprite display; and is recalculated during combat
+										//calculateCloseCombatAttackBonus() is calculated here only for sprite display; and is recalculated during combat
 	u->longDistanceAttackBonus = 0;					//calculateLongDistanceAttackBonus() cannot be peformed at this stage (without knowledge of opponents) - do this later
 
 	/*long distance attack range value cannot be given without knowing the relative height of the attacker and his oppponent*/
@@ -1991,18 +1449,7 @@ void LRRCcombatClass::performFinalUnitClassCalculations(ModelDetails* u)
 		u->defenceBonus = 1;
 	}
 
-	/*
-	//DEBUG:
-	cout << "u->armourDefenceValue = " << u->armourDefenceValue << endl;
-	cout << "u->breastDefenceValue = " << u->breastDefenceValue << endl;
-	cout << "u->helmetDefenceValue = " << u->helmetDefenceValue << endl;
-	cout << "u->shieldDefenceValue = " << u->shieldDefenceValue << endl;
-	cout << "u->defenceBonus = " << u->defenceBonus << endl;
-	*/
-
 	u->defenceTotal = u->armourDefenceValue + u->defenceBonus;
-	//cout << "e4 u->defenceTotal  = " << u->defenceTotal  << endl;
-
 }
 
 void LRRCcombatClass::performFinalUnitGroupClassCalculations(ModelDetails* u)
@@ -2053,7 +1500,6 @@ void LRRCcombatClass::performFinalUnitGroupClassCalculations(ModelDetails* u)
 		}
 		currentReferenceRecordClass = currentReferenceRecordClass->next;
 	}
-
 
 	u->helmetDefenceValue  = 0;
 	currentReferenceRulesClass = LRRCrulesUnitCombatDetailsDefenceHead;
@@ -2110,7 +1556,6 @@ void LRRCcombatClass::performFinalUnitGroupClassCalculations(ModelDetails* u)
 	currentReferenceRecordClass = u->recordOfUnitCombatDetailsAttackLongDistance;
 	while(currentReferenceRecordClass->next != NULL)
 	{
-
 		u->longDistanceAttackValue = u->longDistanceAttackValue + (currentReferenceRulesClass->attribute4* currentReferenceRecordClass->numberOfThisPartIDInTheUnit);
 
 		if(currentReferenceRecordClass->numberOfThisPartIDInTheUnit > 0)
@@ -2133,7 +1578,6 @@ void LRRCcombatClass::performFinalUnitGroupClassCalculations(ModelDetails* u)
 
 	if(u->numPerson > 0)
 	{
-		//cout << "HAND_DAGGER_MOD = " << HAND_DAGGER_MOD << endl;
 		u->closeCombatAttackValue = SHAREDvars.maxInt(int(HAND_DAGGER_MOD), u->closeCombatAttackValue);
 	}
 	u->closeCombatAttackTotal = (u->closeCombatAttackValue + u->closeCombatAttackBonus);
@@ -2145,22 +1589,11 @@ void LRRCcombatClass::performFinalUnitGroupClassCalculations(ModelDetails* u)
 
 	u->armourDefenceValue = u->breastDefenceValue + u->helmetDefenceValue + u->shieldDefenceValue;
 
-
-
 	if(u->numBattlement || u->numBush)
 	{
 		//u->defenceTotal = u->defenceTotal + 1;	23-Sept-06; the defence bonus modifier is now applied higher up the chain
 		u->defenceBonus = 1;
 	}
-
-	/*
-	//DEBUG:
-	cout << "u->armourDefenceValue = " << u->armourDefenceValue << endl;
-	cout << "u->breastDefenceValue = " << u->breastDefenceValue << endl;
-	cout << "u->helmetDefenceValue = " << u->helmetDefenceValue << endl;
-	cout << "u->shieldDefenceValue = " << u->shieldDefenceValue << endl;
-	cout << "u->defenceBonus = " << u->defenceBonus << endl;
-	*/
 
 	if((u->numPerson) && (u->closeCombatAttackValue == 0))
 	{
@@ -2168,12 +1601,7 @@ void LRRCcombatClass::performFinalUnitGroupClassCalculations(ModelDetails* u)
 		exit(0);
 	}
 	u->defenceTotal = u->armourDefenceValue + u->defenceBonus;
-
 }
-
-
-
-
 
 /*VERY OLD:
 
@@ -2239,7 +1667,6 @@ int LRRCcombatClass::calculateCloseCombatAttackBonus(ModelDetails* unit, const b
 }
 
 */
-
 
 /*
 General Notes:
@@ -2310,22 +1737,22 @@ int LRRCcombatClass::calculateCloseCombatAttackBonus(ModelDetails* unit, const b
 	}
 	else if(unit->numHorse)
 	{
-			if(unit->numLance)
-			{
-				unitAttackWithBonus = HAND_LANCE_MOD + HAND_LANCE_MOUNTED_BONUS;
-				unit->closeCombatAttackBonus = HAND_LANCE_MOUNTED_BONUS;
-			}
-			else if(unit->numSpear)
-			{
-				unitAttackWithBonus = HAND_SPEAR_MOD + HAND_SPEAR_MOUNTED_BONUS;
-				unit->closeCombatAttackBonus = HAND_SPEAR_MOD + HAND_SPEAR_MOUNTED_BONUS - unit->closeCombatAttackValue;		//or just unit->closeCombatAttackBonus = HAND_SPEAR_MOUNTED_BONUS - assuming the unit does not have a sword or axe also
-			}
-			else
-			{
-				//mounted attackers generally get +1 on their attack weapons
-				unitAttackWithBonus = unit->closeCombatAttackValue + HAND_OTHER_MOUNTED_BONUS;
-				unit->closeCombatAttackBonus = HAND_OTHER_MOUNTED_BONUS;
-			}
+		if(unit->numLance)
+		{
+			unitAttackWithBonus = HAND_LANCE_MOD + HAND_LANCE_MOUNTED_BONUS;
+			unit->closeCombatAttackBonus = HAND_LANCE_MOUNTED_BONUS;
+		}
+		else if(unit->numSpear)
+		{
+			unitAttackWithBonus = HAND_SPEAR_MOD + HAND_SPEAR_MOUNTED_BONUS;
+			unit->closeCombatAttackBonus = HAND_SPEAR_MOD + HAND_SPEAR_MOUNTED_BONUS - unit->closeCombatAttackValue;		//or just unit->closeCombatAttackBonus = HAND_SPEAR_MOUNTED_BONUS - assuming the unit does not have a sword or axe also
+		}
+		else
+		{
+			//mounted attackers generally get +1 on their attack weapons
+			unitAttackWithBonus = unit->closeCombatAttackValue + HAND_OTHER_MOUNTED_BONUS;
+			unit->closeCombatAttackBonus = HAND_OTHER_MOUNTED_BONUS;
+		}
 	}
 	else
 	{
@@ -2404,7 +1831,6 @@ int LRRCcombatClass::calculateCloseCombatAttackBonus(ModelDetails* unit, const b
 			currentReferenceRulesClass = currentReferenceRulesClass->next;
 		}
 
-
 		unit->closeCombatAttackValue = SHAREDvars.maxInt(int(HAND_DAGGER_MOD), unit->closeCombatAttackValue);
 		unitAttackWithBonus = unit->closeCombatAttackValue;
 		unit->closeCombatAttackBonus = 0;
@@ -2459,12 +1885,9 @@ int LRRCcombatClass::calculateCloseCombatAttackBonus(ModelDetails* unit, const b
 
 }
 
-
-
 void LRRCcombatClass::calculateLongDistanceAttackBonus(LDreference* unit1ReferenceInThisPhaseStartSceneFile, LDreference* unit2ReferenceInThisPhaseStartSceneFile, const bool unit1HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, const bool unit2HasNotMovedInPreviousRoundAndIntendsToPerformLongDistanceAttack, bool* unit1CanPerformLongDistanceAttack, bool* unit2CanPerformLongDistanceAttack, const double distanceBetweenUnitsForLDTest)
 {
 	//calculate the range of each units weapon based on the relative height between ModelDetails:
-	/******************************************************/
 	double longRangeDistanceBetweenTheTwoUnits;
 	double unit1MinimumRangeOfFire;
 	double unit1RangeModifier;
@@ -2474,24 +1897,12 @@ void LRRCcombatClass::calculateLongDistanceAttackBonus(LDreference* unit1Referen
 	/*Method 3 - simplied - uses modified rules, assumes linear horiz/range advatange corresponding to height increase*/
 	//(positionZOfUnit2-positionZOfUnit1) and not (positionZOfUnit2-positionZOfUnit1) for unit1 range modifier; as the lesser (or more negative) the z distance of a model, the higher the model is in the scene
 
-	unit1RangeModifier = this->calculateLongDistanceRangeModifier(unit2ReferenceInThisPhaseStartSceneFile, unit1ReferenceInThisPhaseStartSceneFile);
-	unit2RangeModifier = this->calculateLongDistanceRangeModifier(unit1ReferenceInThisPhaseStartSceneFile, unit2ReferenceInThisPhaseStartSceneFile);
+	unit1RangeModifier = calculateLongDistanceRangeModifier(unit2ReferenceInThisPhaseStartSceneFile, unit1ReferenceInThisPhaseStartSceneFile);
+	unit2RangeModifier = calculateLongDistanceRangeModifier(unit1ReferenceInThisPhaseStartSceneFile, unit2ReferenceInThisPhaseStartSceneFile);
 
 	unit1MinimumRangeOfFire = CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY;	//CHECK this: possibly make this setting more advanced for catapults (eg a ratio of the max range of fire distance)
 	unit2MinimumRangeOfFire = CLOSE_AND_LONGDISTANCE_COMBAT_BOUNDARY;	//CHECK this: possibly make this setting more advanced for catapults (eg a ratio of the max range of fire distance)
-	//cout << "(currentPositionYOfUnit2-currentPositionYOfUnit1) = " << (currentPositionYOfUnit2-currentPositionYOfUnit1) << endl;
-	//cout << "(currentPositionYOfUnit1-currentPositionYOfUnit2) = " << (currentPositionYOfUnit1-currentPositionYOfUnit2) << endl;
 
-	/******************************************************/
-
-	/*
-	cout << "DEBUG: unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.x = " << unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.x << endl;
-	cout << "DEBUG: unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.y = " << unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.y << endl;
-	cout << "DEBUG: unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.z = " << unit1ReferenceInThisPhaseStartSceneFile->absolutePosition.z << endl;
-	cout << "DEBUG: unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.x = " << unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.x << endl;
-	cout << "DEBUG: unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.y = " << unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.y << endl;
-	cout << "DEBUG: unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.z = " << unit2ReferenceInThisPhaseStartSceneFile->absolutePosition.z << endl;
-	*/
 
 	if(!(unit1ReferenceInThisPhaseStartSceneFile->subModelDetails->hasLongDistanceCombatWeapon))
 	{
@@ -2512,7 +1923,7 @@ void LRRCcombatClass::calculateLongDistanceAttackBonus(LDreference* unit1Referen
 			{
 				int currentWeaponsRange = currentReferenceRulesClass->attribute5;
 				double currentWeaponMaximumRangeOfFireWithModifier = currentWeaponsRange + unit1RangeModifier;
-				if(this->calculateIfUnitIsWithinAGivenLongRangeAttackDistance(distanceBetweenUnitsForLDTest, (int)currentWeaponMaximumRangeOfFireWithModifier, (int)unit1MinimumRangeOfFire))
+				if(calculateIfUnitIsWithinAGivenLongRangeAttackDistance(distanceBetweenUnitsForLDTest, (int)currentWeaponMaximumRangeOfFireWithModifier, (int)unit1MinimumRangeOfFire))
 				{
 					foundOptimumLongDistanceWeapon = true;
 
@@ -2554,7 +1965,7 @@ void LRRCcombatClass::calculateLongDistanceAttackBonus(LDreference* unit1Referen
 			{
 				int currentWeaponsRange = currentReferenceRulesClass->attribute5;
 				double currentWeaponMaximumRangeOfFireWithModifier = currentWeaponsRange + unit2RangeModifier;
-				if(this->calculateIfUnitIsWithinAGivenLongRangeAttackDistance(distanceBetweenUnitsForLDTest, (int)currentWeaponMaximumRangeOfFireWithModifier, (int)unit2MinimumRangeOfFire))
+				if(calculateIfUnitIsWithinAGivenLongRangeAttackDistance(distanceBetweenUnitsForLDTest, (int)currentWeaponMaximumRangeOfFireWithModifier, (int)unit2MinimumRangeOfFire))
 				{
 					foundOptimumLongDistanceWeapon = true;
 
@@ -2579,17 +1990,16 @@ void LRRCcombatClass::calculateLongDistanceAttackBonus(LDreference* unit1Referen
 }
 
 
+
 //range calculations
-
-
 
 bool LRRCcombatClass::calculateIfTwoUnitsAreWithinAGivenLongRangeAttackDistance(const double positionXOfUnit1, const double positionXOfUnit2, const double positionYOfUnit1, const double positionYOfUnit2, const double positionZOfUnit1, const double positionZOfUnit2, const int maximumDistance, const int minimumDistance)
 {
 	bool result;
 
-	double LRRCdistanceBetweenTheTwoUnits = this->calculateTheDistanceBetweenTwoUnits(positionXOfUnit1, positionXOfUnit2, positionYOfUnit1, positionYOfUnit2, positionZOfUnit1, positionZOfUnit2);
+	double LRRCdistanceBetweenTheTwoUnits = calculateTheDistanceBetweenTwoUnits(positionXOfUnit1, positionXOfUnit2, positionYOfUnit1, positionYOfUnit2, positionZOfUnit1, positionZOfUnit2);
 
-	result = this->calculateIfUnitIsWithinAGivenLongRangeAttackDistance(LRRCdistanceBetweenTheTwoUnits, maximumDistance, minimumDistance);
+	result = calculateIfUnitIsWithinAGivenLongRangeAttackDistance(LRRCdistanceBetweenTheTwoUnits, maximumDistance, minimumDistance);
 
 	return result;
 }
@@ -2600,23 +2010,15 @@ bool LRRCcombatClass::calculateIfUnitIsWithinAGivenLongRangeAttackDistance(const
 
 	if(((int)distanceBetweenTheTwoUnits <= maximumDistance) && ((int)distanceBetweenTheTwoUnits >= minimumDistance))
 	{
-		//cout << "\nDEBUG: Units are within Range for long range attack. Distance between units = " << distanceBetweenTheTwoUnits << endl;
-		//cout << "Maximum Distance = " << maximumDistance << endl;
 		result = true;
 	}
 	else
 	{
-		/*
-		cout << "positionXOfUnit1 = " << positionXOfUnit1 << ", positionXOfUnit2 = " << positionXOfUnit2 << endl;
-		cout << "positionYOfUnit1 = " << positionYOfUnit1 << ", positionYOfUnit2 = " << positionYOfUnit2 << endl;
-		cout << "positionZOfUnit1 = " << positionZOfUnit1 << ", positionZOfUnit2 = " << positionZOfUnit2 << endl;
-		*/
 		result = false;
 	}
 
 	return result;
 }
-
 
 double LRRCcombatClass::calculateTheDistanceBetweenTwoUnits(vec* positionOfUnit1, vec* positionOfUnit2)
 {
@@ -2644,64 +2046,17 @@ double LRRCcombatClass::calculateTheDistanceBetweenTwoUnits(const double positio
 
 }
 
-
-
+/*
 //This function is not currently used (instead simplified calculations of range advantage are calculated based on original Rules
-double calculateExtraHorizontalDistanceOfProjectileWithHeightAdvantage(double verticalHeightAdvantage, double maxHorizRangeOfWeapon)
+double LRRCcombatClass::calculateExtraHorizontalDistanceOfProjectileWithHeightAdvantage(double verticalHeightAdvantage, double maxHorizRangeOfWeapon)
 {
 	return false;
 }
-
-
+*/
 
 int LRRCcombatClass::calculateLongDistanceRangeModifier(const LDreference* targetUnitReference, const LDreference* unitReference)
 {
 	return (targetUnitReference->absolutePosition.y-unitReference->absolutePosition.y)/LDRAW_UNITS_PER_CM*RANGE_MODIFIER_BASED_ON_INCREASED_HEIGHT;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
