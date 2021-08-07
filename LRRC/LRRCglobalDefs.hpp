@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCglobalDefs.hpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2021 Baxter AI (baxterai.com)
  * Project: LD Rules Rounds Checker
- * Project Version: 3n7e 17-August-2020
+ * Project Version: 3p4a 07-August-2021
  * Description: LRRC specific global definitions
  *
  *******************************************************************************/

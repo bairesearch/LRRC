@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCgame.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2021 Baxter AI (baxterai.com)
  * Project: LD Rules Rounds Checker
- * Project Version: 3n7e 17-August-2020
+ * Project Version: 3p4a 07-August-2021
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
@@ -802,7 +802,7 @@ void LRRCgameClass::feedNeuralNetworkWithGameUnitExperiences(ANNneuron* firstInp
 		if(LRRCgameAI.checkAverageKillRatioForUnitGroup(currentUnitInList) || (currentUnitInList->unitDetails->numPerson == 1))
 		{
 		#endif
-			ANNalgorithmBackpropagationTraining.feedNeuralNetworkWithASetOfExperiencesBackpropagation(firstInputNeuronInNetwork, firstOutputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, currentUnitInList->firstExperience[nn]);
+			ANNalgorithmBackpropagation.feedNeuralNetworkWithASetOfExperiencesBackpropagation(firstInputNeuronInNetwork, firstOutputNeuronInNetwork, numberOfInputNeurons, numberOfOutputNeurons, currentUnitInList->firstExperience[nn]);
 
 			if(currentUnitInList->isUnitGroup)
 			{
@@ -2287,7 +2287,7 @@ bool LRRCgameClass::AIsearchUnitListAndCalculateWorthOfOpponents(const int curre
 		#endif
 			ANNexperience* experienceWithoutKnownOutput = new ANNexperience[GAME_NUMBER_OF_EXPERIENCE_NN];
 			LRRCgameAI.generateExperienceFromGlobalDecision(currentPlayer->firstUnitInUnitList, initialReferenceInThisPhaseStartScene, referenceToPlayerUnitThatIsFindingAnOpponent, referenceForOpposingPlayerCurrentUnit, &(experienceWithoutKnownOutput[nn]));
-			experienceBackPropagationPassError = ANNalgorithmBackpropagationTraining.calculateExperienceErrorForHypotheticalDecisionBackpropagation(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn], currentPlayer->numberOfInputNeurons[nn], currentPlayer->numberOfOutputNeurons[nn], &(experienceWithoutKnownOutput[nn]));
+			experienceBackPropagationPassError = ANNalgorithmBackpropagation.calculateExperienceErrorForHypotheticalDecisionBackpropagation(currentPlayer->firstInputNeuronInNetwork[nn], currentPlayer->firstOutputNeuronInNetwork[nn], currentPlayer->numberOfInputNeurons[nn], currentPlayer->numberOfOutputNeurons[nn], &(experienceWithoutKnownOutput[nn]));
 			currentUnit->selfLearningTempVarBackPropagationPassError[nn] = experienceBackPropagationPassError;
 			delete[] experienceWithoutKnownOutput;
 		#endif

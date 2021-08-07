@@ -24,9 +24,9 @@
 /*******************************************************************************
  *
  * File Name: LRRCrecordClass.cpp
- * Author: Richard Bruce Baxter - Copyright (c) 2005-2020 Baxter AI (baxterai.com)
+ * Author: Richard Bruce Baxter - Copyright (c) 2005-2021 Baxter AI (baxterai.com)
  * Project: LD Rules Rounds Checker
- * Project Version: 3n7e 17-August-2020
+ * Project Version: 3p4a 07-August-2021
  * Project First Internal Release: 1aXx 18-Sept-05 (C)
  * Project Second Internal Release: 2aXx 02-April-06 (convert to C++)
  * Project Third Internal Release: 2b7d 26-Sept-06 (added sprites)
